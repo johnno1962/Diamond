@@ -6,7 +6,7 @@
 #  Created by John Holdsworth on 18/09/2015.
 #  Copyright © 2015 John Holdsworth. All rights reserved.
 #
-#  $Id: //depot/SwiftScript/SwiftScript/prepare.rb#4 $
+#  $Id: //depot/SwiftScript/SwiftScript/prepare.rb#5 $
 #
 #  Repo: https://github.com/johnno1962/SwiftScript
 #
@@ -120,10 +120,10 @@ end
 
 missingPods = ""
 
-mainSource.scan( /^import\s+(\S+)\s*\/\/\s*(pod .*\n)/ )
+mainSource.scan( /^import\s+(\S+)\s*\/\/\s*(!)?(pod .*\n)/ )
     .each { |match|
-        if !File.exists?( libraryRoot+"/Frameworks/"+match[0]+".framework" )
-            missingPods += match[1]
+        if match[1] == "!" || !File.exists?( libraryRoot+"/Frameworks/"+match[0]+".framework" )
+            missingPods += match[2]
         end
     }
 
@@ -141,7 +141,7 @@ PODFILE
 
     save( podfile, libraryRoot+"/Pods/Podfile" )
 
-    if !system( "cd '#{libraryRoot}/Pods' && pod install && mv -f Rome/*.framework ../Frameworks" )
+    if !system( "cd '#{libraryRoot}/Pods' && pod install && (rsync -rilvp Rome/ ../Frameworks || echo 'rsync warning')" )
         abort( "Could not build pods" )
     end
 end

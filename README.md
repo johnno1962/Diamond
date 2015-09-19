@@ -2,14 +2,14 @@
 # SwiftScript
 
 Of late I've been looking for a new scripting language when it comes to larger projects.
-The nub of the problem is dynamically typed languages will often be giving
-run time errors that should have been picked up when the script was compiled.
+The nub of the problem is dynamically typed languages will always be prone to
+run time errors that really should have been picked up when the script compiles.
 If only you could write scripts in a type-safe, modern language like Swift. 
 
-From the get-go [you've been able to](http://nomothetis.svbtle.com/swift-for-scripting)
+From the get-go you've been [able to](http://nomothetis.svbtle.com/swift-for-scripting)
 but it leaves much unresolved such as dependency management and auto-completion in the
-editor. The SwiftScript project is a binary "swifts" and a ruby script
-that tries to resolve these problems galvanised by a talk by
+editor. The SwiftScript project is a binary `swifts` and a ruby script that seeks to
+resolve these problems in particular dependency managment galvanised by a talk by 
 [Ayaka Nonaka](https://realm.io/news/swift-scripting/) earlier this year.
 
 To script in SwiftScript, download and build this project and start by placing the
@@ -24,13 +24,18 @@ following into a file in your path and making it executable:
     print( "Hello SwiftScript" )
 ```
 
-This shows how to use a pod dependancy, by putting it's pod spec in
-a comment after the import statement.
-Type the name of the file on the command line with a "-edit" argument.
-This should convert the script into a “.scriptproj” Xcode project and open it
-for so you can start creating. Your script will appear in the project as
-"main.swift" and will also be available at it's original location via a
-symbolic link so you can continue to use it from the command line.
+Execute the file with a `-edit` argument and
+this should convert the script into a `.scriptproj` Xcode project in the same directory
+and open it in Xcode so you can start creating. Your script will appear in the project as
+`main.swift` and will also be available at it's original location via a
+symbolic link to continue to callable from the command line.
+
+This script shows how to use a Cocoapods dependency. By putting it's pod spec
+in a comment after the import statement the pod will be automatically
+downloaded when the script is run and installed
+into ~/Library/SwiftScripts/Frameworks. As this directory is in the
+framework search path for all script projects auto-completion in the
+Xcode Editor will work. Use `!pod` to force a pod to reinstall at a later time.
 
 You must have $HOME/bin in your UNIX $PATH for /usr/bin/env to work and for
 external dependencies install CocoaPods and the handy "Rome" plugin.
@@ -41,12 +46,12 @@ external dependencies install CocoaPods and the handy "Rome" plugin.
 ```
 
 Multiple classes in your script project are fine along with interface nibs.
-Scripts are built as frameworks so they can be also imported into each
+Scripts are built as frameworks. This means they can be also imported into each
 other to share code provided the script being imported has been run at
 some stage - even if it's main.swift does nothing.
 
-A small example script "browse" is included in the project directory as an
-example of how to add a UI to a script. All that is required is a MainMenu.xib
+A small example script `browse` is included in the project directory as an
+example of how to add a UI to a script. All that is required is a `MainMenu.xib`
 in it's project and calling NSApplicationMain() as below. Create an AppDelegate
 object instance and wire it as the delegate of the file's owner as before.
 

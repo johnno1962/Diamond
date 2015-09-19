@@ -665,6 +665,7 @@
         <customObject id="jqF-EB-o0p" userLabel="AppDelegate" customClass="AppDelegate" customModule="browse">
             <connections>
                 <outlet property="webView" destination="4aH-rg-hvv" id="KyV-sJ-t9t"/>
+                <outlet property="window" destination="4rw-ap-uGd" id="Uvg-fp-223"/>
             </connections>
         </customObject>
         <window title="SwiftScript Example" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" animationBehavior="default" id="4rw-ap-uGd">
@@ -682,6 +683,13 @@
                         <webPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12" plugInsEnabled="NO" javaEnabled="NO" javaScriptCanOpenWindowsAutomatically="NO" allowsAnimatedImages="NO" allowsAnimatedImageLooping="NO">
                             <nil key="identifier"/>
                         </webPreferences>
+                        <connections>
+                            <outlet property="UIDelegate" destination="jqF-EB-o0p" id="fFB-My-CPH"/>
+                            <outlet property="downloadDelegate" destination="jqF-EB-o0p" id="rbh-sU-feJ"/>
+                            <outlet property="frameLoadDelegate" destination="jqF-EB-o0p" id="SK6-xm-DmC"/>
+                            <outlet property="policyDelegate" destination="jqF-EB-o0p" id="miU-Sk-qfJ"/>
+                            <outlet property="resourceLoadDelegate" destination="jqF-EB-o0p" id="558-m7-2ff"/>
+                        </connections>
                     </webView>
                 </subviews>
             </view>

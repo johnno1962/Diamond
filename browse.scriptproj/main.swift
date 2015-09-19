@@ -27,5 +27,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Insert code here to tear down your application
         print( "bye.." )
     }
-    
+
+    func webView( aWebView: WebView, didReceiveTitle aTitle: String, forFrame frame: WebFrame ) {
+        window.title = aTitle
+    }
+
 }
