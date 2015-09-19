@@ -19,12 +19,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(aNotification: NSNotification) {
         // Insert code here to initialize your application
-        NSApplication.sharedApplication().activateIgnoringOtherApps( true )
         webView.mainFrame.loadRequest(NSURLRequest(URL: NSURL(string: url)!))
+        NSApplication.sharedApplication().activateIgnoringOtherApps( true )
     }
 
     func applicationWillTerminate(aNotification: NSNotification) {
         // Insert code here to tear down your application
+        print( "bye.." )
     }
     
 }

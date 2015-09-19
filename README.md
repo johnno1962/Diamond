@@ -24,16 +24,16 @@ following into a file in your path and making it executable:
     print( "Hello SwiftScript" )
 ```
 
+This shows how to use a pod dependancy, by putting it's pod spec in
+a comment after the import statement.
 Type the name of the file on the command line with a "-edit" argument.
 This should convert the script into a “.scriptproj” Xcode project and open it
 for so you can start creating. Your script will appear in the project as
-"main.swift" and will also be available at it's previous location via a
+"main.swift" and will also be available at it's original location via a
 symbolic link so you can continue to use it from the command line.
-This shows how to use a pod dependancy, by putting it's pod spec in
-a comment after the import.
 
-You must have $HOME/bin in your UNIX $PATH for SwiftScript to work and for
-external dependencies install CocoaPods and the excellent "Rome" plugin.
+You must have $HOME/bin in your UNIX $PATH for /usr/bin/env to work and for
+external dependencies install CocoaPods and the handy "Rome" plugin.
 
 ```
     $ sudo gem install cocoapods
@@ -43,14 +43,51 @@ external dependencies install CocoaPods and the excellent "Rome" plugin.
 Multiple classes in your script project are fine along with interface nibs.
 Scripts are built as frameworks so they can be also imported into each
 other to share code provided the script being imported has been run at
-some stage - even if it does nothing.
+some stage - even if it's main.swift does nothing.
 
-There is a small example script "browse" in the project directory to get
-you up and running. Raise any issues you encounter against this project
-or you can get in touch via script (at) johnholdsworth.com or on Twitter 
-[@Injection4Xcode](https://twitter.com/#!/@Injection4Xcode).
+A small example script "browse" is included in the project directory as an
+example of how to add a UI to a script. All that is required is a MainMenu.xib
+in it's project and calling NSApplicationMain() as below. Create an AppDelegate
+object instance and wire it as the delegate of the file's owner as before.
 
-MIT License
+```Swift
+    #!/usr/bin/env swifts
+
+    import Cocoa
+    import WebKit
+
+    if Process.arguments.count < 2 {
+        print( "Please specify URL" )
+        exit(0)
+    }
+
+    let url = Process.arguments[1]
+
+    NSApplicationMain( 0,  UnsafeMutablePointer<UnsafeMutablePointer<Int8>>(nil) )
+
+    class AppDelegate: NSObject, NSApplicationDelegate {
+
+        @IBOutlet weak var window: NSWindow!
+        @IBOutlet weak var webView: WebView!
+
+        func applicationDidFinishLaunching(aNotification: NSNotification) {
+            // Insert code here to initialize your application
+            webView.mainFrame.loadRequest(NSURLRequest(URL: NSURL(string: url)!))
+            NSApplication.sharedApplication().activateIgnoringOtherApps( true )
+        }
+
+        func applicationWillTerminate(aNotification: NSNotification) {
+            // Insert code here to tear down your application
+        }
+
+    }
+```
+
+Raise any issues you encounter using SwiftScripting against this github project
+or you can get in touch with any suggestions via script (at) johnholdsworth.com
+or on Twitter [@Injection4Xcode](https://twitter.com/#!/@Injection4Xcode).
+
+### MIT License
 
 Copyright (c) 2015 John Holdsworth
 

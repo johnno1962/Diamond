@@ -6,7 +6,7 @@
 #  Created by John Holdsworth on 18/09/2015.
 #  Copyright © 2015 John Holdsworth. All rights reserved.
 #
-#  $Id: //depot/SwiftScript/SwiftScript/prepare.rb#3 $
+#  $Id: //depot/SwiftScript/SwiftScript/prepare.rb#4 $
 #
 #  Repo: https://github.com/johnno1962/SwiftScript
 #
@@ -80,36 +80,36 @@ if /NSApplicationMain/ =~ mainSource
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-    <key>BuildMachineOSBuild</key>
-    <string>14F27</string>
-    <key>CFBundleDevelopmentRegion</key>
-    <string>en</string>
-    <key>CFBundleExecutable</key>
-    <string>#{menuTitle}</string>
-    <key>CFBundleIdentifier</key>
-    <string>com.johnholdsworth.SwiftScript</string>
-    <key>CFBundleInfoDictionaryVersion</key>
-    <string>6.0</string>
-    <key>CFBundleName</key>
-    <string>SwiftScript</string>
-    <key>CFBundlePackageType</key>
-    <string>APPL</string>
-    <key>CFBundleShortVersionString</key>
-    <string>1.0</string>
-    <key>CFBundleSignature</key>
-    <string>????</string>
-    <key>CFBundleSupportedPlatforms</key>
-    <array>
-    <string>MacOSX</string>
-    </array>
-    <key>CFBundleVersion</key>
-    <string>1</string>
-    <key>NSMainNibFile</key>
-    <string>MainMenu</string>
-    <key>NSPrincipalClass</key>
-    <string>NSApplication</string>
-</dict>
+    <dict>
+        <key>BuildMachineOSBuild</key>
+        <string>14F27</string>
+        <key>CFBundleDevelopmentRegion</key>
+        <string>en</string>
+        <key>CFBundleExecutable</key>
+        <string>#{menuTitle}</string>
+        <key>CFBundleIdentifier</key>
+        <string>com.johnholdsworth.SwiftScript</string>
+        <key>CFBundleInfoDictionaryVersion</key>
+        <string>6.0</string>
+        <key>CFBundleName</key>
+        <string>SwiftScript</string>
+        <key>CFBundlePackageType</key>
+        <string>APPL</string>
+        <key>CFBundleShortVersionString</key>
+        <string>1.0</string>
+        <key>CFBundleSignature</key>
+        <string>????</string>
+        <key>CFBundleSupportedPlatforms</key>
+        <array>
+        <string>MacOSX</string>
+        </array>
+        <key>CFBundleVersion</key>
+        <string>1</string>
+        <key>NSMainNibFile</key>
+        <string>MainMenu</string>
+        <key>NSPrincipalClass</key>
+        <string>NSApplication</string>
+    </dict>
 </plist>
 INFO_PLIST
     FileUtils.rm_f( contents+"/Resources" )
