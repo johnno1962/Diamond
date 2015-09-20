@@ -12,7 +12,7 @@ and others have had [some success](https://realm.io/news/swift-scripting/)
 but it's fairly heavy going without autocompletion and dependency management.
 `SafeScript` is small binary and a couple of scripts that looks to address 
 these problems. Pods are specified in a comment after an import statement 
-in your script and are downloaded automatically when a script is run.
+in your script and are downloaded automatically when the script is run.
 For autocompletion, scripts are converted into a mini Xcode framework
 project with the correct framework search path.
 
@@ -27,7 +27,7 @@ project with the correct framework search path.
 ```
 
 This is overseen by the `safescript` binary and a script `prepare.rb` that is
-run before the script proper. prepare.rb loads pods, rebuilds the script's
+run before the script proper. `prepare.rb` loads pods, rebuilds the script's
 framework if required then jumps into it's main.swift to start execution.
 
 As all of Cocoa is available, a UI component can be added to a script by
@@ -91,7 +91,7 @@ and loaded applying any changes to class method implementations without restart.
 That's about it. What is missing is an implementation of easy to use
 i/o classes such as File, Dir and FileUtils in ruby which could be 
 made available as a pod in due course. As scripts are frameworks they
-can be imported into each other which is another way to shared code.
+can be imported into each other which is another way to share code.
 
 The author can be reached on Twitter
 [@Injection4Xcode](https://twitter.com/#!/@Injection4Xcode).
