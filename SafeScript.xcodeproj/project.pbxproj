@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		BB3F78541BACA97F00435430 /* safescript in CopyFiles */ = {isa = PBXBuildFile; fileRef = BB3F784A1BACA8E800435430 /* safescript */; };
-		BB3F78B61BACB8C100435430 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BB3F78B51BACB8C100435430 /* main.m */; settings = {ASSET_TAGS = (); }; };
+		BB3F78B61BACB8C100435430 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BB3F78B51BACB8C100435430 /* main.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -199,7 +199,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "LIBROOT=~/Library/SafeScript\nmkdir -p $LIBROOT/{Frameworks,Resources,Pods} &&\ncp -f SafeScript/{prepare,reloader}.rb $LIBROOT/Resources &&\ncp -rf TemplateProject Reloader $LIBROOT &&\nrm -rf $LIBROOT/TemplateProject/TemplateProject.xcodeprog/{,project.xcworkspace/}xcuserdata";
+			shellScript = "LIBROOT=~/Library/SafeScript\nmkdir -p $LIBROOT/{Frameworks,Resources,Pods} &&\ncp -f SafeScript/{prepare,reloader}.rb $LIBROOT/Resources &&\ncp -rf TemplateProject Reloader $LIBROOT &&\nrm -rf $LIBROOT/TemplateProject/TemplateProject.xcodeproj/{xcuserdata,project.xcworkspace}";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */

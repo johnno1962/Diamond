@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 16/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/SafeScript/Reloader/Reloader.m#2 $
+//  $Id: //depot/SafeScript/Reloader/Reloader.m#3 $
 //
 //  Repo: https://github.com/johnno1962/SafeScript
 //

@@ -11,7 +11,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		BB3F78911BACAB9B00435430 /* TemplateProject.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TemplateProject.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB3F78911BACAB9B00435430 /* TemplateProject.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = "TemplateProject.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB3F78A21BACAC3600435430 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BB3F78A61BACAC5200435430 /* main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -70,8 +70,8 @@
 			);
 			dependencies = (
 			);
-			name = TemplateProject;
-			productName = TemplateProject;
+			name = "TemplateProject";
+			productName = "TemplateProject";
 			productReference = BB3F78911BACAB9B00435430 /* TemplateProject.framework */;
 			productType = "com.apple.product-type.framework";
 		};
@@ -241,7 +241,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = Info.plist;
-				PRODUCT_BUNDLE_IDENTIFIER = com.johnholdsworth.TemplateProject;
+				PRODUCT_BUNDLE_IDENTIFIER = com.johnholdsworth.SafeScript;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -260,7 +260,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = Info.plist;
-				PRODUCT_BUNDLE_IDENTIFIER = com.johnholdsworth.TemplateProject;
+				PRODUCT_BUNDLE_IDENTIFIER = com.johnholdsworth.SafeScript;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = NO;
 			};

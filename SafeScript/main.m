@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 18/09/2015.
 //  Copyright © 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/SafeScript/SafeScript/main.m#5 $
+//  $Id: //depot/SafeScript/SafeScript/main.m#7 $
 //
 //  Repo: https://github.com/johnno1962/SafeScript
 //
@@ -16,6 +16,7 @@
 
 static void watchProject( NSString *scriptName );
 static NSString *libraryRoot, *scriptName;
+static FSEventStreamRef fileEvents;
 
 int main(int argc, const char * argv[]) {
 
@@ -81,11 +82,19 @@ int main(int argc, const char * argv[]) {
 
         @try {
             watchProject( scriptProject );
-            exit( scriptMain( argc-1, argv+1 ) );
+            status = scriptMain( argc-1, argv+1 );
         }
         @catch ( NSException *e ) {
             SError( "Exception %@\n%@", e, e.callStackSymbols );
         }
+
+        if ( fileEvents ) {
+            FSEventStreamStop( fileEvents );
+            FSEventStreamInvalidate( fileEvents );
+            FSEventStreamRelease( fileEvents );
+        }
+
+        exit( status );
     }
 
     return 0;
@@ -102,13 +111,11 @@ static void fileCallback( ConstFSEventStreamRef streamRef,
     if ( ![fileChanged hasSuffix:@".swift"] )
         return;
 
-    static BOOL busy;
-    if ( !busy ) {
-        busy = YES;
+    static int busy;
+    if ( !busy++ ) {
 
         static int reloadNumber;
         NSString *bundlePath = [NSString stringWithFormat:@"/tmp/Reloader%d.bundle", reloadNumber++];
-
         NSString *reloadCommand = [NSString stringWithFormat:@"%@/Resources/reloader.rb '%@' '%@' '%@' '%@'",
                                    libraryRoot, libraryRoot, scriptName, fileChanged, bundlePath];
 
@@ -118,19 +125,19 @@ static void fileCallback( ConstFSEventStreamRef streamRef,
             NSLog( @"SafeScript: %@ returns error", reloadCommand );
         else if ( ![[NSBundle bundleWithPath:bundlePath] load] )
             NSLog( @"SafeScript: Could not reload bundle: %@", bundlePath );
-
-        busy = NO;
     }
+
+    busy--;
 }
 
 static void watchProject( NSString *scriptProject ) {
     static struct FSEventStreamContext context;
-    FSEventStreamRef fileEvents = FSEventStreamCreate(kCFAllocatorDefault,
-                                                      fileCallback, &context,
-                                                      (__bridge CFArrayRef)@[scriptProject],
-                                                      kFSEventStreamEventIdSinceNow, .1,
-                                                      kFSEventStreamCreateFlagUseCFTypes|
-                                                      kFSEventStreamCreateFlagFileEvents);
+    fileEvents = FSEventStreamCreate( kCFAllocatorDefault,
+                                     fileCallback, &context,
+                                     (__bridge CFArrayRef)@[scriptProject],
+                                     kFSEventStreamEventIdSinceNow, .1,
+                                     kFSEventStreamCreateFlagUseCFTypes|
+                                     kFSEventStreamCreateFlagFileEvents);
     FSEventStreamScheduleWithRunLoop(fileEvents, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
     FSEventStreamStart( fileEvents );
 }

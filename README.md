@@ -1,59 +1,37 @@
 
 # SafeScript
 
-Of late I've been looking for a new scripting language when it comes to larger projects.
-The nub of the problem is dynamically typed languages will always be prone to
-run time errors that really should have been picked up when the script compiles.
-If only you could write scripts in a type-safe, modern language like Swift. 
+When you're as bad a typist as I am one of the frustrations of using dynamically typed
+scripting languages is when a run time error occurs that could have been picked up 
+by a compiler. Type inference has also reduced the burden coding in a type-safe
+language so perhaps it is time to see if a language such as Swift can be
+pressed into service in a scripting environment.
 
-From the get-go you've been [able to](http://nomothetis.svbtle.com/swift-for-scripting)
-but it leaves much unresolved such as dependency management and auto-completion in the
-editor. The SafeScript project is a binary `safescript` and a ruby script that seeks to
-resolve these problems in particular dependency managment galvanised by a talk 
-[earlier this year](https://realm.io/news/swift-scripting/).
-
-To script in SafeScript, download and build this project and start by placing the
-following into a file in your path and making it executable:
+From it's beginning you've been able [script in swift](http://nomothetis.svbtle.com/swift-for-scripting)
+and others have had [some success](https://realm.io/news/swift-scripting/)
+but it's fairly heavy going without autocompletion and dependency management.
+`SafeScript` is small binary and a couple of scripts that looks to address 
+these problems. Pods are specified in a comment after an import statement 
+in your script and are downloaded automatically when a script is run.
+For autocompletion, scripts are converted into a mini Xcode framework
+project with the correct framework search path.
 
 ```Swift
     #!/usr/bin/env safescript
 
     import Cocoa
-    import Alamofire // pod 'Alamofire'
+    import Alamofire // pod
+    import Box // pod 'Box', :head
 
     print( "Hello SafeScript" )
 ```
 
-Execute the file with a `-edit` argument and this should convert the script into a
-`.scriptproj` Xcode project in the same directory then open it in Xcode so you can
-start creating. Your script will appear in the project as `main.swift` and will also
-be available at it's original location via a symbolic link to be callable 
-from the command line.
+This is overseen by the `safescript` binary and a script `prepare.rb` that is
+run before the script proper. prepare.rb loads pods, rebuilds the script's
+framework if required then jumps into it's main.swift to start execution.
 
-This script shows how to use a CocoaPods dependency. By putting it's pod spec
-in a comment after the import statement the pod will be automatically
-downloaded when the script is run and installed
-into ~/Library/SafeScripts/Frameworks. As this directory is in the
-framework search path for all script projects auto-completion in the
-Xcode Editor will work. Use `!pod` to force a pod to reinstall at a later time.
-
-You must have $HOME/bin in your UNIX $PATH for /usr/bin/env to work and for
-external dependencies install CocoaPods and the handy "Rome" plugin.
-
-```
-    $ sudo gem install cocoapods
-    $ sudo gem install cocoapods-rome
-```
-
-Multiple classes in your script project are fine along with interface nibs.
-Scripts are built as frameworks. This means they can be also imported into each
-other to share code provided the script being imported has been run at
-some stage - even if it's main.swift does nothing.
-
-A small example script `browse` is included in the project directory as an
-example of how to add a UI to a script. All that is required is a `MainMenu.xib`
-in it's project and calling NSApplicationMain() as below. Create an AppDelegate
-object instance and wire it as the delegate of the file's owner as before.
+As all of Cocoa is available, a UI component can be added to a script by
+adding a `MainMenu.xib` and AppDelegate.swift to the script project.
 
 ```Swift
     #!/usr/bin/env safescript
@@ -77,6 +55,7 @@ object instance and wire it as the delegate of the file's owner as before.
 
         func applicationDidFinishLaunching(aNotification: NSNotification) {
             // Insert code here to initialize your application
+            NSApp.applicationIconImage = NSImage( named:"Swift" )
             webView.mainFrame.loadRequest(NSURLRequest(URL: NSURL(string: url)!))
             NSApplication.sharedApplication().activateIgnoringOtherApps( true )
         }
@@ -88,9 +67,34 @@ object instance and wire it as the delegate of the file's owner as before.
     }
 ```
 
-Raise any issues you encounter using SafeScripting against this github project
-or you can get in touch with any suggestions via script (at) johnholdsworth.com
-or on Twitter [@Injection4Xcode](https://twitter.com/#!/@Injection4Xcode).
+To use SafeScript, download and build this project and make sure that `$HOME/bin`
+is in your UNIX `PATH`. You can then type `safescript path_to_script` and it creates
+a blank script, an Xcode framework project then builds and runs it. If you prefer 
+editing in Xcode type `path_to_script -edit` to open the auto-created project.
+To get started there is a small example script `browse` in the project directory.
+
+To use dependencies the `CocoaPods` gem and it's `Rome` plugin need to be installed.
+
+```
+    $ sudo gem install cocoapods
+    $ sudo gem install cocoapods-rome
+```
+
+Use a !pod comment in framework import to force updating a particular pod later.
+
+### Reloader
+
+SafeScript contains an implementation of code injection. If you are running a
+UI script and update one of it's sources it will be built into a bundle
+and loaded applying any changes to class method implementations without restart.
+
+That's about it. What is missing is an implementation of easy to use
+i/o classes such as File, Dir and FileUtils in ruby which could be 
+made available as a pod in due course. As scripts are frameworks they
+can be imported into each other which is another way to shared code.
+
+The author can be reached on Twitter
+[@Injection4Xcode](https://twitter.com/#!/@Injection4Xcode).
 
 ### MIT License
 
