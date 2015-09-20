@@ -1,5 +1,5 @@
 
-# SwiftScript
+# SafeScript
 
 Of late I've been looking for a new scripting language when it comes to larger projects.
 The nub of the problem is dynamically typed languages will always be prone to
@@ -8,32 +8,32 @@ If only you could write scripts in a type-safe, modern language like Swift.
 
 From the get-go you've been [able to](http://nomothetis.svbtle.com/swift-for-scripting)
 but it leaves much unresolved such as dependency management and auto-completion in the
-editor. The SwiftScript project is a binary `swifts` and a ruby script that seeks to
-resolve these problems in particular dependency managment galvanised by a talk by 
-[Ayaka Nonaka](https://realm.io/news/swift-scripting/) earlier this year.
+editor. The SafeScript project is a binary `safescript` and a ruby script that seeks to
+resolve these problems in particular dependency managment galvanised by a talk 
+[earlier this year](https://realm.io/news/swift-scripting/).
 
-To script in SwiftScript, download and build this project and start by placing the
+To script in SafeScript, download and build this project and start by placing the
 following into a file in your path and making it executable:
 
 ```Swift
-    #!/usr/bin/env swifts
+    #!/usr/bin/env safescript
 
     import Cocoa
-    import AlamoFire // pod 'AlamoFire'
+    import Alamofire // pod 'Alamofire'
 
-    print( "Hello SwiftScript" )
+    print( "Hello SafeScript" )
 ```
 
-Execute the file with a `-edit` argument and
-this should convert the script into a `.scriptproj` Xcode project in the same directory
-and open it in Xcode so you can start creating. Your script will appear in the project as
-`main.swift` and will also be available at it's original location via a
-symbolic link to continue to callable from the command line.
+Execute the file with a `-edit` argument and this should convert the script into a
+`.scriptproj` Xcode project in the same directory then open it in Xcode so you can
+start creating. Your script will appear in the project as `main.swift` and will also
+be available at it's original location via a symbolic link to be callable 
+from the command line.
 
-This script shows how to use a Cocoapods dependency. By putting it's pod spec
+This script shows how to use a CocoaPods dependency. By putting it's pod spec
 in a comment after the import statement the pod will be automatically
 downloaded when the script is run and installed
-into ~/Library/SwiftScripts/Frameworks. As this directory is in the
+into ~/Library/SafeScripts/Frameworks. As this directory is in the
 framework search path for all script projects auto-completion in the
 Xcode Editor will work. Use `!pod` to force a pod to reinstall at a later time.
 
@@ -56,7 +56,7 @@ in it's project and calling NSApplicationMain() as below. Create an AppDelegate
 object instance and wire it as the delegate of the file's owner as before.
 
 ```Swift
-    #!/usr/bin/env swifts
+    #!/usr/bin/env safescript
 
     import Cocoa
     import WebKit
@@ -88,7 +88,7 @@ object instance and wire it as the delegate of the file's owner as before.
     }
 ```
 
-Raise any issues you encounter using SwiftScripting against this github project
+Raise any issues you encounter using SafeScripting against this github project
 or you can get in touch with any suggestions via script (at) johnholdsworth.com
 or on Twitter [@Injection4Xcode](https://twitter.com/#!/@Injection4Xcode).
 

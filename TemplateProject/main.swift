@@ -1,3 +1,4 @@
+#!/usr/bin/env safescript
 //
 //  main.swift
 //  TemplateProject

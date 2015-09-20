@@ -8,14 +8,18 @@
 
 /* Begin PBXBuildFile section */
 		BB3F78A71BACAC5200435430 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB3F78A61BACAC5200435430 /* main.swift */; settings = {ASSET_TAGS = (); }; };
-		BB82F7CE1BAD9D7D00094771 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = BB82F7CD1BAD9D7D00094771 /* MainMenu.xib */; settings = {ASSET_TAGS = (); }; };
+		BB81CB6B1BAE1A02001525E1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB81CB6A1BAE1A02001525E1 /* AppDelegate.swift */; settings = {ASSET_TAGS = (); }; };
+		BB81CB6D1BAE1A0B001525E1 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = BB81CB6C1BAE1A0B001525E1 /* MainMenu.xib */; settings = {ASSET_TAGS = (); }; };
+		BBAB1FB31BAED31700AE08B6 /* Swift.png in Resources */ = {isa = PBXBuildFile; fileRef = BBAB1FB21BAED31700AE08B6 /* Swift.png */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		BB3F78911BACAB9B00435430 /* browse.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = browse.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB3F78A21BACAC3600435430 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BB3F78A61BACAC5200435430 /* main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		BB82F7CD1BAD9D7D00094771 /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
+		BB81CB6A1BAE1A02001525E1 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		BB81CB6C1BAE1A0B001525E1 /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
+		BBAB1FB21BAED31700AE08B6 /* Swift.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Swift.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,8 +36,10 @@
 		BB3F78871BACAB9B00435430 = {
 			isa = PBXGroup;
 			children = (
-				BB82F7CD1BAD9D7D00094771 /* MainMenu.xib */,
+				BBAB1FB21BAED31700AE08B6 /* Swift.png */,
 				BB3F78A61BACAC5200435430 /* main.swift */,
+				BB81CB6C1BAE1A0B001525E1 /* MainMenu.xib */,
+				BB81CB6A1BAE1A02001525E1 /* AppDelegate.swift */,
 				BB3F78A21BACAC3600435430 /* Info.plist */,
 				BB3F78921BACAB9B00435430 /* Products */,
 			);
@@ -115,7 +121,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BB82F7CE1BAD9D7D00094771 /* MainMenu.xib in Resources */,
+				BB81CB6D1BAE1A0B001525E1 /* MainMenu.xib in Resources */,
+				BBAB1FB31BAED31700AE08B6 /* Swift.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,6 +133,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BB81CB6B1BAE1A02001525E1 /* AppDelegate.swift in Sources */,
 				BB3F78A71BACAC5200435430 /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -157,7 +165,7 @@
 				ENABLE_TESTABILITY = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(HOME)/Library/SwiftScript/Frameworks",
+					"$(HOME)/Library/SafeScript/Frameworks",
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -173,12 +181,13 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INSTALL_PATH = "$(HOME)/Library/SwiftScript/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(XCODE_APP_SUPPORT_DIR)/../../Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/macosx @executable_path/../Library/SwiftScript/Frameworks $(HOME)/Library/SwiftScript/Frameworks @executable_path/../Frameworks @loader_path/Frameworks";
+				INSTALL_PATH = "$(HOME)/Library/SafeScript/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(XCODE_APP_SUPPORT_DIR)/../../Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/macosx /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/macosx @executable_path/../Library/SafeScript/Frameworks $(HOME)/Library/SafeScript/Frameworks @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				STRIP_INSTALLED_PRODUCT = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SYMROOT = /tmp/build;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -210,7 +219,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(HOME)/Library/SwiftScript/Frameworks",
+					"$(HOME)/Library/SafeScript/Frameworks",
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -220,11 +229,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INSTALL_PATH = "$(HOME)/Library/SwiftScript/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(XCODE_APP_SUPPORT_DIR)/../../Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/macosx @executable_path/../Library/SwiftScript/Frameworks $(HOME)/Library/SwiftScript/Frameworks @executable_path/../Frameworks @loader_path/Frameworks";
+				INSTALL_PATH = "$(HOME)/Library/SafeScript/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(XCODE_APP_SUPPORT_DIR)/../../Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/macosx /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/macosx @executable_path/../Library/SafeScript/Frameworks $(HOME)/Library/SafeScript/Frameworks @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
+				STRIP_INSTALLED_PRODUCT = NO;
 				SYMROOT = /tmp/build;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
