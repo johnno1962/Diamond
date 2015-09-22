@@ -8,22 +8,45 @@
 
 /* Begin PBXBuildFile section */
 		BB3F78A71BACAC5200435430 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB3F78A61BACAC5200435430 /* main.swift */; settings = {ASSET_TAGS = (); }; };
-		BB81CB6B1BAE1A02001525E1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB81CB6A1BAE1A02001525E1 /* AppDelegate.swift */; settings = {ASSET_TAGS = (); }; };
-		BB81CB6D1BAE1A0B001525E1 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = BB81CB6C1BAE1A0B001525E1 /* MainMenu.xib */; settings = {ASSET_TAGS = (); }; };
-		BBAB1FB31BAED31700AE08B6 /* Swift.png in Resources */ = {isa = PBXBuildFile; fileRef = BBAB1FB21BAED31700AE08B6 /* Swift.png */; settings = {ASSET_TAGS = (); }; };
+		BB45AF641BB0CDD300428322 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB45AF611BB0CDD300428322 /* AppDelegate.swift */; settings = {ASSET_TAGS = (); }; };
+		BB45AF651BB0CDD300428322 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = BB45AF621BB0CDD300428322 /* MainMenu.xib */; settings = {ASSET_TAGS = (); }; };
+		BB45AF661BB0CDD300428322 /* Swift.png in Resources */ = {isa = PBXBuildFile; fileRef = BB45AF631BB0CDD300428322 /* Swift.png */; settings = {ASSET_TAGS = (); }; };
+		BB45AF671BB0CFC700428322 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB3F78A61BACAC5200435430 /* main.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		BB45AF581BB0CC8A00428322 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
-		BB3F78911BACAB9B00435430 /* browse.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = browse.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB3F78911BACAB9B00435430 /* browse.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = "browse.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB3F78A21BACAC3600435430 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BB3F78A61BACAC5200435430 /* main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		BB81CB6A1BAE1A02001525E1 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		BB81CB6C1BAE1A0B001525E1 /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
-		BBAB1FB21BAED31700AE08B6 /* Swift.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Swift.png; sourceTree = "<group>"; };
+		BB45AF5A1BB0CC8A00428322 /* browse */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "browse"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB45AF5C1BB0CC8A00428322 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		BB45AF611BB0CDD300428322 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		BB45AF621BB0CDD300428322 /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
+		BB45AF631BB0CDD300428322 /* Swift.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Swift.png; sourceTree = "<group>"; };
+		BB8EE26A1BB0D75A00348257 /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		BB3F788D1BACAB9B00435430 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB45AF571BB0CC8A00428322 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -36,11 +59,13 @@
 		BB3F78871BACAB9B00435430 = {
 			isa = PBXGroup;
 			children = (
-				BBAB1FB21BAED31700AE08B6 /* Swift.png */,
 				BB3F78A61BACAC5200435430 /* main.swift */,
-				BB81CB6C1BAE1A0B001525E1 /* MainMenu.xib */,
-				BB81CB6A1BAE1A02001525E1 /* AppDelegate.swift */,
+				BB45AF611BB0CDD300428322 /* AppDelegate.swift */,
+				BB8EE26A1BB0D75A00348257 /* BridgingHeader.h */,
+				BB45AF621BB0CDD300428322 /* MainMenu.xib */,
+				BB45AF631BB0CDD300428322 /* Swift.png */,
 				BB3F78A21BACAC3600435430 /* Info.plist */,
+				BB45AF5B1BB0CC8A00428322 /* browse */,
 				BB3F78921BACAB9B00435430 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -49,8 +74,17 @@
 			isa = PBXGroup;
 			children = (
 				BB3F78911BACAB9B00435430 /* browse.framework */,
+				BB45AF5A1BB0CC8A00428322 /* browse */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		BB45AF5B1BB0CC8A00428322 /* browse */ = {
+			isa = PBXGroup;
+			children = (
+				BB45AF5C1BB0CC8A00428322 /* main.swift */,
+			);
+			path = "browse";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -66,9 +100,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		BB3F78901BACAB9B00435430 /* browse */ = {
+		BB3F78901BACAB9B00435430 /* Framework */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BB3F78991BACAB9B00435430 /* Build configuration list for PBXNativeTarget "browse" */;
+			buildConfigurationList = BB3F78991BACAB9B00435430 /* Build configuration list for PBXNativeTarget "Framework" */;
 			buildPhases = (
 				BB3F788C1BACAB9B00435430 /* Sources */,
 				BB3F788D1BACAB9B00435430 /* Frameworks */,
@@ -79,10 +113,27 @@
 			);
 			dependencies = (
 			);
-			name = browse;
-			productName = browse;
+			name = Framework;
+			productName = "browse";
 			productReference = BB3F78911BACAB9B00435430 /* browse.framework */;
 			productType = "com.apple.product-type.framework";
+		};
+		BB45AF591BB0CC8A00428322 /* Binary */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB45AF5E1BB0CC8A00428322 /* Build configuration list for PBXNativeTarget "Binary" */;
+			buildPhases = (
+				BB45AF561BB0CC8A00428322 /* Sources */,
+				BB45AF571BB0CC8A00428322 /* Frameworks */,
+				BB45AF581BB0CC8A00428322 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Binary;
+			productName = "browse";
+			productReference = BB45AF5A1BB0CC8A00428322 /* browse */;
+			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
 
@@ -95,6 +146,9 @@
 				ORGANIZATIONNAME = "John Holdsworth";
 				TargetAttributes = {
 					BB3F78901BACAB9B00435430 = {
+						CreatedOnToolsVersion = 7.0;
+					};
+					BB45AF591BB0CC8A00428322 = {
 						CreatedOnToolsVersion = 7.0;
 					};
 				};
@@ -111,7 +165,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				BB3F78901BACAB9B00435430 /* browse */,
+				BB3F78901BACAB9B00435430 /* Framework */,
+				BB45AF591BB0CC8A00428322 /* Binary */,
 			);
 		};
 /* End PBXProject section */
@@ -121,8 +176,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BB81CB6D1BAE1A0B001525E1 /* MainMenu.xib in Resources */,
-				BBAB1FB31BAED31700AE08B6 /* Swift.png in Resources */,
+				BB45AF651BB0CDD300428322 /* MainMenu.xib in Resources */,
+				BB45AF661BB0CDD300428322 /* Swift.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -133,8 +188,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BB81CB6B1BAE1A02001525E1 /* AppDelegate.swift in Sources */,
 				BB3F78A71BACAC5200435430 /* main.swift in Sources */,
+				BB45AF641BB0CDD300428322 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB45AF561BB0CC8A00428322 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB45AF671BB0CFC700428322 /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -161,6 +224,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DSTROOT = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -215,6 +279,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DSTROOT = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -247,14 +312,13 @@
 				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEFINES_MODULE = YES;
-				DSTROOT = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = Info.plist;
-				PRODUCT_BUNDLE_IDENTIFIER = com.johnholdsworth.browse;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.johnholdsworth.SafeScript;
+				PRODUCT_NAME = "browse";
 				SKIP_INSTALL = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -272,9 +336,27 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = Info.plist;
-				PRODUCT_BUNDLE_IDENTIFIER = com.johnholdsworth.browse;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.johnholdsworth.SafeScript;
+				PRODUCT_NAME = "browse";
 				SKIP_INSTALL = NO;
+			};
+			name = Release;
+		};
+		BB45AF5F1BB0CC8A00428322 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INSTALL_PATH = "$(HOME)/bin";
+				PRODUCT_NAME = "browse";
+				SWIFT_OBJC_BRIDGING_HEADER = BridgingHeader.h;
+			};
+			name = Debug;
+		};
+		BB45AF601BB0CC8A00428322 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INSTALL_PATH = "$(HOME)/bin";
+				PRODUCT_NAME = "browse";
+				SWIFT_OBJC_BRIDGING_HEADER = BridgingHeader.h;
 			};
 			name = Release;
 		};
@@ -290,7 +372,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BB3F78991BACAB9B00435430 /* Build configuration list for PBXNativeTarget "browse" */ = {
+		BB3F78991BACAB9B00435430 /* Build configuration list for PBXNativeTarget "Framework" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BB3F789A1BACAB9B00435430 /* Debug */,
@@ -298,6 +380,15 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		BB45AF5E1BB0CC8A00428322 /* Build configuration list for PBXNativeTarget "Binary" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB45AF5F1BB0CC8A00428322 /* Debug */,
+				BB45AF601BB0CC8A00428322 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};

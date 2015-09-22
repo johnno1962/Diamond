@@ -5,14 +5,15 @@
 //  Created by John Holdsworth on 18/09/2015.
 //  Copyright © 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/SafeScript/SafeScript/main.m#7 $
+//  $Id: //depot/SafeScript/SafeScript/main.m#11 $
 //
 //  Repo: https://github.com/johnno1962/SafeScript
 //
 
 #import <Foundation/Foundation.h>
+#import <crt_externs.h>
 
-#define SError( ... ) { NSLog( @"SafeScript: " __VA_ARGS__ ); exit( EXIT_FAILURE ); }
+#define SError( ... ) { NSLog( @"safescript: " __VA_ARGS__ ); exit( EXIT_FAILURE ); }
 
 static void watchProject( NSString *scriptName );
 static NSString *libraryRoot, *scriptName;
@@ -31,6 +32,7 @@ int main(int argc, const char * argv[]) {
 
         NSString *scriptPath = script;
         NSFileManager *manager = [NSFileManager defaultManager];
+        NSString *home = [NSString stringWithUTF8String:getenv("HOME")];
 
         unichar path0 = [scriptPath characterAtIndex:0];
         if ( path0 != '/' && path0 != '.' )
@@ -42,12 +44,10 @@ int main(int argc, const char * argv[]) {
                 }
             }
 
-        libraryRoot = [[NSString stringWithUTF8String:getenv("HOME")]
-                           stringByAppendingPathComponent:@"Library/SafeScript"];
+        libraryRoot = [home stringByAppendingPathComponent:@"Library/SafeScript"];
         scriptName = [[script lastPathComponent] stringByDeletingPathExtension];
 
-        NSString *scriptProject = [[scriptPath stringByDeletingLastPathComponent]
-                                   stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.scriptproj", [script lastPathComponent]]];
+        NSString *scriptProject = [scriptPath stringByAppendingString:@".scriptproj"];
         NSString *prepareCommand = [NSString stringWithFormat:@"%@/Resources/prepare.rb '%@' '%@' '%@' '%@' %d %d",
                                     libraryRoot, libraryRoot, scriptPath, scriptName, scriptProject, isRebuild, isEdit];
 
@@ -59,12 +59,21 @@ int main(int argc, const char * argv[]) {
         if ( isEdit || isRebuild )
             exit(0);
 
+        setenv( "SAFESCRIPT_LIBRARY_ROOT", strdup( [libraryRoot UTF8String] ), 1 );
+        setenv( "SAFESCRIPT_PROJECT_ROOT", strdup( [scriptProject UTF8String] ), 1 );
+        argv[0] = strdup( [scriptPath UTF8String] );
+
+        NSString *binaryPath = [NSString stringWithFormat:@"%@/bin/%@", home, scriptName];
+        if ( [[NSFileManager defaultManager] isExecutableFileAtPath:binaryPath] &&
+                execve( [binaryPath UTF8String], (char *const *)argv+1, *_NSGetEnviron() ) )
+            SError( "Unable to execute %@: %s", binaryPath, strerror(errno) );
+
         NSString *frameworkPath = [NSString stringWithFormat:@"%@/Frameworks/%@.framework",
                                    libraryRoot, scriptName];
         NSBundle *frameworkBundle = [NSBundle bundleWithPath:frameworkPath];
 
         if ( !frameworkBundle )
-            SError( "Could not create framemork bundle %@", frameworkPath );
+            SError( "Could not locate binary or framemork bundle %@", frameworkPath );
 
         if ( ![frameworkBundle load] )
             SError( "Could not load framemork bundle %@", frameworkBundle );
@@ -80,8 +89,9 @@ int main(int argc, const char * argv[]) {
         if ( !scriptMain )
             SError( "Could not locate main() function in %@", frameworkBundle );
 
+        watchProject( scriptProject );
+
         @try {
-            watchProject( scriptProject );
             status = scriptMain( argc-1, argv+1 );
         }
         @catch ( NSException *e ) {

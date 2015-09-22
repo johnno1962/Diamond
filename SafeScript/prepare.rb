@@ -6,17 +6,15 @@
 #  Created by John Holdsworth on 18/09/2015.
 #  Copyright © 2015 John Holdsworth. All rights reserved.
 #
-#  $Id: //depot/SafeScript/SafeScript/prepare.rb#7 $
+#  $Id: //depot/SafeScript/SafeScript/prepare.rb#14 $
 #
 #  Repo: https://github.com/johnno1962/SafeScript
 #
 
 require 'fileutils'
 
-def save( contents, path, mode = "w" )
-    f = File.open( path, mode )
-    f.write( contents )
-    f.close
+def log( msg )
+    puts( "SafeScript: "+msg )
 end
 
 def die( msg )
@@ -24,34 +22,32 @@ def die( msg )
 end
 
 def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, isRebuild, isEdit )
-    isRebuild = isRebuild == "1"
-    isEdit = isEdit == "1"
 
     # create shadow project
 
     newProj = scriptProject+"/"+scriptName+".xcodeproj"
+    scriptMain = scriptProject+"/main.swift"
 
     if !File.exist?( scriptProject )
 
         if !File.exists?( scriptPath )
-            puts "SafeScript: Creating #{scriptPath}"
+            log "Creating #{scriptPath}"
 
-            if !system( "cp -rf '#{libraryRoot}/TemplateProject/main.swift' '#{scriptPath}' && chmod +x '#{scriptPath}'" )
+            if !system( "cp -f '#{libraryRoot}/TemplateProject/main.swift' '#{scriptPath}' && chmod +x '#{scriptPath}'" )
                 die( "could not create script: "+scriptPath )
             end
         end
 
-        puts "SafeScript: Creating #{scriptProject}"
+        log "Creating #{scriptProject}"
 
         if !system( "cp -rf '#{libraryRoot}/TemplateProject' '#{scriptProject}' && chmod -R +w '#{scriptProject}'" )
             die( "could not copy TemplateProject" )
         end
 
         # move script into project and replace with symlink
-        scriptMain = scriptProject+"/main.swift"
 
         FileUtils.mv( scriptPath, scriptMain, :force => true )
-        if !File.symlink( File.basename( scriptProject )+"/main.swift", scriptPath )
+        if !File.link( scriptMain, scriptPath )
             File.rename( scriptMain, scriptPath )
             die( "Could not link script "+scriptPath )
         end
@@ -60,21 +56,21 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, is
 
         # change name of project to that of script
         pbxproj = scriptProject+"/TemplateProject.xcodeproj/project.pbxproj"
-        project = File.open( pbxproj, "r" ).read()
+        project = File.read( pbxproj )
 
-        save( project.gsub( /TemplateProject/, scriptName ), pbxproj )
+        File.write( pbxproj, project.gsub( /TemplateProject/, scriptName ) )
 
         File.rename( scriptProject+"/TemplateProject.xcodeproj", newProj )
     end
 
-    if isEdit # --edit
+    if isEdit == "1" # --edit
         system( "open '#{newProj}'" )
         exit(0)
     end
 
     # determine pod dependancies
 
-    mainSource = File.open( scriptPath, "r" ).read()
+    mainSource = File.read( scriptPath )
     missingPods = ""
 
     mainSource.scan( /^import\s+(\S+)(\s*\/\/\s*(!)?((pod)( .*)?))?/ ).each { |import|
@@ -85,7 +81,7 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, is
                 if File.exists?( libPath )
                     libName = File.basename(libPath)
                     libProj = File.dirname(libPath)+"/"+libName+".scriptproj"
-                    prepareScriptProject( libraryRoot, libPath, libName, libProj, isRebuild ? "1" : "0", "0" )
+                    prepareScriptProject( libraryRoot, libPath, libName, libProj, isRebuild, "0" )
                 end
             }
             elsif import[2] == "!" || !File.exists?( libraryRoot+"/Frameworks/"+import[0]+".framework" )
@@ -93,10 +89,24 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, is
         end
     }
 
+    # keep script and main.swift in sync
+    # symbolic links don't work in Xcode
+
+    scriptDate = File.mtime( scriptPath ).to_f
+    mainDate = File.mtime( scriptMain ).to_f
+
+    if scriptDate > mainDate
+        File.rm_f( scriptMain )
+        File.link( scriptPath, scriptMain )
+    elsif mainDate > scriptDate
+        File.rm_f( scriptPath )
+        File.link( scriptMain, scriptPath )
+    end
+
     # build and install any missing or forced pods
 
     if missingPods != ""
-        save( podfile = <<PODFILE, libraryRoot+"/Pods/Podfile" )
+        File.write( libraryRoot+"/Pods/Podfile", podfile = <<PODFILE )
 
 platform :osx, '10.10'
 
@@ -105,12 +115,12 @@ plugin 'cocoapods-rome'
 #{missingPods}
 PODFILE
 
-        puts "SafeScript: Fetching missing pods:\n"+podfile
+        log "Fetching missing pods:\n"+podfile
         if !system( "cd '#{libraryRoot}/Pods' && pod install" )
             die( "Could not build pods" )
         end
 
-        puts "\nSafeScript: copying new pods to #{libraryRoot}/Frameworks"
+        log "Copying new pods to #{libraryRoot}/Frameworks"
         if !system( "cd '#{libraryRoot}/Pods' && (rsync -rilvp Rome/ ../Frameworks || echo 'rsync warning')" )
             die( "Could not copy pods" )
         end
@@ -125,7 +135,7 @@ PODFILE
         menuTitle = "SafeScript"
 
         FileUtils::mkdir_p( contents )
-        save( <<INFO_PLIST, contents+"/Info.plist" )
+        File.write( contents+"/Info.plist", <<INFO_PLIST )
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -163,12 +173,20 @@ PODFILE
     </dict>
 </plist>
 INFO_PLIST
-        FileUtils.symlink( scriptFramework+"/Resources", contents+"/Resources", :force => true )
+        FileUtils.rm_f( contents+"/Resources" )
+        File.symlink( scriptFramework+"/Resources", contents+"/Resources" )
     end
 
     # check if recompile required
 
-    binary = scriptFramework+"/Versions/Current/"+scriptName
+    if /\.bin$/ =~ scriptPath
+        target = "Binary"
+        binary = ENV["HOME"]+"/bin/"+scriptName
+    else
+        target = "Framework"
+        binary = scriptFramework+"/Versions/Current/"+scriptName
+    end
+
     skipRebuild = File.exists?( binary )
 
     if skipRebuild
@@ -182,22 +200,24 @@ INFO_PLIST
 
     # build script project
 
+    isRebuild = isRebuild == "1"
+
     if !skipRebuild || isRebuild
-        puts "SafeScript: Building #{scriptProject} ..."
-        logPath = libraryRoot+"/Reloader/"+scriptName+".log"
+        log "Building #{scriptProject} ..."
+        reloaderLog = libraryRoot+"/Reloader/"+scriptName+".log"
         mode = "a+"
 
-        if File.exists?( logPath ) && File.size( logPath ) > 1_000_000 || isRebuild
-            system( "cd '#{scriptProject}' && xcodebuild -configuration Debug clean" )
+        if isRebuild || File.exists?( reloaderLog ) && File.size( reloaderLog ) > 1_000_000
+            system( "cd '#{scriptProject}' && xcodebuild -configuration Debug -target #{target} clean" )
             mode = "w"
         end
 
-        out = `cd '#{scriptProject}' && xcodebuild -configuration Debug install 2>&1`
+        out = `cd '#{scriptProject}' && xcodebuild -configuration Debug -target #{target} install 2>&1`
         if !$?.success?
-            die( "SafeScript: Script build error:\n"+out )
+            die( "Script build error:\n"+out )
         end
 
-        save( out, logPath, mode )
+        File.open( reloaderLog, mode ).write( out )
         FileUtils.touch( binary )
     end
 end
