@@ -96,10 +96,10 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, is
     mainDate = File.mtime( scriptMain ).to_f
 
     if scriptDate > mainDate
-        File.rm_f( scriptMain )
+        File.unlink( scriptMain )
         File.link( scriptPath, scriptMain )
     elsif mainDate > scriptDate
-        File.rm_f( scriptPath )
+        File.unlink( scriptPath )
         File.link( scriptMain, scriptPath )
     end
 
