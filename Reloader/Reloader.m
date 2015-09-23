@@ -1,13 +1,13 @@
 //
 //  Reloader.m
-//  SafeScript
+//  Diamond
 //
 //  Created by John Holdsworth on 16/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/SafeScript/Reloader/Reloader.m#3 $
+//  $Id: //depot/Diamond/Reloader/Reloader.m#3 $
 //
-//  Repo: https://github.com/johnno1962/SafeScript
+//  Repo: https://github.com/johnno1962/DiamondProject
 //
 
 #import <Foundation/Foundation.h>
@@ -16,10 +16,10 @@
 #import <objc/runtime.h>
 #import <dlfcn.h>
 
-@implementation NSObject(SafeScript)
+@implementation NSObject(Diamond)
 
 + (void)reloaded {
-    NSLog( @"SafeScript: Reloaded %@", self );
+    NSLog( @"Diamond: Reloaded %@", self );
 }
 
 + (void)load {
@@ -99,7 +99,7 @@
         }
     }
     else
-        NSLog( @"SafeScript: Could not locate referencesSection - no classes to swizzle" );
+        NSLog( @"Diamond: Could not locate referencesSection - no classes to swizzle" );
 }
 
 + (void)swizzle:(char)which className:(const char *)className onto:(Class)oldClass from:(Class)newClass {

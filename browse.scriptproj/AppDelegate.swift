@@ -36,7 +36,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func webView( aWebView: WebView, didReceiveTitle aTitle: String, forFrame frame: WebFrame ) {
         window.title = aTitle
     }
-    
+
 }
 
 class PureSwiftClass {

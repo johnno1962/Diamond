@@ -1,19 +1,19 @@
 //
 //  main.m
-//  SafeScript
+//  Diamond
 //
 //  Created by John Holdsworth on 18/09/2015.
 //  Copyright © 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/SafeScript/SafeScript/main.m#11 $
+//  $Id: //depot/Diamond/Diamond/main.m#4 $
 //
-//  Repo: https://github.com/johnno1962/SafeScript
+//  Repo: https://github.com/johnno1962/DiamondProject
 //
 
 #import <Foundation/Foundation.h>
 #import <crt_externs.h>
 
-#define SError( ... ) { NSLog( @"safescript: " __VA_ARGS__ ); exit( EXIT_FAILURE ); }
+#define SError( ... ) { NSLog( @"diamond: " __VA_ARGS__ ); exit( EXIT_FAILURE ); }
 
 static void watchProject( NSString *scriptName );
 static NSString *libraryRoot, *scriptName;
@@ -44,7 +44,7 @@ int main(int argc, const char * argv[]) {
                 }
             }
 
-        libraryRoot = [home stringByAppendingPathComponent:@"Library/SafeScript"];
+        libraryRoot = [home stringByAppendingPathComponent:@"Library/Diamond"];
         scriptName = [[script lastPathComponent] stringByDeletingPathExtension];
 
         NSString *scriptProject = [scriptPath stringByAppendingString:@".scriptproj"];
@@ -59,11 +59,12 @@ int main(int argc, const char * argv[]) {
         if ( isEdit || isRebuild )
             exit(0);
 
-        setenv( "SAFESCRIPT_LIBRARY_ROOT", strdup( [libraryRoot UTF8String] ), 1 );
-        setenv( "SAFESCRIPT_PROJECT_ROOT", strdup( [scriptProject UTF8String] ), 1 );
+        NSString *binaryPath = [NSString stringWithFormat:@"%@/bin/%@", home, scriptName];
+
+        setenv( "DIAMOND_LIBRARY_ROOT", strdup( [libraryRoot UTF8String] ), 1 );
+        setenv( "DIAMOND_PROJECT_ROOT", strdup( [scriptProject UTF8String] ), 1 );
         argv[0] = strdup( [scriptPath UTF8String] );
 
-        NSString *binaryPath = [NSString stringWithFormat:@"%@/bin/%@", home, scriptName];
         if ( [[NSFileManager defaultManager] isExecutableFileAtPath:binaryPath] &&
                 execve( [binaryPath UTF8String], (char *const *)argv+1, *_NSGetEnviron() ) )
             SError( "Unable to execute %@: %s", binaryPath, strerror(errno) );
@@ -132,9 +133,9 @@ static void fileCallback( ConstFSEventStreamRef streamRef,
         int status = system( [reloadCommand UTF8String] ) >> 8;
 
         if ( status != EXIT_SUCCESS )
-            NSLog( @"SafeScript: %@ returns error", reloadCommand );
+            NSLog( @"diamond: %@ returns error", reloadCommand );
         else if ( ![[NSBundle bundleWithPath:bundlePath] load] )
-            NSLog( @"SafeScript: Could not reload bundle: %@", bundlePath );
+            NSLog( @"diamond: Could not reload bundle: %@", bundlePath );
     }
 
     busy--;

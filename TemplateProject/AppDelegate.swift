@@ -44,5 +44,5 @@ class PureSwiftClass {
     func reloadTest() {
         print( "bye.." )
     }
-    
+
 }

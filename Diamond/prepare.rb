@@ -1,24 +1,30 @@
 #!/usr/bin/env ruby
 
 #  prepare.rb
-#  SafeScript
+#  Diamond
 #
 #  Created by John Holdsworth on 18/09/2015.
 #  Copyright © 2015 John Holdsworth. All rights reserved.
 #
-#  $Id: //depot/SafeScript/SafeScript/prepare.rb#14 $
+#  $Id: //depot/Diamond/Diamond/prepare.rb#3 $
 #
-#  Repo: https://github.com/johnno1962/SafeScript
+#  Repo: https://github.com/johnno1962/DiamondProject
 #
 
 require 'fileutils'
 
 def log( msg )
-    puts( "SafeScript: "+msg )
+    puts( "Diamond: "+msg )
 end
 
 def die( msg )
-    abort( "SafeScript: "+msg )
+    abort( "Diamond: "+msg )
+end
+
+def save( path, contents )
+    f = File.open( path, "w" )
+    f.write( contents )
+    f.close
 end
 
 def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, isRebuild, isEdit )
@@ -27,6 +33,7 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, is
 
     newProj = scriptProject+"/"+scriptName+".xcodeproj"
     scriptMain = scriptProject+"/main.swift"
+    justCreated = false
 
     if !File.exist?( scriptProject )
 
@@ -56,14 +63,19 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, is
 
         # change name of project to that of script
         pbxproj = scriptProject+"/TemplateProject.xcodeproj/project.pbxproj"
-        project = File.read( pbxproj )
 
-        File.write( pbxproj, project.gsub( /TemplateProject/, scriptName ) )
+        project = File.read( pbxproj )
+        project.gsub!( /TemplateProject/, scriptName )
+        File.write( pbxproj, project )
 
         File.rename( scriptProject+"/TemplateProject.xcodeproj", newProj )
+        justCreated = true
     end
 
     if isEdit == "1" # --edit
+        if justCreated
+            sleep 2 # eh?
+        end
         system( "open '#{newProj}'" )
         exit(0)
     end
@@ -96,11 +108,11 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, is
     mainDate = File.mtime( scriptMain ).to_f
 
     if scriptDate > mainDate
-        File.unlink( scriptMain )
-        File.link( scriptPath, scriptMain )
+        FileUtils.cp( scriptPath, scriptMain )
+        system( "perl -e 'utime #{scriptDate}, #{scriptDate}, \"#{scriptMain}\";'" )
     elsif mainDate > scriptDate
-        File.unlink( scriptPath )
-        File.link( scriptMain, scriptPath )
+        FileUtils.cp( scriptMain, scriptPath )
+        system( "perl -e 'utime #{mainDate}, #{mainDate}, \"#{scriptPath}\";'" )
     end
 
     # build and install any missing or forced pods
@@ -132,10 +144,10 @@ PODFILE
 
     if /NSApplicationMain/ =~ mainSource
         contents = ENV["HOME"]+"/bin/Contents"
-        menuTitle = "SafeScript"
+        menuTitle = "Diamond" || scriptName
 
         FileUtils::mkdir_p( contents )
-        File.write( contents+"/Info.plist", <<INFO_PLIST )
+        save( contents+"/Info.plist", <<INFO_PLIST )
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -153,7 +165,7 @@ PODFILE
         <key>CFBundleInfoDictionaryVersion</key>
         <string>6.0</string>
         <key>CFBundleName</key>
-        <string>SafeScript</string>
+        <string>Diamond</string>
         <key>CFBundlePackageType</key>
         <string>APPL</string>
         <key>CFBundleShortVersionString</key>
@@ -200,7 +212,7 @@ INFO_PLIST
 
     # build script project
 
-    isRebuild = isRebuild == "1"
+    isRebuild = isRebuild == "1" || justCreated
 
     if !skipRebuild || isRebuild
         log "Building #{scriptProject} ..."
@@ -224,4 +236,4 @@ end
 
 prepareScriptProject( *ARGV )
 
-# return to safescript binary load bundle and call main
+# return to diamond binary load bundle and call main

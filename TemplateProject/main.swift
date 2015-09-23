@@ -1,4 +1,4 @@
-#!/usr/bin/env safescript
+#!/usr/bin/env diamond
 //
 //  main.swift
 //  TemplateProject
