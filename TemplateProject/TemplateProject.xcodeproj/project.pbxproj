@@ -12,19 +12,32 @@
 		BB45AF661BB0CDD300428322 /* Swift.png in Resources */ = {isa = PBXBuildFile; fileRef = BB45AF631BB0CDD300428322 /* Swift.png */; settings = {ASSET_TAGS = (); }; };
 		BB8EE2E61BB22FFD00348257 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8EE2E51BB22FFD00348257 /* main.swift */; settings = {ASSET_TAGS = (); }; };
 		BB8EE2E71BB2307700348257 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8EE2E51BB22FFD00348257 /* main.swift */; };
+		BBAD46771BBAE9BB00701DE9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB45AF611BB0CDD300428322 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		BB45AF581BB0CC8A00428322 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 1;
+/* Begin PBXContainerItemProxy section */
+		BBB3FEB91BBC2610009E718C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BBB3FEB31BBC260C009E718C /* RubyNative.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BB3F78911BACAB9B00435430;
+			remoteInfo = Framework;
 		};
-/* End PBXCopyFilesBuildPhase section */
+		BBB3FEBB1BBC2610009E718C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BBB3FEB31BBC260C009E718C /* RubyNative.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BB45AF5A1BB0CC8A00428322;
+			remoteInfo = Binary;
+		};
+		BBB3FEBD1BBC2610009E718C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BBB3FEB31BBC260C009E718C /* RubyNative.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BBB3FE8E1BBBFDA5009E718C;
+			remoteInfo = Tests;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		BB3F78911BACAB9B00435430 /* TemplateProject.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = "TemplateProject.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -35,6 +48,7 @@
 		BB45AF631BB0CDD300428322 /* Swift.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Swift.png; sourceTree = "<group>"; };
 		BB8EE26A1BB0D75A00348257 /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
 		BB8EE2E51BB22FFD00348257 /* main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		BBB3FEB31BBC260C009E718C /* RubyNative.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RubyNative.xcodeproj; path = "RubyNative/RubyNative.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +78,7 @@
 				BB45AF621BB0CDD300428322 /* MainMenu.xib */,
 				BB45AF631BB0CDD300428322 /* Swift.png */,
 				BB3F78A21BACAC3600435430 /* Info.plist */,
+				BBB3FEB31BBC260C009E718C /* RubyNative.xcodeproj */,
 				BB3F78921BACAB9B00435430 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -73,6 +88,16 @@
 			children = (
 				BB3F78911BACAB9B00435430 /* TemplateProject.framework */,
 				BB45AF5A1BB0CC8A00428322 /* TemplateProject */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BBB3FEB41BBC260C009E718C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BBB3FEBA1BBC2610009E718C /* RubyNative.framework */,
+				BBB3FEBC1BBC2610009E718C /* RubyNative */,
+				BBB3FEBE1BBC2610009E718C /* Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -98,6 +123,7 @@
 				BB3F788D1BACAB9B00435430 /* Frameworks */,
 				BB3F788E1BACAB9B00435430 /* Headers */,
 				BB3F788F1BACAB9B00435430 /* Resources */,
+				BBAD46611BBAC4EE00701DE9 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -114,7 +140,7 @@
 			buildPhases = (
 				BB45AF561BB0CC8A00428322 /* Sources */,
 				BB45AF571BB0CC8A00428322 /* Frameworks */,
-				BB45AF581BB0CC8A00428322 /* CopyFiles */,
+				BBB3FE441BBB2406009E718C /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -153,6 +179,12 @@
 			mainGroup = BB3F78871BACAB9B00435430;
 			productRefGroup = BB3F78921BACAB9B00435430 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = BBB3FEB41BBC260C009E718C /* Products */;
+					ProjectRef = BBB3FEB31BBC260C009E718C /* RubyNative.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				BB3F78901BACAB9B00435430 /* Framework */,
@@ -160,6 +192,30 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		BBB3FEBA1BBC2610009E718C /* RubyNative.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = RubyNative.framework;
+			remoteRef = BBB3FEB91BBC2610009E718C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BBB3FEBC1BBC2610009E718C /* RubyNative */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = RubyNative;
+			remoteRef = BBB3FEBB1BBC2610009E718C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BBB3FEBE1BBC2610009E718C /* Tests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = Tests.xctest;
+			remoteRef = BBB3FEBD1BBC2610009E718C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		BB3F788F1BACAB9B00435430 /* Resources */ = {
@@ -172,6 +228,36 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		BBAD46611BBAC4EE00701DE9 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "rsync -rilvp --force \"$CONFIGURATION_BUILD_DIR/$FULL_PRODUCT_NAME\" ~/Library/Diamond/Frameworks";
+			showEnvVarsInLog = 0;
+		};
+		BBB3FE441BBB2406009E718C /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cp \"$CODESIGNING_FOLDER_PATH\" ~/bin/${FULL_PRODUCT_NAME}.dmd";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		BB3F788C1BACAB9B00435430 /* Sources */ = {
@@ -187,6 +273,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BBAD46771BBAE9BB00701DE9 /* AppDelegate.swift in Sources */,
 				BB8EE2E71BB2307700348257 /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -236,12 +323,11 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INSTALL_PATH = "$(HOME)/Library/Diamond/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(XCODE_APP_SUPPORT_DIR)/../../Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/macosx /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/macosx @executable_path/../Library/Diamond/Frameworks $(HOME)/Library/Diamond/Frameworks @executable_path/../Frameworks @loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(HOME)/Library/Diamond/Frameworks $(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path/../Library/Diamond/Frameworks @executable_path/../Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
-				STRIP_INSTALLED_PRODUCT = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SYMROOT = /tmp/build;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -285,11 +371,10 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INSTALL_PATH = "$(HOME)/Library/Diamond/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(XCODE_APP_SUPPORT_DIR)/../../Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/macosx /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/macosx @executable_path/../Library/Diamond/Frameworks $(HOME)/Library/Diamond/Frameworks @executable_path/../Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(HOME)/Library/Diamond/Frameworks $(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path/../Library/Diamond/Frameworks @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
-				STRIP_INSTALLED_PRODUCT = NO;
 				SYMROOT = /tmp/build;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";

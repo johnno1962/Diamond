@@ -213,8 +213,8 @@
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "LIBROOT=~/Library/Diamond\nmkdir -p $LIBROOT/{Frameworks,Pods,Resources} &&\ncp -f diamond/{prepare,reloader}.rb $LIBROOT/Resources &&\ncp -rf TemplateProject Reloader $LIBROOT &&\nrm -rf $LIBROOT/TemplateProject/TemplateProject.xcodeproj/{xcuserdata,project.xcworkspace}";
+			shellPath = "/bin/sh -x";
+			shellScript = "LIBROOT=~/Library/Diamond\nmkdir -p $LIBROOT/{Frameworks,Pods,Projects,Resources} &&\ncp -f diamond/{prepare,reloader}.rb $LIBROOT/Resources &&\ncp -rf TemplateProject Reloader $LIBROOT &&\nrm -rf $LIBROOT/TemplateProject/TemplateProject.xcodeproj/{xcuserdata,project.xcworkspace} &&\ncd $LIBROOT/Projects &&\nrm -rf RubyNative &&\ngit clone https://github.com/RubyNative/RubyNative.git &&\ncd RubyNative && xcodebuild -config Debug\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */

@@ -6,9 +6,9 @@
 #  Created by John Holdsworth on 18/09/2015.
 #  Copyright © 2015 John Holdsworth. All rights reserved.
 #
-#  $Id: //depot/Diamond/Diamond/reloader.rb#3 $
+#  $Id: //depot/Diamond/Diamond/reloader.rb#4 $
 #
-#  Repo: https://github.com/johnno1962/DiamondProject
+#  Repo: https://github.com/johnno1962/ProjectDiamond
 #
 
 require 'fileutils'

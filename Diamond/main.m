@@ -5,9 +5,9 @@
 //  Created by John Holdsworth on 18/09/2015.
 //  Copyright © 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Diamond/Diamond/main.m#4 $
+//  $Id: //depot/Diamond/Diamond/main.m#8 $
 //
-//  Repo: https://github.com/johnno1962/DiamondProject
+//  Repo: https://github.com/johnno1962/ProjectDiamond
 //
 
 #import <Foundation/Foundation.h>
@@ -19,7 +19,7 @@ static void watchProject( NSString *scriptName );
 static NSString *libraryRoot, *scriptName;
 static FSEventStreamRef fileEvents;
 
-int main(int argc, const char * argv[]) {
+int main( int argc, const char * argv[] ) {
 
     @autoreleasepool {
 
@@ -27,8 +27,7 @@ int main(int argc, const char * argv[]) {
             SError( "%s must be run from a script", argv[0] );
 
         NSString *script = [NSString stringWithUTF8String:argv[1]];
-        BOOL isRebuild = strcmp( argv[argc-1], "-rebuild" ) == 0;
-        BOOL isEdit = strcmp( argv[argc-1], "-edit" ) == 0;
+        NSString *lastArg = argv[argc-1][0] == '-' ? [NSString stringWithUTF8String:argv[argc-1]] : @"";
 
         NSString *scriptPath = script;
         NSFileManager *manager = [NSFileManager defaultManager];
@@ -48,16 +47,19 @@ int main(int argc, const char * argv[]) {
         scriptName = [[script lastPathComponent] stringByDeletingPathExtension];
 
         NSString *scriptProject = [scriptPath stringByAppendingString:@".scriptproj"];
-        NSString *prepareCommand = [NSString stringWithFormat:@"%@/Resources/prepare.rb '%@' '%@' '%@' '%@' %d %d",
-                                    libraryRoot, libraryRoot, scriptPath, scriptName, scriptProject, isRebuild, isEdit];
+        if ( ![manager fileExistsAtPath:scriptProject] )
+            scriptProject = [[libraryRoot stringByAppendingPathComponent:@"Projects"]
+                             stringByAppendingPathComponent:scriptName];
+
+        NSString *prepareCommand = [NSString stringWithFormat:@"%@/Resources/prepare.rb \"%@\" \"%@\" \"%@\" \"%@\" \"%@\"",
+                                    libraryRoot, libraryRoot, scriptPath, scriptName, scriptProject, lastArg];
 
         int status = system( [prepareCommand UTF8String] ) >> 8;
 
+        if ( status == 123 )
+            exit( 0 );
         if ( status != EXIT_SUCCESS )
             SError( "%@ returns error", prepareCommand );
-
-        if ( isEdit || isRebuild )
-            exit(0);
 
         NSString *binaryPath = [NSString stringWithFormat:@"%@/bin/%@", home, scriptName];
 
@@ -119,7 +121,7 @@ static void fileCallback( ConstFSEventStreamRef streamRef,
     NSArray *changed = (__bridge NSArray *)eventPaths;
     NSString *fileChanged = changed[0];
 
-    if ( ![fileChanged hasSuffix:@".swift"] )
+    if ( ![fileChanged hasSuffix:@".swift"] || [fileChanged rangeOfString:@"~."].location != NSNotFound )
         return;
 
     static int busy;

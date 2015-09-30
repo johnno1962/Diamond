@@ -1,13 +1,13 @@
 
 # Diamond
 
-When you're as bad a typist as I am one of the frustrations of using dynamically typed
+When you're as bad a typist as I am, one of the frustrations of using dynamically typed
 scripting languages is when a run time error occurs that could have been picked up 
 by a compiler. Type inference has also reduced the burden coding in a type-safe
 language so perhaps it is time to see if a language such as Swift can be
 pressed into service in a scripting environment.
 
-From it's beginning you've been able [script in swift](http://nomothetis.svbtle.com/swift-for-scripting)
+From the onset you've been able [script in swift](http://nomothetis.svbtle.com/swift-for-scripting)
 and others have had [some success](https://realm.io/news/swift-scripting/)
 but it's fairly heavy going without autocompletion and dependency management.
 `Diamond` is small binary and a couple of scripts that looks to address 
@@ -82,16 +82,16 @@ To use dependencies the `CocoaPods` gem and it's `Rome` plugin need to be instal
 
 Use a !pod comment in framework import to force updating a particular pod later.
 
+The [RubyNative](https://github.com/RubyNative/RubyNative) project is included as a
+dependency automatically. This project ports the Ruby core apis to Swift for concise
+access to files and more flexible handling of Swift strings and Regular Expressions
+making Swift truely feel like a grown up scripting anguage.
+
 ### Reloader
 
 Diamond contains an implementation of code injection. If you are running a
 UI script and update one of it's sources it will be built into a bundle
 and loaded applying any changes to class method implementations without restart.
-
-That's about it. What is missing is an implementation of easy to use
-i/o classes such as File, Dir and FileUtils in ruby which could be 
-made available as a pod in due course. As scripts are frameworks they
-can be imported into each other which is another way to share code.
 
 The author can be reached on Twitter
 [@Injection4Xcode](https://twitter.com/#!/@Injection4Xcode).
