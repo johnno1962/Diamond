@@ -1,5 +1,10 @@
 
-# Diamond
+# Diamond - Swift scripting made easy
+
+Stop Press:
+
+This Project has now moved to the [here](https://github.com/RubyNative/Diamond)
+to be with the RubyNative project for which it was intended.
 
 When you're as bad a typist as I am, one of the frustrations of using dynamically typed
 scripting languages is when a run time error occurs that could have been picked up 
@@ -25,6 +30,13 @@ project with the correct framework search path.
 
     print( "Hello Diamond" )
 ```
+
+The [RubyNative](https://github.com/RubyNative/RubyNative) project is included as a
+dependency automatically. This project ports the Ruby core apis to Swift for concise
+access to files and more flexible handling of Swift strings and Regular Expressions
+making Swift truely feel like a grown up scripting anguage.
+
+### Usage
 
 This is overseen by the `diamond` binary and a script `prepare.rb` that is
 run before the script proper. `prepare.rb` loads pods, rebuilds the script's
@@ -81,11 +93,6 @@ To use dependencies the `CocoaPods` gem and it's `Rome` plugin need to be instal
 ```
 
 Use a !pod comment in framework import to force updating a particular pod later.
-
-The [RubyNative](https://github.com/RubyNative/RubyNative) project is included as a
-dependency automatically. This project ports the Ruby core apis to Swift for concise
-access to files and more flexible handling of Swift strings and Regular Expressions
-making Swift truely feel like a grown up scripting anguage.
 
 ### Reloader
 
