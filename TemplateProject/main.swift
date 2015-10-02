@@ -1,4 +1,4 @@
-#!/usr/bin/env diamond
+#!/usr/bin/env cocoa
 //
 //  main.swift
 //  TemplateProject
@@ -8,7 +8,7 @@
 //
 
 import Foundation
-import RubyNative
+import RubyKit
 
 print("Hello, \(Process.arguments)!")
 
