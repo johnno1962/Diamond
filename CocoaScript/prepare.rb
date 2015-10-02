@@ -136,7 +136,7 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
     # import c // pod 'c' -branch etc
     # import d // clone xx/yy etc
 
-    mainSource.scan( /^import\s+(\S+)(\s*\/\/\s*(!)?(?:((pod)( .*)?)|(clone (\S+)(.*))))?/ ).each { |import|
+    mainSource.scan( /^\s*import\s+(\S+)(\s*\/\/\s*(!)?(?:((pod)( .*)?)|(clone (\S+)(.*))))?/ ).each { |import|
         libName = import[0]
         if !import[1]
             libProj = libName+".scriptproj"
