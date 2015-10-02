@@ -1,13 +1,13 @@
 //
 //  Reloader.m
-//  Diamond
+//  CocoaScript
 //
 //  Created by John Holdsworth on 16/06/2015.
 //  Copyright (c) 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Diamond/Reloader/Reloader.m#4 $
+//  $Id: //depot/CocoaScript/Reloader/Reloader.m#1 $
 //
-//  Repo: https://github.com/johnno1962/ProjectDiamond
+//  Repo: https://github.com/johnno1962/CocoaScript
 //
 
 #import <Foundation/Foundation.h>
@@ -16,10 +16,10 @@
 #import <objc/runtime.h>
 #import <dlfcn.h>
 
-@implementation NSObject(Diamond)
+@implementation NSObject(CocoaScript)
 
 + (void)reloaded {
-    NSLog( @"Diamond: Reloaded %@", self );
+    NSLog( @"CocoaScript Reloaded Class %@", self );
 }
 
 + (void)load {
@@ -35,7 +35,7 @@
     Dl_info info;
     static int sym;
     if ( !dladdr( &sym, &info ) )
-        NSLog( @"Diamond Reloader: Could not find load address" );
+        NSLog( @"CocoaScript Reloader: Could not find load address" );
 
 #ifndef __LP64__
     uint32_t size = 0;
@@ -99,7 +99,7 @@
         }
     }
     else
-        NSLog( @"Diamond Reloader: Could not locate referencesSection - no classes to swizzle" );
+        NSLog( @"CocoaScript Reloader: Could not locate referencesSection - no classes to swizzle" );
 }
 
 + (void)swizzle:(char)which className:(const char *)className onto:(Class)oldClass from:(Class)newClass {

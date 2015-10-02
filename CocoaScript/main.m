@@ -1,19 +1,18 @@
 //
 //  main.m
-//  Diamond
+//  CocoaScript
 //
 //  Created by John Holdsworth on 18/09/2015.
 //  Copyright © 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Diamond/Diamond/main.m#8 $
+//  $Id: //depot/CocoaScript/CocoaScript/main.m#2 $
 //
-//  Repo: https://github.com/johnno1962/ProjectDiamond
+//  Repo: https://github.com/johnno1962/CocoaScript
 //
 
 #import <Foundation/Foundation.h>
-#import <crt_externs.h>
 
-#define SError( ... ) { NSLog( @"diamond: " __VA_ARGS__ ); exit( EXIT_FAILURE ); }
+#define SError( ... ) { NSLog( @"cocoa: " __VA_ARGS__ ); exit( EXIT_FAILURE ); }
 
 static void watchProject( NSString *scriptName );
 static NSString *libraryRoot, *scriptName;
@@ -26,12 +25,17 @@ int main( int argc, const char * argv[] ) {
         if ( argc < 2 )
             SError( "%s must be run from a script", argv[0] );
 
-        NSString *script = [NSString stringWithUTF8String:argv[1]];
-        NSString *lastArg = argv[argc-1][0] == '-' ? [NSString stringWithUTF8String:argv[argc-1]] : @"";
+        NSString *home = [NSString stringWithUTF8String:getenv("HOME")];
+        libraryRoot = [home stringByAppendingPathComponent:@"Library/CocoaScript"];
+
+        const char *runIndicator = "running:";
+        BOOL isRun = strcmp( argv[1], runIndicator ) == 0;
+        NSString *script = isRun ? [NSString stringWithUTF8String:argv[2]] :
+            [NSString stringWithFormat:@"%@/Resources/guardian", libraryRoot];
+        NSString *lastArg = isRun && argv[argc-1][0] == '-' ? [NSString stringWithUTF8String:argv[argc-1]] : @"";
 
         NSString *scriptPath = script;
         NSFileManager *manager = [NSFileManager defaultManager];
-        NSString *home = [NSString stringWithUTF8String:getenv("HOME")];
 
         unichar path0 = [scriptPath characterAtIndex:0];
         if ( path0 != '/' && path0 != '.' )
@@ -43,7 +47,6 @@ int main( int argc, const char * argv[] ) {
                 }
             }
 
-        libraryRoot = [home stringByAppendingPathComponent:@"Library/Diamond"];
         scriptName = [[script lastPathComponent] stringByDeletingPathExtension];
 
         NSString *scriptProject = [scriptPath stringByAppendingString:@".scriptproj"];
@@ -54,22 +57,37 @@ int main( int argc, const char * argv[] ) {
         NSString *prepareCommand = [NSString stringWithFormat:@"%@/Resources/prepare.rb \"%@\" \"%@\" \"%@\" \"%@\" \"%@\"",
                                     libraryRoot, libraryRoot, scriptPath, scriptName, scriptProject, lastArg];
 
-        int status = system( [prepareCommand UTF8String] ) >> 8;
+        int status = system( [prepareCommand UTF8String] );
 
-        if ( status == 123 )
+        if ( status >> 8 == 123 )
             exit( 0 );
         if ( status != EXIT_SUCCESS )
-            SError( "%@ returns error", prepareCommand );
+            SError( "%@ returns error %x", prepareCommand, status );
 
-        NSString *binaryPath = [NSString stringWithFormat:@"%@/bin/%@", home, scriptName];
-
-        setenv( "DIAMOND_LIBRARY_ROOT", strdup( [libraryRoot UTF8String] ), 1 );
-        setenv( "DIAMOND_PROJECT_ROOT", strdup( [scriptProject UTF8String] ), 1 );
+        setenv( "COCOA_LIBRARY_ROOT", strdup( [libraryRoot UTF8String] ), 1 );
+        setenv( "COCOA_PROJECT_ROOT", strdup( [scriptProject UTF8String] ), 1 );
         argv[0] = strdup( [scriptPath UTF8String] );
 
+        NSString *binaryPath = [NSString stringWithFormat:@"%@/bin/%@", home, scriptName];
         if ( [[NSFileManager defaultManager] isExecutableFileAtPath:binaryPath] &&
-                execve( [binaryPath UTF8String], (char *const *)argv+1, *_NSGetEnviron() ) )
+                execv( [binaryPath UTF8String], (char *const *)argv+2 ) )
             SError( "Unable to execute %@: %s", binaryPath, strerror(errno) );
+
+        if ( !isRun ) {
+            pid_t pid;
+            if ( !(pid = fork()) ) {
+                const char **shiftedArgv = calloc( argc+2, sizeof *shiftedArgv );
+                shiftedArgv[0] = "/usr/bin/env";
+                shiftedArgv[1] = "cocoa";
+                shiftedArgv[2] = runIndicator;
+                for ( int i=1 ; i<=argc ; i++ )
+                    shiftedArgv[i+2] = argv[i];
+                execv( shiftedArgv[0], (char *const *)shiftedArgv );
+                SError( "execve failed" );
+            }
+
+            argv[0] = [[NSString stringWithFormat:@"%d", pid] UTF8String];
+        }
 
         NSString *frameworkPath = [NSString stringWithFormat:@"%@/Frameworks/%@.framework",
                                    libraryRoot, scriptName];
@@ -92,10 +110,11 @@ int main( int argc, const char * argv[] ) {
         if ( !scriptMain )
             SError( "Could not locate main() function in %@", frameworkBundle );
 
-        watchProject( scriptProject );
+        if ( isRun )
+            watchProject( scriptProject );
 
         @try {
-            status = scriptMain( argc-1, argv+1 );
+            status = scriptMain( argc-isRun*2, argv+isRun*2 );
         }
         @catch ( NSException *e ) {
             SError( "Exception %@\n%@", e, e.callStackSymbols );
@@ -135,9 +154,9 @@ static void fileCallback( ConstFSEventStreamRef streamRef,
         int status = system( [reloadCommand UTF8String] ) >> 8;
 
         if ( status != EXIT_SUCCESS )
-            NSLog( @"diamond: %@ returns error", reloadCommand );
+            NSLog( @"cocoa: %@ returns error", reloadCommand );
         else if ( ![[NSBundle bundleWithPath:bundlePath] load] )
-            NSLog( @"diamond: Could not reload bundle: %@", bundlePath );
+            NSLog( @"cocoa: Could not reload bundle: %@", bundlePath );
     }
 
     busy--;

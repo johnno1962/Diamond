@@ -1,24 +1,24 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env ruby -E UTF-8
 
 #  prepare.rb
-#  Diamond
+#  CocoaScript
 #
 #  Created by John Holdsworth on 18/09/2015.
 #  Copyright © 2015 John Holdsworth. All rights reserved.
 #
-#  $Id: //depot/Diamond/Diamond/prepare.rb#10 $
+#  $Id: //depot/CocoaScript/CocoaScript/prepare.rb#1 $
 #
-#  Repo: https://github.com/johnno1962/ProjectDiamond
+#  Repo: https://github.com/johnno1962/CocoaScript
 #
 
 require 'fileutils'
 
 def log( msg )
-    puts( "Diamond: "+msg )
+    puts( "CocoaScript: "+msg )
 end
 
 def die( msg )
-    abort( "Diamond: "+msg )
+    abort( "*** CocoaScript: "+msg )
 end
 
 def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, lastArg )
@@ -29,30 +29,25 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
     scriptMain = scriptProject+"/main.swift"
     justCreated = false
 
+    if !File.exists?( scriptPath )
+        log( "Creating #{scriptPath}" )
+
+        if !system( "cp -f '#{libraryRoot}/TemplateProject/main.swift' '#{scriptPath}' && chmod +wx '#{scriptPath}'" )
+            die( "Could not create script: "+scriptPath )
+        end
+    end
+
     if !File.exist?( scriptProject )
 
-        if !File.exists?( scriptPath )
-            log "Creating #{scriptPath}"
-
-            if !system( "cp -f '#{libraryRoot}/TemplateProject/main.swift' '#{scriptPath}' && chmod +x '#{scriptPath}'" )
-                die( "could not create script: "+scriptPath )
-            end
-        end
-
-        log "Creating #{scriptProject}"
+        log( "Creating #{scriptProject}" )
 
         if !system( "cp -rf '#{libraryRoot}/TemplateProject' '#{scriptProject}' && chmod -R +w '#{scriptProject}'" )
-            die( "could not copy TemplateProject" )
+            die( "Could not copy TemplateProject" )
         end
 
         # move script into project and replace with symlink
 
-        FileUtils.mv( scriptPath, scriptMain, :force => true )
-        if !File.link( scriptMain, scriptPath )
-            File.rename( scriptMain, scriptPath )
-            die( "Could not link script "+scriptPath )
-        end
-
+        FileUtils.cp( scriptPath, scriptMain )
         File.chmod( 0755, scriptMain )
 
         # change name of project to that of script
@@ -63,7 +58,7 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
         File.write( pbxproj, project )
         File.rename( scriptProject+"/TemplateProject.xcodeproj", newProj )
 
-        File.symlink( ENV["HOME"]+"/Library/Diamond/Projects/RubyNative", scriptProject+"/RubyNative" )
+        File.symlink( ENV["HOME"]+"/Library/CocoaScript/Projects/RubyKit", scriptProject+"/RubyKit" )
 
         justCreated = true
     end
@@ -74,26 +69,23 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
     scriptDate = File.mtime( scriptPath ).to_f
     mainDate = File.mtime( scriptMain ).to_f
 
-    # puts scriptDate, mainDate
-
     if scriptDate > mainDate
-        while File.size( scriptPath ) == 0
-            puts "Diamond: Watiing for #{scriptPath} to update..."
-            sleep 1
-        end
         File.unlink( scriptMain )
         FileUtils.cp( scriptPath, scriptMain )
         system( "perl -e 'utime #{scriptDate}, #{scriptDate}, \"#{scriptMain}\";'" )
-        puts "Copied #{scriptPath} -> #{scriptMain}"
+        log( "Copied #{scriptPath} -> #{scriptMain}" )
     elsif mainDate > scriptDate
-        while File.size( scriptMain ) == 0
-            puts "Diamond: Waiting for #{scriptMain} to update..."
-            sleep 1
-        end
         File.unlink( scriptPath )
         FileUtils.cp( scriptMain, scriptPath )
         system( "perl -e 'utime #{mainDate}, #{mainDate}, \"#{scriptPath}\";'" )
-        puts "Copied #{scriptMain} -> #{scriptPath}"
+        log( "Copied #{scriptMain} -> #{scriptPath}" )
+    end
+
+    # fix up any script style comments
+
+    mainSource = File.read( scriptMain )
+    if mainSource.gsub!( /^([ \t]*)#(?!!)/m, '\1//#' )
+        File.write( scriptMain, mainSource )
     end
 
     # user options
@@ -105,23 +97,29 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
             sleep 2 # eh?
         end
         system( "open '#{newProj}'" )
-        puts "Opened #{newProj}"
+        log( "Opened #{newProj}" )
         exit( 123 )
 
     when "-show"
         showProj = scriptPath+".scriptproj"
         if !File.rename( scriptProject, showProj )
-            die "Could not move project to #{showProj}"
+            die( "Could not move project to #{showProj}" )
         end
-        puts "Moved #{scriptProject} -> #{showProj}"
+        log( "Moved #{scriptProject} -> #{showProj}" )
         exit( 123 )
 
     when "-hide"
         hideProj = libraryRoot+"/Projects/"+scriptName
         if !File.rename( scriptProject, hideProj )
-            die "Could not move project to #{hideProj}"
+            die( "Could not move project to #{hideProj}" )
         end
-        puts "Moved #{scriptProject} -> #{hideProj}"
+        log( "Moved #{scriptProject} -> #{hideProj}" )
+        exit( 123 )
+
+    when "-trace"
+        if !system( "open `ls -t $HOME/Library/Logs/DiagnosticReports/cocoa*.crash | head -1`" )
+            die( "Could not open crash log" )
+        end
         exit( 123 )
 
     when "-rebuild"
@@ -131,7 +129,6 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
 
     # determine pod dependancies
 
-    mainSource = File.read( scriptPath )
     missingPods = ""
 
     # import a // pod
@@ -180,12 +177,12 @@ plugin 'cocoapods-rome'
 #{missingPods}
 PODFILE
 
-        log "Fetching missing pods:\n"+podfile
+        log( "Fetching missing pods:\n"+podfile )
         if !system( "cd '#{libraryRoot}/Pods' && pod install" )
             die( "Could not build pods" )
         end
 
-        log "Copying new pods to #{libraryRoot}/Frameworks"
+        log( "Copying new pods to #{libraryRoot}/Frameworks" )
         if !system( "cd '#{libraryRoot}/Pods' && (rsync -rilvp Rome/ ../Frameworks || echo 'rsync warning')" )
             die( "Could not copy pods" )
         end
@@ -197,10 +194,10 @@ PODFILE
 
     if /NSApplicationMain/ =~ mainSource
         contents = ENV["HOME"]+"/bin/Contents"
-        menuTitle = "Diamond" || scriptName
+        menuTitle = "CocoaScript" || scriptName
 
         FileUtils::mkdir_p( contents )
-        File.write( contents+"/Info.plist", <<INFO_PLIST )
+        File.write( contents+"/Info.plist", plist = <<INFO_PLIST )
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -218,7 +215,7 @@ PODFILE
         <key>CFBundleInfoDictionaryVersion</key>
         <string>6.0</string>
         <key>CFBundleName</key>
-        <string>Diamond</string>
+        <string>CocoaScript</string>
         <key>CFBundlePackageType</key>
         <string>APPL</string>
         <key>CFBundleShortVersionString</key>
@@ -240,6 +237,13 @@ PODFILE
 INFO_PLIST
         FileUtils.rm_f( contents+"/Resources" )
         File.symlink( scriptFramework+"/Resources", contents+"/Resources" )
+
+        # for debugging
+        contents = "/tmp/build/Debug/Contents"
+        FileUtils.mkdir_p( contents )
+        File.write( contents+"/Info.plist", plist )
+        FileUtils.rm_f( contents+"/Resources" )
+        File.symlink( scriptFramework+"/Resources", contents+"/Resources" )
     end
 
     # check if recompile required
@@ -257,7 +261,7 @@ INFO_PLIST
     # build script project
 
     if !skipRebuild || isRebuild
-        log "Building #{scriptProject} ..."
+        log( "Building #{scriptProject} ..." )
         reloaderLog = libraryRoot+"/Reloader/"+scriptName+".log"
         mode = "a+"
 
@@ -278,4 +282,4 @@ end
 
 prepareScriptProject( *ARGV )
 
-# return to diamond binary load bundle and call main
+# return to cocoa binary load bundle and call main

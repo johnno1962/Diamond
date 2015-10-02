@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BB3F78541BACA97F00435430 /* diamond in CopyFiles */ = {isa = PBXBuildFile; fileRef = BB3F784A1BACA8E800435430 /* diamond */; };
+		BB3F78541BACA97F00435430 /* cocoa in CopyFiles */ = {isa = PBXBuildFile; fileRef = BB3F784A1BACA8E800435430 /* cocoa */; };
 		BB3F78B61BACB8C100435430 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BB3F78B51BACB8C100435430 /* main.m */; };
 /* End PBXBuildFile section */
 
@@ -42,20 +42,22 @@
 			dstPath = "~/bin";
 			dstSubfolderSpec = 0;
 			files = (
-				BB3F78541BACA97F00435430 /* diamond in CopyFiles */,
+				BB3F78541BACA97F00435430 /* cocoa in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		BB3F784A1BACA8E800435430 /* diamond */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = diamond; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB3F784A1BACA8E800435430 /* cocoa */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cocoa; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB3F789C1BACAB9B00435430 /* TemplateProject.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TemplateProject.xcodeproj; path = TemplateProject/TemplateProject.xcodeproj; sourceTree = "<group>"; };
 		BB3F78B51BACB8C100435430 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		BB3F78CA1BACC2FB00435430 /* prepare.rb */ = {isa = PBXFileReference; lastKnownFileType = text.script.ruby; path = prepare.rb; sourceTree = "<group>"; };
+		BB76C5411BBF3E6500987FBC /* browse */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = browse; sourceTree = "<group>"; };
 		BB81CB541BADF8BD001525E1 /* Reloader.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Reloader.xcodeproj; path = Reloader/Reloader.xcodeproj; sourceTree = "<group>"; };
 		BB81CB671BAE168D001525E1 /* reloader.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = reloader.rb; sourceTree = "<group>"; };
 		BB82F7CB1BAD92BE00094771 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		BB8F123E1BBE94050067527A /* guardian */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = guardian; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,8 +74,9 @@
 		BB3F78411BACA8E800435430 = {
 			isa = PBXGroup;
 			children = (
+				BB76C5411BBF3E6500987FBC /* browse */,
 				BB82F7CB1BAD92BE00094771 /* README.md */,
-				BB3F784C1BACA8E800435430 /* Diamond */,
+				BB3F784C1BACA8E800435430 /* CocoaScript */,
 				BB3F789C1BACAB9B00435430 /* TemplateProject.xcodeproj */,
 				BB81CB541BADF8BD001525E1 /* Reloader.xcodeproj */,
 				BB3F784B1BACA8E800435430 /* Products */,
@@ -83,19 +86,20 @@
 		BB3F784B1BACA8E800435430 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				BB3F784A1BACA8E800435430 /* diamond */,
+				BB3F784A1BACA8E800435430 /* cocoa */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		BB3F784C1BACA8E800435430 /* Diamond */ = {
+		BB3F784C1BACA8E800435430 /* CocoaScript */ = {
 			isa = PBXGroup;
 			children = (
 				BB3F78B51BACB8C100435430 /* main.m */,
 				BB3F78CA1BACC2FB00435430 /* prepare.rb */,
 				BB81CB671BAE168D001525E1 /* reloader.rb */,
+				BB8F123E1BBE94050067527A /* guardian */,
 			);
-			path = Diamond;
+			path = CocoaScript;
 			sourceTree = "<group>";
 		};
 		BB3F789D1BACAB9B00435430 /* Products */ = {
@@ -118,9 +122,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		BB3F78491BACA8E800435430 /* diamond */ = {
+		BB3F78491BACA8E800435430 /* cocoa */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BB3F78511BACA8E800435430 /* Build configuration list for PBXNativeTarget "diamond" */;
+			buildConfigurationList = BB3F78511BACA8E800435430 /* Build configuration list for PBXNativeTarget "cocoa" */;
 			buildPhases = (
 				BB3F78461BACA8E800435430 /* Sources */,
 				BB3F78471BACA8E800435430 /* Frameworks */,
@@ -131,9 +135,9 @@
 			);
 			dependencies = (
 			);
-			name = diamond;
-			productName = Diamond;
-			productReference = BB3F784A1BACA8E800435430 /* diamond */;
+			name = cocoa;
+			productName = CocoaScript;
+			productReference = BB3F784A1BACA8E800435430 /* cocoa */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -151,7 +155,7 @@
 					};
 				};
 			};
-			buildConfigurationList = BB3F78451BACA8E800435430 /* Build configuration list for PBXProject "Diamond" */;
+			buildConfigurationList = BB3F78451BACA8E800435430 /* Build configuration list for PBXProject "CocoaScript" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -173,7 +177,7 @@
 			);
 			projectRoot = "";
 			targets = (
-				BB3F78491BACA8E800435430 /* diamond */,
+				BB3F78491BACA8E800435430 /* cocoa */,
 			);
 		};
 /* End PBXProject section */
@@ -214,7 +218,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = "/bin/sh -x";
-			shellScript = "LIBROOT=~/Library/Diamond\nmkdir -p $LIBROOT/{Frameworks,Pods,Projects,Resources} &&\ncp -f diamond/{prepare,reloader}.rb $LIBROOT/Resources &&\ncp -rf TemplateProject Reloader $LIBROOT &&\nrm -rf $LIBROOT/TemplateProject/TemplateProject.xcodeproj/{xcuserdata,project.xcworkspace} &&\ncd $LIBROOT/Projects &&\nrm -rf RubyNative &&\ngit clone https://github.com/RubyNative/RubyNative.git &&\ncd RubyNative && xcodebuild -config Debug\n";
+			shellScript = "LIBROOT=~/Library/CocoaScript\nmkdir -p $LIBROOT/{Frameworks,Pods,Projects,Resources} &&\ncp -f CocoaScript/{*.rb,guardian} $LIBROOT/Resources &&\ncp -rf TemplateProject Reloader $LIBROOT &&\nrm -rf $LIBROOT/TemplateProject/TemplateProject.xcodeproj/{xcuserdata,project.xcworkspace} &&\ncd $LIBROOT/Projects &&\nrm -rf RubyKit &&\ngit clone https://github.com/RubyNative/RubyKit.git &&\ncd RubyKit && xcodebuild -configuration Debug -target Framework &&\n~/bin/cocoa running: $LIBROOT/Resources/guardian -rebuild";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -331,7 +335,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		BB3F78451BACA8E800435430 /* Build configuration list for PBXProject "Diamond" */ = {
+		BB3F78451BACA8E800435430 /* Build configuration list for PBXProject "CocoaScript" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BB3F784F1BACA8E800435430 /* Debug */,
@@ -340,7 +344,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BB3F78511BACA8E800435430 /* Build configuration list for PBXNativeTarget "diamond" */ = {
+		BB3F78511BACA8E800435430 /* Build configuration list for PBXNativeTarget "cocoa" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BB3F78521BACA8E800435430 /* Debug */,

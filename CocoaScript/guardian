@@ -1,0 +1,41 @@
+#!/usr/bin/env cocoa
+
+//
+//  guardian
+//  CocoaScript
+//
+//  Created by John Holdsworth on 18/09/2015.
+//  Copyright © 2015 John Holdsworth. All rights reserved.
+//
+//  $Id: //depot/CocoaScript/CocoaScript/guardian#2 $
+//
+//  Repo: https://github.com/RubyNative/RubyNative
+//
+
+import Foundation
+import RubyKit
+
+let pid = Process.arguments[0].to_i
+var status: Int32 = 0
+
+if waitpid(pid_t(pid), &status, 0) < 0 || status & 0o177 == 0 {
+    exit( status >> 8 )
+}
+
+let recent = Time().to_f - 2
+
+while let log = IO.popen( "ls -t $HOME/Library/Logs/DiagnosticReports/cocoa_*.crash | head -1" )?.readline() {
+    if File.mtime( log )!.to_f < recent {
+        print( "Waiting for log" )
+        sleep( 1 )
+    }
+    else {
+        File.open( log )?.each_line {
+            (line) -> () in
+            if line.containsString( " + ") {
+                print( line )
+            }
+        }
+        exit( 1 )
+    }
+}
