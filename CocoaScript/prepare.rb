@@ -6,7 +6,7 @@
 #  Created by John Holdsworth on 18/09/2015.
 #  Copyright © 2015 John Holdsworth. All rights reserved.
 #
-#  $Id: //depot/CocoaScript/CocoaScript/prepare.rb#1 $
+#  $Id: //depot/CocoaScript/CocoaScript/prepare.rb#5 $
 #
 #  Repo: https://github.com/johnno1962/CocoaScript
 #
@@ -20,6 +20,8 @@ end
 def die( msg )
     abort( "*** CocoaScript: "+msg )
 end
+
+$builtFramework = {}
 
 def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, lastArg )
 
@@ -58,7 +60,7 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
         File.write( pbxproj, project )
         File.rename( scriptProject+"/TemplateProject.xcodeproj", newProj )
 
-        File.symlink( ENV["HOME"]+"/Library/CocoaScript/Projects/RubyKit", scriptProject+"/RubyKit" )
+        File.symlink( libraryRoot+"/Projects/RubyKit", scriptProject+"/RubyKit" )
 
         justCreated = true
     end
@@ -138,7 +140,8 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
 
     mainSource.scan( /^\s*import\s+(\S+)(\s*\/\/\s*(!)?(?:((pod)( .*)?)|(clone (\S+)(.*))))?/ ).each { |import|
         libName = import[0]
-        if !import[1]
+        if !import[1] && !$builtFramework[libName]
+            $builtFramework[libName] = true
             libProj = libName+".scriptproj"
 
             [libraryRoot+"/Projects/"+libName,
@@ -246,7 +249,7 @@ INFO_PLIST
         File.symlink( scriptFramework+"/Resources", contents+"/Resources" )
     end
 
-    # check if recompile required
+    # scripts ending ".bin" create binaries rather than frameworks
 
     if /\.bin$/ =~ scriptPath
         target = "Binary"
@@ -255,6 +258,8 @@ INFO_PLIST
         target = "Framework"
         binary = scriptFramework+"/Versions/Current/"+scriptName
     end
+
+    # check if recompile required
 
     skipRebuild = FileUtils.uptodate?( binary, Dir.glob( scriptProject+"/*.*" ) )
 
@@ -277,9 +282,19 @@ INFO_PLIST
 
         File.open( reloaderLog, mode ).write( out )
         FileUtils.touch( binary )
+
+        if scriptName == "RubyKit"
+            FileUtils.touch( libraryRoot+"/Resources/guardian" )
+        end
+
+        if isRebuild
+           return 123
+        end
     end
+
+    return 0
 end
 
-prepareScriptProject( *ARGV )
+exit( prepareScriptProject( *ARGV ) )
 
 # return to cocoa binary load bundle and call main
