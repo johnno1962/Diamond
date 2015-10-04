@@ -151,7 +151,7 @@
 				ENABLE_TESTABILITY = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(HOME)/Library/SafeScript/Frameworks",
+					"$(COCOASCRIPT_HOME)/Frameworks/Debug",
 					"$(XCODE_APP_SUPPORT_DIR)/../../Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/macosx",
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -202,7 +202,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(HOME)/Library/SafeScript/Frameworks",
+					"$(COCOASCRIPT_HOME)/Frameworks/Debug",
 					"$(XCODE_APP_SUPPORT_DIR)/../../Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/macosx",
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;

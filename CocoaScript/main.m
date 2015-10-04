@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 18/09/2015.
 //  Copyright © 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/CocoaScript/CocoaScript/main.m#2 $
+//  $Id: //depot/CocoaScript/CocoaScript/main.m#10 $
 //
 //  Repo: https://github.com/johnno1962/CocoaScript
 //
@@ -23,15 +23,15 @@ int main( int argc, const char * argv[] ) {
     @autoreleasepool {
 
         if ( argc < 2 )
-            SError( "%s must be run from a script", argv[0] );
+            SError( "must be run with a script name" );
 
         NSString *home = [NSString stringWithUTF8String:getenv("HOME")];
         libraryRoot = [home stringByAppendingPathComponent:@"Library/CocoaScript"];
 
-        const char *runIndicator = "running:";
+        const char *runIndicator = "run:";
         BOOL isRun = strcmp( argv[1], runIndicator ) == 0;
         NSString *script = isRun ? [NSString stringWithUTF8String:argv[2]] :
-            [NSString stringWithFormat:@"%@/Resources/guardian", libraryRoot];
+            [libraryRoot stringByAppendingPathComponent:@"Resources/guardian"];
         NSString *lastArg = isRun && argv[argc-1][0] == '-' ? [NSString stringWithUTF8String:argv[argc-1]] : @"";
 
         NSString *scriptPath = script;
@@ -51,8 +51,7 @@ int main( int argc, const char * argv[] ) {
 
         NSString *scriptProject = [scriptPath stringByAppendingString:@".scriptproj"];
         if ( ![manager fileExistsAtPath:scriptProject] )
-            scriptProject = [[libraryRoot stringByAppendingPathComponent:@"Projects"]
-                             stringByAppendingPathComponent:scriptName];
+            scriptProject = [NSString stringWithFormat:@"%@/Projects/%@", libraryRoot, scriptName];
 
         NSString *prepareCommand = [NSString stringWithFormat:@"%@/Resources/prepare.rb \"%@\" \"%@\" \"%@\" \"%@\" \"%@\"",
                                     libraryRoot, libraryRoot, scriptPath, scriptName, scriptProject, lastArg];
@@ -68,7 +67,7 @@ int main( int argc, const char * argv[] ) {
         setenv( "COCOA_PROJECT_ROOT", strdup( [scriptProject UTF8String] ), 1 );
         argv[0] = strdup( [scriptPath UTF8String] );
 
-        NSString *binaryPath = [NSString stringWithFormat:@"%@/bin/%@", home, scriptName];
+        NSString *binaryPath = [NSString stringWithFormat:@"%@/bin/%@.cce", home, scriptName];
         if ( [[NSFileManager defaultManager] isExecutableFileAtPath:binaryPath] &&
                 execv( [binaryPath UTF8String], (char *const *)argv+2 ) )
             SError( "Unable to execute %@: %s", binaryPath, strerror(errno) );
@@ -83,13 +82,13 @@ int main( int argc, const char * argv[] ) {
                 for ( int i=1 ; i<=argc ; i++ )
                     shiftedArgv[i+2] = argv[i];
                 execv( shiftedArgv[0], (char *const *)shiftedArgv );
-                SError( "execve failed" );
+                SError( "execv failed" );
             }
 
             argv[0] = [[NSString stringWithFormat:@"%d", pid] UTF8String];
         }
 
-        NSString *frameworkPath = [NSString stringWithFormat:@"%@/Frameworks/%@.framework",
+        NSString *frameworkPath = [NSString stringWithFormat:@"%@/Frameworks/Debug/%@.framework",
                                    libraryRoot, scriptName];
         NSBundle *frameworkBundle = [NSBundle bundleWithPath:frameworkPath];
 
