@@ -6,7 +6,7 @@
 #  Created by John Holdsworth on 18/09/2015.
 #  Copyright © 2015 John Holdsworth. All rights reserved.
 #
-#  $Id: //depot/CocoaScript/CocoaScript/prepare.rb#5 $
+#  $Id: //depot/CocoaScript/CocoaScript/prepare.rb#26 $
 #
 #  Repo: https://github.com/johnno1962/CocoaScript
 #
@@ -14,7 +14,7 @@
 require 'fileutils'
 
 def log( msg )
-    puts( "CocoaScript: "+msg )
+    puts( "CocoaScript: "+msg.gsub( ENV["HOME"], "~" ) )
 end
 
 def die( msg )
@@ -22,6 +22,7 @@ def die( msg )
 end
 
 $builtFramework = {}
+$isRebuild = false
 
 def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, lastArg )
 
@@ -90,6 +91,65 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
         File.write( scriptMain, mainSource )
     end
 
+    # create dummy "Contents" folder in script directory (bundle of app)
+
+    scriptFramework = libraryRoot+"/Frameworks/Debug/"+scriptName+".framework"
+
+    if /NSApplicationMain/ =~ mainSource
+        contents = ENV["HOME"]+"/bin/Contents"
+        menuTitle = scriptName =~ /^[A-Z]/ ? scriptName : "CocoaScript"
+
+        FileUtils::mkdir_p( contents )
+        File.write( contents+"/Info.plist", plist = <<INFO_PLIST )
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>BuildMachineOSBuild</key>
+        <string>14F27</string>
+        <key>CFBundleDevelopmentRegion</key>
+        <string>en</string>
+        <key>CFBundleExecutable</key>
+        <string>#{menuTitle}</string>
+        <key>CFBundleIdentifier</key>
+        <string>com.johnholdsworth.#{menuTitle}</string>
+        <key>CFBundleIconFile</key>
+        <string>App.icns</string>
+        <key>CFBundleInfoDictionaryVersion</key>
+        <string>6.0</string>
+        <key>CFBundleName</key>
+        <string>#{menuTitle}</string>
+        <key>CFBundlePackageType</key>
+        <string>APPL</string>
+        <key>CFBundleShortVersionString</key>
+        <string>1.0</string>
+        <key>CFBundleSignature</key>
+        <string>????</string>
+        <key>CFBundleSupportedPlatforms</key>
+        <array>
+            <string>MacOSX</string>
+        </array>
+        <key>CFBundleVersion</key>
+        <string>1</string>
+        <key>NSMainNibFile</key>
+        <string>MainMenu</string>
+        <key>NSPrincipalClass</key>
+        <string>NSApplication</string>
+    </dict>
+</plist>
+INFO_PLIST
+
+        FileUtils.rm_f( contents+"/Resources" )
+        File.symlink( scriptFramework+"/Resources", contents+"/Resources" )
+        
+        # for debugging
+        contents = libraryRoot+"/Frameworks/Debug/Contents"
+        FileUtils.mkdir_p( contents )
+        File.write( contents+"/Info.plist", plist )
+        FileUtils.rm_f( contents+"/Resources" )
+        File.symlink( scriptFramework+"/Resources", contents+"/Resources" )
+    end
+
     # user options
 
     case lastArg
@@ -118,19 +178,20 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
         log( "Moved #{scriptProject} -> #{hideProj}" )
         exit( 123 )
 
-    when "-trace"
+    when "-dump"
         if !system( "open `ls -t $HOME/Library/Logs/DiagnosticReports/cocoa*.crash | head -1`" )
             die( "Could not open crash log" )
         end
         exit( 123 )
 
     when "-rebuild"
-        isRebuild = true
+        $isRebuild = 123
 
     end
 
     # determine pod dependancies
 
+    moduleBinaries = [`xcode-select -p`]
     missingPods = ""
 
     # import a // pod
@@ -140,32 +201,34 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
 
     mainSource.scan( /^\s*import\s+(\S+)(\s*\/\/\s*(!)?(?:((pod)( .*)?)|(clone (\S+)(.*))))?/ ).each { |import|
         libName = import[0]
-        if !import[1] && !$builtFramework[libName]
-            $builtFramework[libName] = true
-            libProj = libName+".scriptproj"
 
-            [libraryRoot+"/Projects/"+libName,
-                libProj,
-                scriptPath+"/lib/"+libProj,
-                ENV["HOME"]+"/bin/lib/"+libProj].each { |libProj|
-
-                if File.exists?( libProj )
-                    prepareScriptProject( libraryRoot, libProj+"/main.swift", libName, libProj, isRebuild ? lastArg : "" )
-                end
-            }
-        elsif import[2] == "!" || !File.exists?( libraryRoot+"/Frameworks/"+import[0]+".framework" )
+        if import[2] == "!" || !File.exists?( libraryRoot+"/Frameworks/Debug/"+libName+".framework" )
             if import[3]
                 missingPods += import[4] + (import[5]||" '#{import[0]}'") + "\n"
             elsif import[6]
-                if import[2] == "!"
-                    system( "rm -rf '#{libraryRoot}/Projects/#{libName}'" )
-                end
                 url = "https://github.com/"+import[7]+".git"
-                if !system( "cd '#{libraryRoot}/Projects' && git clone #{import[8]} #{url} && cd #{import[0]} && xcodebuild -configuration Debug -target Framework" )
-                    die "Could not clone #{import[0]} from #{url}"
+                if !system( "cd '#{libraryRoot}/Projects' && rm -rf '#{libName}' && git clone #{import[8]} #{url}" )
+                    die "Could not clone #{libName} from #{url}"
                 end
             end
         end
+
+        if !$builtFramework[libName]
+            $builtFramework[libName] = true
+
+            for libProj in [libName+".scriptproj",
+                        scriptPath+"/lib/"+libName+".scriptproj",
+                        ENV["HOME"]+"/bin/lib/"+libName+".scriptproj",
+                        libraryRoot+"/Projects/"+libName]
+
+                if File.exists?( libProj )
+                    prepareScriptProject( libraryRoot, libProj+"/main.swift", libName, libProj, lastArg )
+                    break
+                end
+            end
+        end
+
+        moduleBinaries += [libraryRoot+"/Frameworks/Debug/"+libName+".framework/Versions/Current/"+libName]
     }
 
     # build and install any missing or forced pods
@@ -185,73 +248,15 @@ PODFILE
             die( "Could not build pods" )
         end
 
-        log( "Copying new pods to #{libraryRoot}/Frameworks" )
-        if !system( "cd '#{libraryRoot}/Pods' && (rsync -rilvp Rome/ ../Frameworks || echo 'rsync warning')" )
+        log( "Copying new pods to #{libraryRoot}/Frameworks/Debug" )
+        if !system( "cd '#{libraryRoot}/Pods' && (rsync -rilvp Rome/ ../Frameworks/Debug || echo 'rsync warning')" )
             die( "Could not copy pods" )
         end
     end
 
-    # create dummy "Contents" folder in script directory (bundle of app)
-
-    scriptFramework = libraryRoot+"/Frameworks/"+scriptName+".framework"
-
-    if /NSApplicationMain/ =~ mainSource
-        contents = ENV["HOME"]+"/bin/Contents"
-        menuTitle = "CocoaScript" || scriptName
-
-        FileUtils::mkdir_p( contents )
-        File.write( contents+"/Info.plist", plist = <<INFO_PLIST )
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-    <dict>
-        <key>BuildMachineOSBuild</key>
-        <string>14F27</string>
-        <key>CFBundleDevelopmentRegion</key>
-        <string>en</string>
-        <key>CFBundleExecutable</key>
-        <string>#{menuTitle}</string>
-        <key>CFBundleIdentifier</key>
-        <string>com.johnholdsworth.#{menuTitle}</string>
-        <key>CFBundleIconFile</key>
-        <string>App.icns</string>
-        <key>CFBundleInfoDictionaryVersion</key>
-        <string>6.0</string>
-        <key>CFBundleName</key>
-        <string>CocoaScript</string>
-        <key>CFBundlePackageType</key>
-        <string>APPL</string>
-        <key>CFBundleShortVersionString</key>
-        <string>1.0</string>
-        <key>CFBundleSignature</key>
-        <string>????</string>
-        <key>CFBundleSupportedPlatforms</key>
-        <array>
-            <string>MacOSX</string>
-        </array>
-        <key>CFBundleVersion</key>
-        <string>1</string>
-        <key>NSMainNibFile</key>
-        <string>MainMenu</string>
-        <key>NSPrincipalClass</key>
-        <string>NSApplication</string>
-    </dict>
-</plist>
-INFO_PLIST
-        FileUtils.rm_f( contents+"/Resources" )
-        File.symlink( scriptFramework+"/Resources", contents+"/Resources" )
-
-        # for debugging
-        contents = "/tmp/build/Debug/Contents"
-        FileUtils.mkdir_p( contents )
-        File.write( contents+"/Info.plist", plist )
-        FileUtils.rm_f( contents+"/Resources" )
-        File.symlink( scriptFramework+"/Resources", contents+"/Resources" )
-    end
-
     # scripts ending ".bin" create binaries rather than frameworks
 
-    if /\.bin$/ =~ scriptPath
+    if /\.ccs$/ =~ scriptPath
         target = "Binary"
         binary = ENV["HOME"]+"/bin/"+scriptName
     else
@@ -261,40 +266,36 @@ INFO_PLIST
 
     # check if recompile required
 
-    skipRebuild = FileUtils.uptodate?( binary, Dir.glob( scriptProject+"/*.*" ) )
+    skipRebuild = FileUtils.uptodate?( binary, moduleBinaries + Dir.glob( scriptProject+"/**.*" ) )
 
     # build script project
 
-    if !skipRebuild || isRebuild
-        log( "Building #{scriptProject} ..." )
+    if !skipRebuild || $isRebuild
+
+        settings = "SYMROOT=#{libraryRoot}/Frameworks"
+        build = "cd '#{scriptProject}' && xcodebuild -sdk macosx -configuration Debug -target #{target} #{settings}"
+
         reloaderLog = libraryRoot+"/Reloader/"+scriptName+".log"
         mode = "a+"
 
-        if isRebuild || File.exists?( reloaderLog ) && File.size( reloaderLog ) > 1_000_000
-            system( "cd '#{scriptProject}' && xcodebuild -configuration Debug -target #{target} clean" )
+        if $isRebuild || File.exists?( reloaderLog ) && File.size( reloaderLog ) > 1_000_000
+            log( "Cleaning #{scriptProject}")
+            `#{build} clean 2>&1`
             mode = "w"
         end
 
-        out = `cd '#{scriptProject}' && xcodebuild -configuration Debug -target #{target} 2>&1`
+        log( "Building #{scriptProject}")
+        out = `#{build} 2>&1`
         if !$?.success?
-            die( "Script build error:\n"+out )
+            die( "Script build error:\n"+build+"\n"+out )
         end
 
         File.open( reloaderLog, mode ).write( out )
         FileUtils.touch( binary )
-
-        if scriptName == "RubyKit"
-            FileUtils.touch( libraryRoot+"/Resources/guardian" )
-        end
-
-        if isRebuild
-           return 123
-        end
     end
-
-    return 0
 end
 
-exit( prepareScriptProject( *ARGV ) )
-
 # return to cocoa binary load bundle and call main
+
+prepareScriptProject( *ARGV )
+exit( $isRebuild || 0 )

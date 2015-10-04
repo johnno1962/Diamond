@@ -218,7 +218,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = "/bin/sh -x";
-			shellScript = "LIBROOT=~/Library/CocoaScript\nmkdir -p $LIBROOT/{Frameworks,Pods,Projects,Resources} &&\ncp -f CocoaScript/{*.rb,guardian} $LIBROOT/Resources &&\ncp -rf TemplateProject Reloader $LIBROOT &&\nrm -rf $LIBROOT/TemplateProject/TemplateProject.xcodeproj/{xcuserdata,project.xcworkspace} &&\ncd $LIBROOT/Projects && rm -rf RubyKit &&\ngit clone https://github.com/RubyNative/RubyKit.git &&\n~/bin/cocoa running: $LIBROOT/Resources/guardian -rebuild";
+			shellScript = "LIBROOT=~/Library/CocoaScript\nmkdir -p $LIBROOT/{Frameworks,Pods,Projects,Resources} &&\ncp -f CocoaScript/{*.rb,guardian} $LIBROOT/Resources &&\ncp -rf TemplateProject Reloader $LIBROOT &&\nrm -rf $LIBROOT/TemplateProject/TemplateProject.xcodeproj/{xcuserdata,project.xcworkspace} &&\nrm -rf $LIBROOT/Frameworks/Debug/RubyKit.framework &&\n~/bin/cocoa run: $LIBROOT/Resources/guardian -rebuild";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */

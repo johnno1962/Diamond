@@ -7,35 +7,47 @@
 //  Created by John Holdsworth on 18/09/2015.
 //  Copyright © 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/CocoaScript/CocoaScript/guardian#2 $
+//  $Id: //depot/CocoaScript/CocoaScript/guardian#6 $
 //
 //  Repo: https://github.com/RubyNative/RubyNative
 //
 
 import Foundation
-import RubyKit
+import RubyKit // clone RubyNative/RubyKit
+
+// print( Process.arguments )
 
 let pid = Process.arguments[0].to_i
 var status: Int32 = 0
 
-if waitpid(pid_t(pid), &status, 0) < 0 || status & 0o177 == 0 {
+if waitpid( pid_t(pid), &status, 0 ) < 0 || status & 0o177 == 0 {
     exit( status >> 8 )
 }
 
 let recent = Time().to_f - 2
 
-while let log = IO.popen( "ls -t $HOME/Library/Logs/DiagnosticReports/cocoa_*.crash | head -1" )?.readline() {
+var binary = "cocoa"
+var script = Process.arguments[1]
+if script.hasSuffix( ".ccs" ) {
+    binary = script.stringByReplacingOccurrencesOfString( ".ccs", withString: ".cce" )
+}
+
+let logs = "~/Library/Logs/DiagnosticReports/\(binary)_*.crash"
+
+sleep( 1 )
+
+while let log = IO.popen( "ls -t \(logs) 2>/dev/null | head -1" )?.readline() {
     if File.mtime( log )!.to_f < recent {
-        print( "Waiting for log" )
+        print( "Waiting for \(logs)" )
         sleep( 1 )
     }
     else {
         File.open( log )?.each_line {
-            (line) -> () in
+            (line) in
             if line.containsString( " + ") {
                 print( line )
             }
         }
-        exit( 1 )
+        exit( EXIT_FAILURE )
     }
 }
