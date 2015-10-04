@@ -3,7 +3,7 @@
 
 Stop Press:
 
-This Project has now moved to the [here](https://github.com/RubyNative/CocoaScript)
+This Project has now moved [here](https://github.com/RubyNative/CocoaScript)
 to be with the RubyNative project for which it was intended.
 
 When you're as bad a typist as I am, one of the frustrations of using dynamically typed
@@ -34,7 +34,7 @@ project with the correct framework search path.
 The [RubyKit](https://github.com/RubyNative/RubyKit) project is included as a
 dependency automatically. This project ports the Ruby core apis to Swift for concise
 access to files and more flexible handling of Swift strings and Regular Expressions
-making Swift truely feel like a grown up scripting anguage.
+making Swift truly feel like a grown up scripting language.
 
 ### Usage
 
@@ -93,6 +93,26 @@ To use dependencies the `CocoaPods` gem and it's `Rome` plugin need to be instal
 ```
 
 Use a !pod comment in framework import to force updating a particular pod later.
+
+### Under the Covers
+
+Cocoa script works by setting the framework search path to include the following path:
+
+    ~/Library/CocoaScript/Frameworks/Debug
+
+and set the SYMROOT of projects when they build to ~/Library/CocoaScript/Frameworks
+so they build there. This looks after auto completion in the Xcode editor.
+The `cocoa` binary use a runtime "rpath" the same as this Framework
+search path so cocoa finds the Frameworks at run time.
+
+Each script has it's own shadow Xcode project accessed by typing `script_name -edit`.
+The files are copied to and from the actual script location depending on which is
+more recent. When `prepare.rb` is building these projects it looks for projects
+it is dependent on and makes sure they are up to date.
+
+The final step is to provide better reporting of the file and line number of
+any crashes. All builds are `Debug` so they symbolicate. A separate `guardian`
+process watches for crashes and opens and formats the `.crash` log to do this.
 
 ### Reloader
 
