@@ -1,11 +1,6 @@
 
 # CocoaScript - Swift scripting made easy
 
-Stop Press:
-
-This Project has now moved [here](https://github.com/RubyNative/CocoaScript)
-to be with the RubyNative project for which it was intended.
-
 When you're as bad a typist as I am, one of the frustrations of using dynamically typed
 scripting languages is when a run time error occurs that could have been picked up 
 by a compiler. Type inference has also reduced the burden coding in a type-safe
