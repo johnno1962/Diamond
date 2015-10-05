@@ -6,7 +6,7 @@
 #  Created by John Holdsworth on 18/09/2015.
 #  Copyright © 2015 John Holdsworth. All rights reserved.
 #
-#  $Id: //depot/CocoaScript/CocoaScript/prepare.rb#26 $
+#  $Id: //depot/CocoaScript/CocoaScript/compile.rb#2 $
 #
 #  Repo: https://github.com/johnno1962/CocoaScript
 #
@@ -143,8 +143,8 @@ INFO_PLIST
         FileUtils.rm_f( contents+"/Resources" )
         File.symlink( scriptFramework+"/Resources", contents+"/Resources" )
         
-        # for debugging
-        contents = frameworkRoot+"/Contents"
+        # for use inside Xcode with debugger
+        contents = libraryRoot+"/Frameworks/Debug/Contents"
         FileUtils.mkdir_p( contents )
         File.write( contents+"/Info.plist", plist )
         FileUtils.rm_f( contents+"/Resources" )
@@ -218,6 +218,7 @@ INFO_PLIST
         if !$builtFramework[libName]
             $builtFramework[libName] = true
 
+            # make sure ay projects script is dependent on are rebuilt
             for libProj in [libName+".scriptproj",
                         scriptPath+"/lib/"+libName+".scriptproj",
                         ENV["HOME"]+"/bin/lib/"+libName+".scriptproj",
@@ -230,6 +231,7 @@ INFO_PLIST
             end
         end
 
+        # make sure script project is rebuilt if project it depends on has been rebuilt.
         moduleBinaries += [libFramework+"/Versions/Current/"+libName]
     }
 
@@ -280,6 +282,7 @@ PODFILE
         reloaderLog = libraryRoot+"/Reloader/"+scriptName+".log"
         mode = "a+"
 
+        # make sure there is a complete xcodebuild log retained while keeping it under a mb
         if $isRebuild || File.exists?( reloaderLog ) && File.size( reloaderLog ) > 1_000_000
             log( "Cleaning #{scriptProject}")
             `#{build} clean 2>&1`

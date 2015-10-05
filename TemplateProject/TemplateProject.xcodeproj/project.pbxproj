@@ -411,6 +411,7 @@
 				INSTALL_PATH = "$(HOME)/bin";
 				PRODUCT_NAME = "TemplateProject";
 				SWIFT_OBJC_BRIDGING_HEADER = BridgingHeader.h;
+				SYMROOT = "$(COCOASCRIPT_HOME)/Frameworks";
 			};
 			name = Debug;
 		};
@@ -420,6 +421,7 @@
 				INSTALL_PATH = "$(HOME)/bin";
 				PRODUCT_NAME = "TemplateProject";
 				SWIFT_OBJC_BRIDGING_HEADER = BridgingHeader.h;
+				SYMROOT = "$(COCOASCRIPT_HOME)/Frameworks";
 			};
 			name = Release;
 		};
