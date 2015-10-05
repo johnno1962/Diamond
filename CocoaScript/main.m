@@ -88,7 +88,7 @@ int main( int argc, const char * argv[] ) {
             argv[0] = [[NSString stringWithFormat:@"%d", pid] UTF8String];
         }
 
-        NSString *frameworkPath = [NSString stringWithFormat:@"%@/Frameworks/Debug/%@.framework",
+        NSString *frameworkPath = [NSString stringWithFormat:@"%@/Frameworks/macosx/Debug/%@.framework",
                                    libraryRoot, scriptName];
         NSBundle *frameworkBundle = [NSBundle bundleWithPath:frameworkPath];
 

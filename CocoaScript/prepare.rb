@@ -93,7 +93,8 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
 
     # create dummy "Contents" folder in script directory (bundle of app)
 
-    scriptFramework = libraryRoot+"/Frameworks/Debug/"+scriptName+".framework"
+    frameworkRoot = libraryRoot+"/Frameworks/macosx/Debug"
+    scriptFramework = frameworkRoot+"/"+scriptName+".framework"
 
     if /NSApplicationMain/ =~ mainSource
         contents = ENV["HOME"]+"/bin/Contents"
@@ -143,7 +144,7 @@ INFO_PLIST
         File.symlink( scriptFramework+"/Resources", contents+"/Resources" )
         
         # for debugging
-        contents = libraryRoot+"/Frameworks/Debug/Contents"
+        contents = frameworkRoot+"/Contents"
         FileUtils.mkdir_p( contents )
         File.write( contents+"/Info.plist", plist )
         FileUtils.rm_f( contents+"/Resources" )
@@ -201,8 +202,9 @@ INFO_PLIST
 
     mainSource.scan( /^\s*import\s+(\S+)(\s*\/\/\s*(!)?(?:((pod)( .*)?)|(clone (\S+)(.*))))?/ ).each { |import|
         libName = import[0]
+        libFramework = frameworkRoot+"/"+libName+".framework"
 
-        if import[2] == "!" || !File.exists?( libraryRoot+"/Frameworks/Debug/"+libName+".framework" )
+        if import[2] == "!" || !File.exists?( libFramework )
             if import[3]
                 missingPods += import[4] + (import[5]||" '#{import[0]}'") + "\n"
             elsif import[6]
@@ -228,7 +230,7 @@ INFO_PLIST
             end
         end
 
-        moduleBinaries += [libraryRoot+"/Frameworks/Debug/"+libName+".framework/Versions/Current/"+libName]
+        moduleBinaries += [libFramework+"/Versions/Current/"+libName]
     }
 
     # build and install any missing or forced pods
@@ -248,8 +250,8 @@ PODFILE
             die( "Could not build pods" )
         end
 
-        log( "Copying new pods to #{libraryRoot}/Frameworks/Debug" )
-        if !system( "cd '#{libraryRoot}/Pods' && (rsync -rilvp Rome/ ../Frameworks/Debug || echo 'rsync warning')" )
+        log( "Copying new pods to #{frameworkRoot}" )
+        if !system( "cd '#{libraryRoot}/Pods' && (rsync -rilvp Rome/ ../Frameworks/macosx/Debug || echo 'rsync warning')" )
             die( "Could not copy pods" )
         end
     end
@@ -272,7 +274,7 @@ PODFILE
 
     if !skipRebuild || $isRebuild
 
-        settings = "SYMROOT=#{libraryRoot}/Frameworks"
+        settings = "SYMROOT=#{libraryRoot}/Frameworks/macosx"
         build = "cd '#{scriptProject}' && xcodebuild -sdk macosx -configuration Debug -target #{target} #{settings}"
 
         reloaderLog = libraryRoot+"/Reloader/"+scriptName+".log"
