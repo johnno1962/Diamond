@@ -52,12 +52,12 @@
 		BB3F784A1BACA8E800435430 /* cocoa */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cocoa; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB3F789C1BACAB9B00435430 /* TemplateProject.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TemplateProject.xcodeproj; path = TemplateProject/TemplateProject.xcodeproj; sourceTree = "<group>"; };
 		BB3F78B51BACB8C100435430 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		BB3F78CA1BACC2FB00435430 /* prepare.rb */ = {isa = PBXFileReference; lastKnownFileType = text.script.ruby; path = prepare.rb; sourceTree = "<group>"; };
 		BB76C5411BBF3E6500987FBC /* browse */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = browse; sourceTree = "<group>"; };
 		BB81CB541BADF8BD001525E1 /* Reloader.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Reloader.xcodeproj; path = Reloader/Reloader.xcodeproj; sourceTree = "<group>"; };
 		BB81CB671BAE168D001525E1 /* reloader.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = reloader.rb; sourceTree = "<group>"; };
 		BB82F7CB1BAD92BE00094771 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		BB8F123E1BBE94050067527A /* guardian */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = guardian; sourceTree = "<group>"; };
+		BBCFE07C1BC301F100BE6B16 /* compile.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = compile.rb; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,7 +95,7 @@
 			isa = PBXGroup;
 			children = (
 				BB3F78B51BACB8C100435430 /* main.m */,
-				BB3F78CA1BACC2FB00435430 /* prepare.rb */,
+				BBCFE07C1BC301F100BE6B16 /* compile.rb */,
 				BB81CB671BAE168D001525E1 /* reloader.rb */,
 				BB8F123E1BBE94050067527A /* guardian */,
 			);
@@ -218,7 +218,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = "/bin/sh -x";
-			shellScript = "LIBROOT=~/Library/CocoaScript\nmkdir -p $LIBROOT/{Frameworks,Pods,Projects,Resources} &&\ncp -f CocoaScript/{*.rb,guardian} $LIBROOT/Resources &&\ncp -rf TemplateProject Reloader $LIBROOT &&\nrm -rf $LIBROOT/TemplateProject/TemplateProject.xcodeproj/{xcuserdata,project.xcworkspace} &&\nrm -rf $LIBROOT/Frameworks/Debug/RubyKit.framework &&\n~/bin/cocoa run: $LIBROOT/Resources/guardian -rebuild";
+			shellScript = "LIBROOT=~/Library/CocoaScript\nmkdir -p $LIBROOT/{Frameworks,Pods,Projects,Resources} &&\ncp -f CocoaScript/{*.rb,guardian} $LIBROOT/Resources &&\ncp -rf TemplateProject Reloader $LIBROOT &&\nrm -rf $LIBROOT/TemplateProject/TemplateProject.xcodeproj/{xcuserdata,project.xcworkspace} &&\nrm -rf $LIBROOT/Frameworks/macosx/Debug/RubyKit.framework &&\n~/bin/cocoa run: $LIBROOT/Resources/guardian -rebuild";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */

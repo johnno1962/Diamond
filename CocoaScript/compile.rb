@@ -6,7 +6,7 @@
 #  Created by John Holdsworth on 18/09/2015.
 #  Copyright © 2015 John Holdsworth. All rights reserved.
 #
-#  $Id: //depot/CocoaScript/CocoaScript/prepare.rb#26 $
+#  $Id: //depot/CocoaScript/CocoaScript/compile.rb#2 $
 #
 #  Repo: https://github.com/johnno1962/CocoaScript
 #
@@ -93,7 +93,8 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
 
     # create dummy "Contents" folder in script directory (bundle of app)
 
-    scriptFramework = libraryRoot+"/Frameworks/Debug/"+scriptName+".framework"
+    frameworkRoot = libraryRoot+"/Frameworks/macosx/Debug"
+    scriptFramework = frameworkRoot+"/"+scriptName+".framework"
 
     if /NSApplicationMain/ =~ mainSource
         contents = ENV["HOME"]+"/bin/Contents"
@@ -142,7 +143,7 @@ INFO_PLIST
         FileUtils.rm_f( contents+"/Resources" )
         File.symlink( scriptFramework+"/Resources", contents+"/Resources" )
         
-        # for debugging
+        # for use inside Xcode with debugger
         contents = libraryRoot+"/Frameworks/Debug/Contents"
         FileUtils.mkdir_p( contents )
         File.write( contents+"/Info.plist", plist )
@@ -201,8 +202,9 @@ INFO_PLIST
 
     mainSource.scan( /^\s*import\s+(\S+)(\s*\/\/\s*(!)?(?:((pod)( .*)?)|(clone (\S+)(.*))))?/ ).each { |import|
         libName = import[0]
+        libFramework = frameworkRoot+"/"+libName+".framework"
 
-        if import[2] == "!" || !File.exists?( libraryRoot+"/Frameworks/Debug/"+libName+".framework" )
+        if import[2] == "!" || !File.exists?( libFramework )
             if import[3]
                 missingPods += import[4] + (import[5]||" '#{import[0]}'") + "\n"
             elsif import[6]
@@ -216,6 +218,7 @@ INFO_PLIST
         if !$builtFramework[libName]
             $builtFramework[libName] = true
 
+            # make sure ay projects script is dependent on are rebuilt
             for libProj in [libName+".scriptproj",
                         scriptPath+"/lib/"+libName+".scriptproj",
                         ENV["HOME"]+"/bin/lib/"+libName+".scriptproj",
@@ -228,7 +231,8 @@ INFO_PLIST
             end
         end
 
-        moduleBinaries += [libraryRoot+"/Frameworks/Debug/"+libName+".framework/Versions/Current/"+libName]
+        # make sure script project is rebuilt if project it depends on has been rebuilt.
+        moduleBinaries += [libFramework+"/Versions/Current/"+libName]
     }
 
     # build and install any missing or forced pods
@@ -248,8 +252,8 @@ PODFILE
             die( "Could not build pods" )
         end
 
-        log( "Copying new pods to #{libraryRoot}/Frameworks/Debug" )
-        if !system( "cd '#{libraryRoot}/Pods' && (rsync -rilvp Rome/ ../Frameworks/Debug || echo 'rsync warning')" )
+        log( "Copying new pods to #{frameworkRoot}" )
+        if !system( "cd '#{libraryRoot}/Pods' && (rsync -rilvp Rome/ ../Frameworks/macosx/Debug || echo 'rsync warning')" )
             die( "Could not copy pods" )
         end
     end
@@ -272,12 +276,13 @@ PODFILE
 
     if !skipRebuild || $isRebuild
 
-        settings = "SYMROOT=#{libraryRoot}/Frameworks"
+        settings = "SYMROOT=#{libraryRoot}/Frameworks/macosx"
         build = "cd '#{scriptProject}' && xcodebuild -sdk macosx -configuration Debug -target #{target} #{settings}"
 
         reloaderLog = libraryRoot+"/Reloader/"+scriptName+".log"
         mode = "a+"
 
+        # make sure there is a complete xcodebuild log retained while keeping it under a mb
         if $isRebuild || File.exists?( reloaderLog ) && File.size( reloaderLog ) > 1_000_000
             log( "Cleaning #{scriptProject}")
             `#{build} clean 2>&1`
