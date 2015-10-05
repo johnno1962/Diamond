@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 18/09/2015.
 //  Copyright © 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/CocoaScript/CocoaScript/main.m#14 $
+//  $Id: //depot/CocoaScript/CocoaScript/main.m#16 $
 //
 //  Repo: https://github.com/johnno1962/CocoaScript
 //
@@ -18,6 +18,25 @@ static void watchProject( NSString *scriptName );
 static NSString *libraryRoot, *scriptName;
 static FSEventStreamRef fileEvents;
 
+//
+// I won't deny this is a cury peice of code. It calls itself in a child process
+// so traps can be detected and the symbolicated crash reports taken from
+// ~/Library/Logs/DiagnosticReports are presented to the user
+//
+// First time through argv is ["cocooa", "script_name", "args.."]
+// Child process gets ["cocoa", "run:", "script_name", "args.."]
+//
+// Entry point for frameworks is found using it's CFBundle by looking up the
+// symbol main(). Frameworks for the main script are loaded as an NSBundle.
+// Framework for parent process is "guardian". Framework for child is script.
+//
+// This is complicated by the fact the  file watcher for must only run in the
+// child process to look for changes to inject into classes in reaal time.
+//
+// The final crinkle is "x.ccs" scripts produce standalone "~/bin/x.cce" binaries
+// (subject to availablility of framework it depends on in ~/Library/CocoaPods/...)
+//
+
 int main( int argc, const char * argv[] ) {
 
     @autoreleasepool {
@@ -29,10 +48,10 @@ int main( int argc, const char * argv[] ) {
         libraryRoot = [home stringByAppendingPathComponent:@"Library/CocoaScript"];
 
         // cocoa is called twice. Once to execute the "guardian" framework
-        // and once with the first argument run: to rnu the actual script.
+        // and once with the first argument run: to run the actual script.
         // The guardian process watches for traps in the child process and
         // processes the generated crash report to display the line number
-        // the script the script failed at.
+        // the script failed at in a full stack trace.
         const char *runIndicator = "run:";
         BOOL isRun = strcmp( argv[1], runIndicator ) == 0;
 
@@ -62,8 +81,8 @@ int main( int argc, const char * argv[] ) {
         if ( ![manager fileExistsAtPath:scriptProject] )
             scriptProject = [NSString stringWithFormat:@"%@/Projects/%@", libraryRoot, scriptName];
 
-        // Call copmpile.rb to build script into framework (or binary.cce if extension is .ccs)
-        // makes sure project is built if any frameworks it is dependant on are rebuilt recursively.
+        // Call compile.rb to build script into framework (or binary.cce if extension is .ccs.)
+        // Makes sure project is built if any frameworks it is dependant on are rebuilt recursively.
         NSString *compileCommand = [NSString stringWithFormat:@"%@/Resources/compile.rb \"%@\" \"%@\" \"%@\" \"%@\" \"%@\"",
                                     libraryRoot, libraryRoot, scriptPath, scriptName, scriptProject, lastArg];
 
@@ -74,12 +93,12 @@ int main( int argc, const char * argv[] ) {
         if ( status != EXIT_SUCCESS )
             SError( "%@ returns error %x", compileCommand, status );
 
-        // This is where actual script is run as a child process leaving the
-        // guardian framework monitoring it for traps/crashes to dump .crash
-
         if ( !isRun ) {
             pid_t pid;
 
+            // This is where actual script is run as a child process leaving the
+            // guardian framework monitoring it for traps/crashes to dump .crash
+            
             if ( !(pid = fork()) ) {
                 const char **shiftedArgv = calloc( argc+2, sizeof *shiftedArgv );
                 shiftedArgv[0] = "/usr/bin/env";
