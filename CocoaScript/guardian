@@ -7,7 +7,7 @@
 //  Created by John Holdsworth on 18/09/2015.
 //  Copyright © 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/CocoaScript/CocoaScript/guardian#6 $
+//  $Id: //depot/CocoaScript/CocoaScript/guardian#8 $
 //
 //  Repo: https://github.com/RubyNative/RubyNative
 //
@@ -45,7 +45,12 @@ while let log = IO.popen( "ls -t \(logs) 2>/dev/null | head -1" )?.readline() {
         File.open( log )?.each_line {
             (line) in
             if line.containsString( " + ") {
-                print( line )
+                var mutable = line.mutableString
+                mutable["((?:\\S+\\s+){3})(\\S+)(.*)"] =~ {
+                    (groups: [String?]) in
+                    return groups[1]!+_stdlib_demangleName( groups[2]! )+groups[3]!
+                }
+                print( mutable )
             }
         }
         exit( EXIT_FAILURE )

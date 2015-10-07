@@ -6,7 +6,7 @@
 #  Created by John Holdsworth on 18/09/2015.
 #  Copyright © 2015 John Holdsworth. All rights reserved.
 #
-#  $Id: //depot/CocoaScript/CocoaScript/compile.rb#2 $
+#  $Id: //depot/CocoaScript/CocoaScript/compile.rb#3 $
 #
 #  Repo: https://github.com/johnno1962/CocoaScript
 #
@@ -289,7 +289,7 @@ PODFILE
             mode = "w"
         end
 
-        log( "Building #{scriptProject}")
+        log( "Building #{scriptProject} #{target}")
         out = `#{build} 2>&1`
         if !$?.success?
             die( "Script build error:\n"+build+"\n"+out )
