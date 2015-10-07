@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 18/09/2015.
 //  Copyright © 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/CocoaScript/CocoaScript/main.m#19 $
+//  $Id: //depot/CocoaScript/CocoaScript/main.m#20 $
 //
 //  Repo: https://github.com/johnno1962/CocoaScript
 //
@@ -111,10 +111,10 @@ int main( int argc, const char * argv[] ) {
             // guardian framework monitoring it for traps/crashes to dump .crash
             
             if ( !(pid = fork()) ) {
-                const char **shiftedArgv = calloc( argc+2, sizeof *shiftedArgv );
+                const char **shiftedArgv = calloc( argc+3, sizeof *shiftedArgv );
                 shiftedArgv[0] = "/usr/bin/env";
-                shiftedArgv[1] = "cocoa";
-                shiftedArgv[2] = runIndicator;
+                shiftedArgv[1] = argv[0]; // "cocoa"
+                shiftedArgv[2] = runIndicator; // run:
                 for ( int i=1 ; i<=argc ; i++ )
                     shiftedArgv[i+2] = argv[i];
                 execv( shiftedArgv[0], (char *const *)shiftedArgv );
