@@ -7,7 +7,7 @@
 //  Created by John Holdsworth on 18/09/2015.
 //  Copyright © 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/CocoaScript/CocoaScript/guardian#8 $
+//  $Id: //depot/CocoaScript/CocoaScript/guardian#12 $
 //
 //  Repo: https://github.com/RubyNative/RubyNative
 //
@@ -17,7 +17,7 @@ import RubyKit // clone RubyNative/RubyKit
 
 // print( Process.arguments )
 
-let pid = Process.arguments[0].to_i
+let pid = ENV["COCOA_CHILD_PID"]!.to_i
 var status: Int32 = 0
 
 if waitpid( pid_t(pid), &status, 0 ) < 0 || status & 0o177 == 0 {
@@ -53,6 +53,10 @@ while let log = IO.popen( "ls -t \(logs) 2>/dev/null | head -1" )?.readline() {
                 print( mutable )
             }
         }
-        exit( EXIT_FAILURE )
+        break
     }
+}
+
+if Process.arguments[Process.argc-1] != "-restarter" {
+    exit( EXIT_FAILURE )
 }

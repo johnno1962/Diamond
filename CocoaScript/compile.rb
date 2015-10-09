@@ -6,7 +6,7 @@
 #  Created by John Holdsworth on 18/09/2015.
 #  Copyright © 2015 John Holdsworth. All rights reserved.
 #
-#  $Id: //depot/CocoaScript/CocoaScript/compile.rb#3 $
+#  $Id: //depot/CocoaScript/CocoaScript/compile.rb#8 $
 #
 #  Repo: https://github.com/johnno1962/CocoaScript
 #
@@ -19,6 +19,10 @@ end
 
 def die( msg )
     abort( "*** CocoaScript: "+msg )
+end
+
+def setDate( date, file )
+    system( "perl -e 'utime #{date}, #{date}, \"#{file}\";'" )
 end
 
 $builtFramework = {}
@@ -51,6 +55,7 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
         # move script into project and replace with symlink
 
         FileUtils.cp( scriptPath, scriptMain )
+        setDate( File.mtime( scriptPath ).to_f, scriptMain )
         File.chmod( 0755, scriptMain )
 
         # change name of project to that of script
@@ -75,12 +80,12 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
     if scriptDate > mainDate
         File.unlink( scriptMain )
         FileUtils.cp( scriptPath, scriptMain )
-        system( "perl -e 'utime #{scriptDate}, #{scriptDate}, \"#{scriptMain}\";'" )
+        setDate( scriptDate, scriptMain )
         log( "Copied #{scriptPath} -> #{scriptMain}" )
     elsif mainDate > scriptDate
         File.unlink( scriptPath )
         FileUtils.cp( scriptMain, scriptPath )
-        system( "perl -e 'utime #{mainDate}, #{mainDate}, \"#{scriptPath}\";'" )
+        setDate( mainDate, scriptPath )
         log( "Copied #{scriptMain} -> #{scriptPath}" )
     end
 
@@ -98,7 +103,7 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
 
     if /NSApplicationMain/ =~ mainSource
         contents = ENV["HOME"]+"/bin/Contents"
-        menuTitle = scriptName =~ /^[A-Z]/ ? scriptName : "CocoaScript"
+        menuTitle = scriptName =~ /^[a-z]/ ? "CocoaScript" : scriptName
 
         FileUtils::mkdir_p( contents )
         File.write( contents+"/Info.plist", plist = <<INFO_PLIST )

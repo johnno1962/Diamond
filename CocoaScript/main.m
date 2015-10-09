@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 18/09/2015.
 //  Copyright © 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/CocoaScript/CocoaScript/main.m#20 $
+//  $Id: //depot/CocoaScript/CocoaScript/main.m#26 $
 //
 //  Repo: https://github.com/johnno1962/CocoaScript
 //
@@ -14,6 +14,7 @@
 
 #define SError( ... ) { NSLog( @"cocoa: " __VA_ARGS__ ); exit( EXIT_FAILURE ); }
 
+static int execFramework( NSString *framework, int argc, const char **argv );
 static void watchProject( NSString *scriptName );
 static NSString *libraryRoot, *scriptName;
 static FSEventStreamRef fileEvents;
@@ -66,6 +67,7 @@ int main( int argc, const char * argv[] ) {
         NSString *script = isRun ? [NSString stringWithUTF8String:argv[2]] :
             [libraryRoot stringByAppendingPathComponent:@"Resources/guardian"];
         NSString *lastArg = isRun && argv[argc-1][0] == '-' ? [NSString stringWithUTF8String:argv[argc-1]] : @"";
+        BOOL isRestarter = strcmp( argv[argc-1], "-restarter" ) == 0;
 
         // find the actual script path using $PATH from the environment.
         NSString *scriptPath = script;
@@ -94,8 +96,10 @@ int main( int argc, const char * argv[] ) {
         NSString *compileCommand = [NSString stringWithFormat:@"%@/Resources/compile.rb \"%@\" \"%@\" \"%@\" \"%@\" \"%@\"",
                                     libraryRoot, libraryRoot, scriptPath, scriptName, scriptProject, lastArg];
 
+        int status;
+restart:
         // call compile.rb to prepare Frameworks/Binary
-        int status = system( [compileCommand UTF8String] );
+        status = system( [compileCommand UTF8String] );
 
         // user option such as -edit, -show, -hide, -rebuild
         if ( status >> 8 == 123 )
@@ -105,93 +109,106 @@ int main( int argc, const char * argv[] ) {
             SError( "%@ returns error %x", compileCommand, status );
 
         if ( !isRun ) {
-            pid_t pid;
-
             // This is where actual script is run as a child process leaving the
             // guardian framework monitoring it for traps/crashes to dump .crash
-            
+            pid_t pid;
+
             if ( !(pid = fork()) ) {
+
                 const char **shiftedArgv = calloc( argc+3, sizeof *shiftedArgv );
                 shiftedArgv[0] = "/usr/bin/env";
-                shiftedArgv[1] = argv[0]; // "cocoa"
+                shiftedArgv[1] = "cocoa";
                 shiftedArgv[2] = runIndicator; // run:
                 for ( int i=1 ; i<=argc ; i++ )
                     shiftedArgv[i+2] = argv[i];
+
                 execv( shiftedArgv[0], (char *const *)shiftedArgv );
                 SError( "execv failed" );
             }
 
             // argv[0] for guardian framework main() is process id of child process.
-            argv[0] = strdup( [[NSString stringWithFormat:@"%d", pid] UTF8String] );
+            setenv( "COCOA_CHILD_PID", [[NSString stringWithFormat:@"%d", pid] UTF8String], 1 );
+
+            status = execFramework( scriptName, argc, argv );
+
+            if ( isRestarter )
+                goto restart;
         }
 
         else {
+            if ( isRestarter )
+                argv[--argc] = NULL;
+
+            argv[2] = strdup( [scriptPath UTF8String] );
+            setenv( "COCOA_LIBRARY_ROOT", [libraryRoot UTF8String], 1 );
+            setenv( "COCOA_PROJECT_ROOT", [scriptProject UTF8String], 1 );
 
             // This code relates to ".cce" binaries used as an alternative to frameworks
             if ( [scriptPath hasSuffix:@".ccs"] ) {
 
-                setenv( "COCOA_LIBRARY_ROOT", strdup( [libraryRoot UTF8String] ), 1 );
-                setenv( "COCOA_PROJECT_ROOT", strdup( [scriptProject UTF8String] ), 1 );
-                argv[0] = strdup( [scriptPath UTF8String] );
-
                 // execv binary in child process if present (and there is run: argument.)
                 NSString *binaryPath = [NSString stringWithFormat:@"%@/bin/%@.cce", home, scriptName];
-                if ( [[NSFileManager defaultManager] isExecutableFileAtPath:binaryPath] &&
-                    execv( [binaryPath UTF8String], (char *const *)argv+2 ) )
-                    SError( "Unable to execute %@: %s", binaryPath, strerror(errno) );
+                if ( [[NSFileManager defaultManager] isExecutableFileAtPath:binaryPath] )
+                    execv( [binaryPath UTF8String], (char *const *)argv+2 );
 
-                // shouldn't get here..
+                SError( "Unable to execute %@: %s", binaryPath, strerror(errno) );
             }
 
             // If running actual script in child process,
             // start file watcher for code reloading.
             watchProject( scriptProject );
-        }
 
-        // Now look for Framework with the script's name determined before and load it as a bundle.
-        NSString *frameworkPath = [NSString stringWithFormat:@"%@/Frameworks/macosx/Debug/%@.framework",
-                                   libraryRoot, scriptName];
-        NSBundle *frameworkBundle = [NSBundle bundleWithPath:frameworkPath];
+            status = execFramework( scriptName, argc-2, argv+2 );
 
-        if ( !frameworkBundle )
-            SError( "Could not locate binary or framemork bundle %@", frameworkPath );
-
-        if ( ![frameworkBundle load] )
-            SError( "Could not load framemork bundle %@", frameworkBundle );
-
-        // Slight hack to get CFBundle from NSBundle so we can locate main function in main.swift
-        CFBundleRef cfBundle = (__bridge CFBundleRef)[frameworkBundle valueForKey:@"cfBundle"];
-
-        if ( !cfBundle )
-            SError( "Could not access CFBundle %@", frameworkBundle );
-
-        // find pointer to main( argc, argv )
-        // ..can be guardian or actual script.
-        typedef int (*main_t)( int argc, const char * argv[] );
-        main_t scriptMain = (main_t)CFBundleGetFunctionPointerForName( cfBundle, (CFStringRef)@"main" );
-
-        if ( !scriptMain )
-            SError( "Could not locate main() function in %@", frameworkBundle );
-
-        @try {
-            // run guardian or script in child process.
-            status = scriptMain( argc-isRun*2, argv+isRun*2 );
-        }
-        @catch ( NSException *e ) {
-            SError( "Exception %@\n%@", e, e.callStackSymbols );
-        }
-
-        // That's it, close fileWatcher and exit.
-        if ( fileEvents ) {
-            FSEventStreamStop( fileEvents );
-            FSEventStreamInvalidate( fileEvents );
-            FSEventStreamRelease( fileEvents );
-        }
+            if ( fileEvents ) {
+                FSEventStreamStop( fileEvents );
+                FSEventStreamInvalidate( fileEvents );
+                FSEventStreamRelease( fileEvents );
+            }
+       }
 
         exit( status );
     }
 
     return 0;
+}
+
+static int execFramework( NSString *scriptName, int argc, const char **argv ) {
+    // Now look for Framework with the script's name determined before and load it as a bundle.
+    NSString *frameworkPath = [NSString stringWithFormat:@"%@/Frameworks/macosx/Debug/%@.framework",
+                               libraryRoot, scriptName];
+    NSBundle *frameworkBundle = [NSBundle bundleWithPath:frameworkPath];
+
+    if ( !frameworkBundle )
+        SError( "Could not locate binary or framemork bundle %@", frameworkPath );
+
+    if ( ![frameworkBundle load] )
+        SError( "Could not load framemork bundle %@", frameworkBundle );
+
+    // Slight hack to get CFBundle from NSBundle so we can locate main function in main.swift
+    CFBundleRef cfBundle = (__bridge CFBundleRef)[frameworkBundle valueForKey:@"cfBundle"];
+
+    if ( !cfBundle )
+        SError( "Could not access CFBundle %@", frameworkBundle );
+
+    // find pointer to main( argc, argv )
+    // ..can be guardian or actual script.
+    typedef int (*main_t)( int argc, const char * argv[] );
+    main_t scriptMain = (main_t)CFBundleGetFunctionPointerForName( cfBundle, (CFStringRef)@"main" );
+
+    if ( !scriptMain )
+        SError( "Could not locate main() function in %@", frameworkBundle );
+
+    int status = 1;
+    @try {
+        // run guardian or script in child process.
+        status = scriptMain( argc, argv );
+    }
+    @catch ( NSException *e ) {
+        SError( "Exception %@\n%@", e, e.callStackSymbols );
+    }
+
+    return status;
 }
 
 static void fileCallback( ConstFSEventStreamRef streamRef,
