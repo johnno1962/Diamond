@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 18/09/2015.
 //  Copyright © 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/CocoaScript/CocoaScript/main.m#26 $
+//  $Id: //depot/CocoaScript/CocoaScript/main.m#29 $
 //
 //  Repo: https://github.com/johnno1962/CocoaScript
 //
@@ -70,13 +70,18 @@ int main( int argc, const char * argv[] ) {
         BOOL isRestarter = strcmp( argv[argc-1], "-restarter" ) == 0;
 
         // find the actual script path using $PATH from the environment.
-        NSString *scriptPath = script;
+        NSString *scriptPath = script, *mainPath = [script stringByAppendingString:@".scriptproj/main.swift"];
         NSFileManager *manager = [NSFileManager defaultManager];
 
         unichar path0 = [scriptPath characterAtIndex:0];
         if ( path0 != '/' && path0 != '.' )
             for ( NSString *component in [[NSString stringWithUTF8String:getenv("PATH")] componentsSeparatedByString:@":"] ) {
                 NSString *result = [component stringByAppendingPathComponent:script];
+                if ( [manager fileExistsAtPath:result] ) {
+                    scriptPath = result;
+                    break;
+                }
+                result = [component stringByAppendingPathComponent:mainPath];
                 if ( [manager fileExistsAtPath:result] ) {
                     scriptPath = result;
                     break;
@@ -126,11 +131,13 @@ restart:
                 SError( "execv failed" );
             }
 
-            // argv[0] for guardian framework main() is process id of child process.
+            // ENV["COCOA_CHILD_PID"] for guardian framework main() is process id of child process.
             setenv( "COCOA_CHILD_PID", [[NSString stringWithFormat:@"%d", pid] UTF8String], 1 );
 
+            // run the guardian script .framework
             status = execFramework( scriptName, argc, argv );
 
+            // restart on crash
             if ( isRestarter )
                 goto restart;
         }
@@ -158,6 +165,7 @@ restart:
             // start file watcher for code reloading.
             watchProject( scriptProject );
 
+            // runthe actual script .framework
             status = execFramework( scriptName, argc-2, argv+2 );
 
             if ( fileEvents ) {
@@ -205,7 +213,8 @@ static int execFramework( NSString *scriptName, int argc, const char **argv ) {
         status = scriptMain( argc, argv );
     }
     @catch ( NSException *e ) {
-        SError( "Exception %@\n%@", e, e.callStackSymbols );
+        NSLog( @"Exception %@\n%@", e, e.callStackSymbols );
+        @throw e;
     }
 
     return status;

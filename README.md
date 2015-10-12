@@ -38,8 +38,8 @@ making Swift truly feel like a grown up scripting language.
 
 ### Usage
 
-This is overseen by the `cocoa` binary and a script `prepare.rb` that is
-run before the script proper. `prepare.rb` loads pods, rebuilds the script's
+This is overseen by the `cocoa` binary and a script `compile.rb` that is
+run before the script proper. `compile.rb` loads pods, rebuilds the script's
 framework if required then jumps into it's main.swift to start execution.
 
 As all of Cocoa is available, a UI component can be added to a script by
@@ -107,7 +107,7 @@ search path so cocoa finds the Frameworks at run time.
 
 Each script has it's own shadow Xcode project accessed by typing `script_name -edit`.
 The files are copied to and from the actual script location depending on which is
-more recent. When `prepare.rb` is building these projects it looks for projects
+more recent. When `compile.rb` is building these projects it looks for projects
 it is dependent on and makes sure they are up to date.
 
 The final step is to provide better reporting of the file and line number of

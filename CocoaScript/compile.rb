@@ -6,27 +6,34 @@
 #  Created by John Holdsworth on 18/09/2015.
 #  Copyright © 2015 John Holdsworth. All rights reserved.
 #
-#  $Id: //depot/CocoaScript/CocoaScript/compile.rb#8 $
+#  $Id: //depot/CocoaScript/CocoaScript/compile.rb#13 $
 #
 #  Repo: https://github.com/johnno1962/CocoaScript
 #
 
 require 'fileutils'
 
+$builtFramework = {}
+$isRebuild = false
+$indent = ""
+
 def log( msg )
-    puts( "CocoaScript: "+msg.gsub( ENV["HOME"], "~" ) )
+    puts( "CocoaScript: "+$indent+msg.gsub( ENV["HOME"], "~" ) )
 end
 
 def die( msg )
-    abort( "*** CocoaScript: "+msg )
+    abort( "*** CocoaScript: "+$indent+msg )
 end
 
-def setDate( date, file )
-    system( "perl -e 'utime #{date}, #{date}, \"#{file}\";'" )
+def dateCopy( from, to )
+    if File.exists?( to )
+        File.unlink( to )
+    end
+    FileUtils.cp( from, to )
+    date = File.mtime( from ).to_f
+    system( "perl -e 'utime #{date}, #{date}, \"#{to}\";'" )
+    log( "Copied #{from} -> #{to}" )
 end
-
-$builtFramework = {}
-$isRebuild = false
 
 def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, lastArg )
 
@@ -37,11 +44,8 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
     justCreated = false
 
     if !File.exists?( scriptPath )
-        log( "Creating #{scriptPath}" )
-
-        if !system( "cp -f '#{libraryRoot}/TemplateProject/main.swift' '#{scriptPath}' && chmod +wx '#{scriptPath}'" )
-            die( "Could not create script: "+scriptPath )
-        end
+        template = File.exists?( scriptMain ) ? scriptMain : libraryRoot+"/TemplateProject/main.swift"
+        dateCopy( template, scriptPath )
     end
 
     if !File.exist?( scriptProject )
@@ -54,9 +58,7 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
 
         # move script into project and replace with symlink
 
-        FileUtils.cp( scriptPath, scriptMain )
-        setDate( File.mtime( scriptPath ).to_f, scriptMain )
-        File.chmod( 0755, scriptMain )
+        dateCopy( scriptPath, scriptMain )
 
         # change name of project to that of script
         pbxproj = scriptProject+"/TemplateProject.xcodeproj/project.pbxproj"
@@ -65,8 +67,6 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
         project.gsub!( /TemplateProject/, scriptName )
         File.write( pbxproj, project )
         File.rename( scriptProject+"/TemplateProject.xcodeproj", newProj )
-
-        File.symlink( libraryRoot+"/Projects/RubyKit", scriptProject+"/RubyKit" )
 
         justCreated = true
     end
@@ -78,16 +78,12 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
     mainDate = File.mtime( scriptMain ).to_f
 
     if scriptDate > mainDate
-        File.unlink( scriptMain )
-        FileUtils.cp( scriptPath, scriptMain )
-        setDate( scriptDate, scriptMain )
-        log( "Copied #{scriptPath} -> #{scriptMain}" )
+        dateCopy( scriptPath, scriptMain )
     elsif mainDate > scriptDate
-        File.unlink( scriptPath )
-        FileUtils.cp( scriptMain, scriptPath )
-        setDate( mainDate, scriptPath )
-        log( "Copied #{scriptMain} -> #{scriptPath}" )
+        dateCopy( scriptMain, scriptPath )
     end
+
+    File.chmod( 0755, scriptPath )
 
     # fix up any script style comments
 
@@ -101,59 +97,14 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
     frameworkRoot = libraryRoot+"/Frameworks/macosx/Debug"
     scriptFramework = frameworkRoot+"/"+scriptName+".framework"
 
-    if /NSApplicationMain/ =~ mainSource
-        contents = ENV["HOME"]+"/bin/Contents"
-        menuTitle = scriptName =~ /^[a-z]/ ? "CocoaScript" : scriptName
-
-        FileUtils::mkdir_p( contents )
-        File.write( contents+"/Info.plist", plist = <<INFO_PLIST )
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-    <dict>
-        <key>BuildMachineOSBuild</key>
-        <string>14F27</string>
-        <key>CFBundleDevelopmentRegion</key>
-        <string>en</string>
-        <key>CFBundleExecutable</key>
-        <string>#{menuTitle}</string>
-        <key>CFBundleIdentifier</key>
-        <string>com.johnholdsworth.#{menuTitle}</string>
-        <key>CFBundleIconFile</key>
-        <string>App.icns</string>
-        <key>CFBundleInfoDictionaryVersion</key>
-        <string>6.0</string>
-        <key>CFBundleName</key>
-        <string>#{menuTitle}</string>
-        <key>CFBundlePackageType</key>
-        <string>APPL</string>
-        <key>CFBundleShortVersionString</key>
-        <string>1.0</string>
-        <key>CFBundleSignature</key>
-        <string>????</string>
-        <key>CFBundleSupportedPlatforms</key>
-        <array>
-            <string>MacOSX</string>
-        </array>
-        <key>CFBundleVersion</key>
-        <string>1</string>
-        <key>NSMainNibFile</key>
-        <string>MainMenu</string>
-        <key>NSPrincipalClass</key>
-        <string>NSApplication</string>
-    </dict>
-</plist>
-INFO_PLIST
-
-        FileUtils.rm_f( contents+"/Resources" )
-        File.symlink( scriptFramework+"/Resources", contents+"/Resources" )
-        
-        # for use inside Xcode with debugger
-        contents = libraryRoot+"/Frameworks/Debug/Contents"
-        FileUtils.mkdir_p( contents )
-        File.write( contents+"/Info.plist", plist )
-        FileUtils.rm_f( contents+"/Resources" )
-        File.symlink( scriptFramework+"/Resources", contents+"/Resources" )
+    if mainSource =~ /NSApplicationMain/ && $indent == ""
+        for contents in [ENV["HOME"]+"/bin/Contents", libraryRoot+"/Frameworks/Debug/Contents"]
+            FileUtils.mkdir_p( contents )
+            FileUtils.rm_f( contents+"/Resources" )
+            File.symlink( scriptFramework+"/Resources", contents+"/Resources" )
+            FileUtils.rm_f( contents+"/Info.plist" )
+            File.symlink( "Resources/Info.plist", contents+"/Info.plist" )
+        end
     end
 
     # user options
@@ -230,7 +181,15 @@ INFO_PLIST
                         libraryRoot+"/Projects/"+libName]
 
                 if File.exists?( libProj )
-                    prepareScriptProject( libraryRoot, libProj+"/main.swift", libName, libProj, lastArg )
+                    saveIndent = $indent
+                    $indent += "  "
+                    if prepareScriptProject( libraryRoot, libProj+"/main.swift", libName, libProj, lastArg )
+                        FileUtils.touch( scriptMain )
+                    end
+                    if !File.exists?( scriptProject+"/"+libName )
+                        File.symlink( File.absolute_path( libProj ), scriptProject+"/"+libName )
+                    end
+                    $indent = saveIndent
                     break
                 end
             end
@@ -266,23 +225,23 @@ PODFILE
     # scripts ending ".bin" create binaries rather than frameworks
 
     if /\.ccs$/ =~ scriptPath
-        target = "Binary"
+        target = "-target Binary"
         binary = ENV["HOME"]+"/bin/"+scriptName
     else
-        target = "Framework"
+        target = "-target Framework"
         binary = scriptFramework+"/Versions/Current/"+scriptName
     end
 
     # check if recompile required
 
-    skipRebuild = FileUtils.uptodate?( binary, moduleBinaries + Dir.glob( scriptProject+"/**.*" ) )
+    skipRebuild = FileUtils.uptodate?( binary, moduleBinaries + Dir.glob( scriptProject+"/{*,*/*}.*" ) )
 
     # build script project
 
     if !skipRebuild || $isRebuild
 
         settings = "SYMROOT=#{libraryRoot}/Frameworks/macosx"
-        build = "cd '#{scriptProject}' && xcodebuild -sdk macosx -configuration Debug -target #{target} #{settings}"
+        build = "cd '#{scriptProject}' && xcodebuild -sdk macosx -configuration Debug #{target} #{settings}"
 
         reloaderLog = libraryRoot+"/Reloader/"+scriptName+".log"
         mode = "a+"
@@ -302,7 +261,10 @@ PODFILE
 
         File.open( reloaderLog, mode ).write( out )
         FileUtils.touch( binary )
+        return true
     end
+
+    return false
 end
 
 # return to cocoa binary load bundle and call main
