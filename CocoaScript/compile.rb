@@ -6,7 +6,7 @@
 #  Created by John Holdsworth on 18/09/2015.
 #  Copyright © 2015 John Holdsworth. All rights reserved.
 #
-#  $Id: //depot/CocoaScript/CocoaScript/compile.rb#13 $
+#  $Id: //depot/CocoaScript/CocoaScript/compile.rb#14 $
 #
 #  Repo: https://github.com/johnno1962/CocoaScript
 #
@@ -15,6 +15,7 @@ require 'fileutils'
 
 $builtFramework = {}
 $isRebuild = false
+$doReclone = false
 $indent = ""
 
 def log( msg )
@@ -94,11 +95,11 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
 
     # create dummy "Contents" folder in script directory (bundle of app)
 
-    frameworkRoot = libraryRoot+"/Frameworks/macosx/Debug"
+    frameworkRoot = libraryRoot+"/Frameworks"
     scriptFramework = frameworkRoot+"/"+scriptName+".framework"
 
     if mainSource =~ /NSApplicationMain/ && $indent == ""
-        for contents in [ENV["HOME"]+"/bin/Contents", libraryRoot+"/Frameworks/Debug/Contents"]
+        for contents in [ENV["HOME"]+"/bin/Contents", libraryRoot+"/Build/Debug/Contents"]
             FileUtils.mkdir_p( contents )
             FileUtils.rm_f( contents+"/Resources" )
             File.symlink( scriptFramework+"/Resources", contents+"/Resources" )
@@ -141,9 +142,12 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
         end
         exit( 123 )
 
+    when "-reclone"
+        $isReclone = 123
+    
     when "-rebuild"
         $isRebuild = 123
-
+    
     end
 
     # determine pod dependancies
@@ -160,7 +164,7 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
         libName = import[0]
         libFramework = frameworkRoot+"/"+libName+".framework"
 
-        if import[2] == "!" || !File.exists?( libFramework )
+        if $isReclone || import[2] == "!" || !File.exists?( libFramework )
             if import[3]
                 missingPods += import[4] + (import[5]||" '#{import[0]}'") + "\n"
             elsif import[6]
@@ -217,7 +221,7 @@ PODFILE
         end
 
         log( "Copying new pods to #{frameworkRoot}" )
-        if !system( "cd '#{libraryRoot}/Pods' && (rsync -rilvp Rome/ ../Frameworks/macosx/Debug || echo 'rsync warning')" )
+        if !system( "cd '#{libraryRoot}/Pods' && (rsync -rilvp Rome/ ../Frameworks || echo 'rsync warning')" )
             die( "Could not copy pods" )
         end
     end
@@ -229,7 +233,7 @@ PODFILE
         binary = ENV["HOME"]+"/bin/"+scriptName
     else
         target = "-target Framework"
-        binary = scriptFramework+"/Versions/Current/"+scriptName
+        binary = scriptFramework+"/"+scriptName
     end
 
     # check if recompile required
@@ -240,7 +244,7 @@ PODFILE
 
     if !skipRebuild || $isRebuild
 
-        settings = "SYMROOT=#{libraryRoot}/Frameworks/macosx"
+        settings = "SYMROOT=#{libraryRoot}/Build/macosx"
         build = "cd '#{scriptProject}' && xcodebuild -sdk macosx -configuration Debug #{target} #{settings}"
 
         reloaderLog = libraryRoot+"/Reloader/"+scriptName+".log"

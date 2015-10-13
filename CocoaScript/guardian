@@ -7,7 +7,7 @@
 //  Created by John Holdsworth on 18/09/2015.
 //  Copyright © 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/CocoaScript/CocoaScript/guardian#12 $
+//  $Id: //depot/CocoaScript/CocoaScript/guardian#13 $
 //
 //  Repo: https://github.com/RubyNative/RubyNative
 //
@@ -24,8 +24,6 @@ if waitpid( pid_t(pid), &status, 0 ) < 0 || status & 0o177 == 0 {
     exit( status >> 8 )
 }
 
-let recent = Time().to_f - 2
-
 var binary = "cocoa"
 var script = Process.arguments[1]
 if script.hasSuffix( ".ccs" ) {
@@ -33,6 +31,7 @@ if script.hasSuffix( ".ccs" ) {
 }
 
 let logs = "~/Library/Logs/DiagnosticReports/\(binary)_*.crash"
+let recent = Time().to_f - 2
 
 sleep( 1 )
 
@@ -42,15 +41,21 @@ while let log = IO.popen( "ls -t \(logs) 2>/dev/null | head -1" )?.readline() {
         sleep( 1 )
     }
     else {
+        var mainThread = true
         File.open( log )?.each_line {
             (line) in
-            if line.containsString( " + ") {
-                var mutable = line.mutableString
-                mutable["((?:\\S+\\s+){3})(\\S+)(.*)"] =~ {
-                    (groups: [String?]) in
-                    return groups[1]!+_stdlib_demangleName( groups[2]! )+groups[3]!
+            if mainThread {
+                if line.containsString( " + ") {
+                    var mutable = line.mutableString
+                    mutable["((?:\\S+\\s+){3})(\\S+)(.*)"] =~ {
+                        (groups: [String?]) in
+                        return groups[1]!+_stdlib_demangleName( groups[2]! )+groups[3]!
+                    }
+                    print( mutable )
+                    if line.containsString( " start + " ) {
+                        mainThread = false
+                    }
                 }
-                print( mutable )
             }
         }
         break

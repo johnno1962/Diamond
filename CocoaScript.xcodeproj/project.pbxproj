@@ -74,8 +74,8 @@
 		BB3F78411BACA8E800435430 = {
 			isa = PBXGroup;
 			children = (
-				BB76C5411BBF3E6500987FBC /* browse */,
 				BB82F7CB1BAD92BE00094771 /* README.md */,
+				BB76C5411BBF3E6500987FBC /* browse */,
 				BB3F784C1BACA8E800435430 /* CocoaScript */,
 				BB3F789C1BACAB9B00435430 /* TemplateProject.xcodeproj */,
 				BB81CB541BADF8BD001525E1 /* Reloader.xcodeproj */,
@@ -218,7 +218,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = "/bin/sh -x";
-			shellScript = "LIBROOT=~/Library/CocoaScript\nmkdir -p $LIBROOT/{Frameworks,Pods,Projects,Resources} &&\ncp -f CocoaScript/{*.rb,guardian} $LIBROOT/Resources &&\ncp -rf TemplateProject Reloader $LIBROOT &&\nrm -rf $LIBROOT/TemplateProject/TemplateProject.xcodeproj/{xcuserdata,project.xcworkspace} &&\nrm -rf $LIBROOT/Frameworks/macosx/Debug/RubyKit.framework &&\n~/bin/cocoa run: $LIBROOT/Resources/guardian -rebuild";
+			shellScript = "LIBROOT=~/Library/CocoaScript\nmkdir -p $LIBROOT/{Build,Pods,Projects,Resources} &&\nrm -f $LIBROOT/Frameworks &&\nln -s Build/macosx/Debug $LIBROOT/Frameworks &&\ncp -f CocoaScript/{*.rb,guardian} $LIBROOT/Resources &&\ncp -rf TemplateProject Reloader $LIBROOT &&\nrm -rf $LIBROOT/TemplateProject/TemplateProject.xcodeproj/{xcuserdata,project.xcworkspace} &&\nrm -rf $LIBROOT/Frameworks/RubyKit.framework &&\n~/bin/cocoa run: $LIBROOT/Resources/guardian -rebuild";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -317,7 +317,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(COCOASCRIPT_HOME)/Frameworks/$(PLATFORM_NAME)/Debug @executable_path/../Library/CocoaScript/Frameworks/$(PLATFORM_NAME)/Debug $(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path/../Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(COCOASCRIPT_HOME)/Frameworks @executable_path/../Library/CocoaScript/Frameworks $(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path/../Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -327,7 +327,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(COCOASCRIPT_HOME)/Frameworks/$(PLATFORM_NAME)/Debug @executable_path/../Library/CocoaScript/Frameworks/$(PLATFORM_NAME)/Debug $(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path/../Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(COCOASCRIPT_HOME)/Frameworks @executable_path/../Library/CocoaScript/Frameworks $(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path/../Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
