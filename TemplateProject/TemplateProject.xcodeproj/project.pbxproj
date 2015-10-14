@@ -284,7 +284,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COCOASCRIPT_HOME = $HOME/Library/CocoaScript;
+				DIAMOND_HOME = $HOME/Library/Diamond;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -293,7 +293,7 @@
 				ENABLE_TESTABILITY = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(COCOASCRIPT_HOME)/Frameworks/$(PLATFORM_NAME)/Debug",
+					"$(DIAMOND_HOME)/Frameworks",
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -309,14 +309,14 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(COCOASCRIPT_HOME)/Frameworks/$(PLATFORM_NAME)/Debug @executable_path/../Library/CocoaScript/Frameworks/$(PLATFORM_NAME)/Debug $(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path/../Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(DIAMOND_HOME)/Frameworks @executable_path/../Library/Diamond/Frameworks $(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				STRIP_INSTALLED_PRODUCT = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SYMROOT = "$(COCOASCRIPT_HOME)/Frameworks/$(PLATFORM_NAME)";
+				SYMROOT = "$(DIAMOND_HOME)/Build/$(PLATFORM_NAME)";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -339,7 +339,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COCOASCRIPT_HOME = $HOME/Library/CocoaScript;
+				DIAMOND_HOME = $HOME/Library/Diamond;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -348,7 +348,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(COCOASCRIPT_HOME)/Frameworks/$(PLATFORM_NAME)/Debug",
+					"$(DIAMOND_HOME)/Frameworks",
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -358,12 +358,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(COCOASCRIPT_HOME)/Frameworks/$(PLATFORM_NAME)/Debug @executable_path/../Library/CocoaScript/Frameworks/$(PLATFORM_NAME)/Debug $(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path/../Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(DIAMOND_HOME)/Frameworks @executable_path/../Library/Diamond/Frameworks $(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 				STRIP_INSTALLED_PRODUCT = NO;
-				SYMROOT = "$(COCOASCRIPT_HOME)/Frameworks/$(PLATFORM_NAME)";
+				SYMROOT = "$(DIAMOND_HOME)/Build/$(PLATFORM_NAME)";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -380,7 +380,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = Info.plist;
-				PRODUCT_BUNDLE_IDENTIFIER = com.johnholdsworth.CocoaScript;
+				PRODUCT_BUNDLE_IDENTIFIER = com.johnholdsworth.Diamond;
 				PRODUCT_NAME = "TemplateProject";
 				SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -399,7 +399,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = Info.plist;
-				PRODUCT_BUNDLE_IDENTIFIER = com.johnholdsworth.CocoaScript;
+				PRODUCT_BUNDLE_IDENTIFIER = com.johnholdsworth.Diamond;
 				PRODUCT_NAME = "TemplateProject";
 				SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator";
 			};
@@ -411,7 +411,7 @@
 				INSTALL_PATH = "$(HOME)/bin";
 				PRODUCT_NAME = "TemplateProject";
 				SWIFT_OBJC_BRIDGING_HEADER = BridgingHeader.h;
-				SYMROOT = "$(COCOASCRIPT_HOME)/Frameworks";
+				SYMROOT = "$(DIAMOND_HOME)/Build";
 			};
 			name = Debug;
 		};
@@ -421,7 +421,7 @@
 				INSTALL_PATH = "$(HOME)/bin";
 				PRODUCT_NAME = "TemplateProject";
 				SWIFT_OBJC_BRIDGING_HEADER = BridgingHeader.h;
-				SYMROOT = "$(COCOASCRIPT_HOME)/Frameworks";
+				SYMROOT = "$(DIAMOND_HOME)/Build";
 			};
 			name = Release;
 		};

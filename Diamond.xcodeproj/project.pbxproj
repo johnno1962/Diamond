@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BB3F78541BACA97F00435430 /* cocoa in CopyFiles */ = {isa = PBXBuildFile; fileRef = BB3F784A1BACA8E800435430 /* cocoa */; };
+		BB3F78541BACA97F00435430 /* diamond in CopyFiles */ = {isa = PBXBuildFile; fileRef = BB3F784A1BACA8E800435430 /* diamond */; };
 		BB3F78B61BACB8C100435430 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BB3F78B51BACB8C100435430 /* main.m */; };
 /* End PBXBuildFile section */
 
@@ -42,14 +42,14 @@
 			dstPath = "~/bin";
 			dstSubfolderSpec = 0;
 			files = (
-				BB3F78541BACA97F00435430 /* cocoa in CopyFiles */,
+				BB3F78541BACA97F00435430 /* diamond in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		BB3F784A1BACA8E800435430 /* cocoa */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cocoa; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB3F784A1BACA8E800435430 /* diamond */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = diamond; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB3F789C1BACAB9B00435430 /* TemplateProject.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TemplateProject.xcodeproj; path = TemplateProject/TemplateProject.xcodeproj; sourceTree = "<group>"; };
 		BB3F78B51BACB8C100435430 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		BB76C5411BBF3E6500987FBC /* browse */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = browse; sourceTree = "<group>"; };
@@ -57,7 +57,7 @@
 		BB81CB671BAE168D001525E1 /* reloader.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = reloader.rb; sourceTree = "<group>"; };
 		BB82F7CB1BAD92BE00094771 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		BB8F123E1BBE94050067527A /* guardian */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = guardian; sourceTree = "<group>"; };
-		BBCFE07C1BC301F100BE6B16 /* compile.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = compile.rb; sourceTree = "<group>"; };
+		BBCFE07C1BC301F100BE6B16 /* prepare.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = prepare.rb; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,9 +74,9 @@
 		BB3F78411BACA8E800435430 = {
 			isa = PBXGroup;
 			children = (
-				BB76C5411BBF3E6500987FBC /* browse */,
 				BB82F7CB1BAD92BE00094771 /* README.md */,
-				BB3F784C1BACA8E800435430 /* CocoaScript */,
+				BB76C5411BBF3E6500987FBC /* browse */,
+				BB3F784C1BACA8E800435430 /* Diamond */,
 				BB3F789C1BACAB9B00435430 /* TemplateProject.xcodeproj */,
 				BB81CB541BADF8BD001525E1 /* Reloader.xcodeproj */,
 				BB3F784B1BACA8E800435430 /* Products */,
@@ -86,20 +86,20 @@
 		BB3F784B1BACA8E800435430 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				BB3F784A1BACA8E800435430 /* cocoa */,
+				BB3F784A1BACA8E800435430 /* diamond */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		BB3F784C1BACA8E800435430 /* CocoaScript */ = {
+		BB3F784C1BACA8E800435430 /* Diamond */ = {
 			isa = PBXGroup;
 			children = (
 				BB3F78B51BACB8C100435430 /* main.m */,
-				BBCFE07C1BC301F100BE6B16 /* compile.rb */,
+				BBCFE07C1BC301F100BE6B16 /* prepare.rb */,
 				BB81CB671BAE168D001525E1 /* reloader.rb */,
 				BB8F123E1BBE94050067527A /* guardian */,
 			);
-			path = CocoaScript;
+			path = Diamond;
 			sourceTree = "<group>";
 		};
 		BB3F789D1BACAB9B00435430 /* Products */ = {
@@ -122,9 +122,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		BB3F78491BACA8E800435430 /* cocoa */ = {
+		BB3F78491BACA8E800435430 /* diamond */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BB3F78511BACA8E800435430 /* Build configuration list for PBXNativeTarget "cocoa" */;
+			buildConfigurationList = BB3F78511BACA8E800435430 /* Build configuration list for PBXNativeTarget "diamond" */;
 			buildPhases = (
 				BB3F78461BACA8E800435430 /* Sources */,
 				BB3F78471BACA8E800435430 /* Frameworks */,
@@ -135,9 +135,9 @@
 			);
 			dependencies = (
 			);
-			name = cocoa;
-			productName = CocoaScript;
-			productReference = BB3F784A1BACA8E800435430 /* cocoa */;
+			name = diamond;
+			productName = Diamond;
+			productReference = BB3F784A1BACA8E800435430 /* diamond */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -155,7 +155,7 @@
 					};
 				};
 			};
-			buildConfigurationList = BB3F78451BACA8E800435430 /* Build configuration list for PBXProject "CocoaScript" */;
+			buildConfigurationList = BB3F78451BACA8E800435430 /* Build configuration list for PBXProject "Diamond" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -177,7 +177,7 @@
 			);
 			projectRoot = "";
 			targets = (
-				BB3F78491BACA8E800435430 /* cocoa */,
+				BB3F78491BACA8E800435430 /* diamond */,
 			);
 		};
 /* End PBXProject section */
@@ -218,7 +218,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = "/bin/sh -x";
-			shellScript = "LIBROOT=~/Library/CocoaScript\nmkdir -p $LIBROOT/{Frameworks,Pods,Projects,Resources} &&\ncp -f CocoaScript/{*.rb,guardian} $LIBROOT/Resources &&\ncp -rf TemplateProject Reloader $LIBROOT &&\nrm -rf $LIBROOT/TemplateProject/TemplateProject.xcodeproj/{xcuserdata,project.xcworkspace} &&\nrm -rf $LIBROOT/Frameworks/macosx/Debug/RubyKit.framework &&\n~/bin/cocoa run: $LIBROOT/Resources/guardian -rebuild";
+			shellScript = "LIBROOT=~/Library/Diamond\nmkdir -p $LIBROOT/{Build,Pods,Projects,Resources} &&\nrm -f $LIBROOT/Frameworks &&\nln -s Build/macosx/Debug $LIBROOT/Frameworks &&\ncp -f Diamond/{*.rb,guardian} $LIBROOT/Resources &&\ncp -rf TemplateProject Reloader $LIBROOT &&\nrm -rf $LIBROOT/TemplateProject/TemplateProject.xcodeproj/{xcuserdata,project.xcworkspace} &&\nrm -rf $LIBROOT/Frameworks/RubyKit.framework &&\n~/bin/diamond run: $LIBROOT/Resources/guardian -rebuild";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -254,6 +254,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DIAMOND_HOME = "$(HOME)/Library/Diamond";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -297,6 +298,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DIAMOND_HOME = "$(HOME)/Library/Diamond";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -317,7 +319,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(COCOASCRIPT_HOME)/Frameworks/$(PLATFORM_NAME)/Debug @executable_path/../Library/CocoaScript/Frameworks/$(PLATFORM_NAME)/Debug $(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path/../Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(DIAMOND_HOME)/Frameworks @executable_path/../Library/Diamond/Frameworks $(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path/../Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -327,7 +329,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(COCOASCRIPT_HOME)/Frameworks/$(PLATFORM_NAME)/Debug @executable_path/../Library/CocoaScript/Frameworks/$(PLATFORM_NAME)/Debug $(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path/../Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(DIAMOND_HOME)/Frameworks @executable_path/../Library/Diamond/Frameworks $(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path/../Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -335,7 +337,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		BB3F78451BACA8E800435430 /* Build configuration list for PBXProject "CocoaScript" */ = {
+		BB3F78451BACA8E800435430 /* Build configuration list for PBXProject "Diamond" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BB3F784F1BACA8E800435430 /* Debug */,
@@ -344,7 +346,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BB3F78511BACA8E800435430 /* Build configuration list for PBXNativeTarget "cocoa" */ = {
+		BB3F78511BACA8E800435430 /* Build configuration list for PBXNativeTarget "diamond" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BB3F78521BACA8E800435430 /* Debug */,
