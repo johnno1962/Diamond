@@ -1,18 +1,18 @@
 //
 //  main.m
-//  CocoaScript
+//  Diamond
 //
 //  Created by John Holdsworth on 18/09/2015.
 //  Copyright © 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/CocoaScript/CocoaScript/main.m#34 $
+//  $Id: //depot/Diamond/Diamond/main.m#17 $
 //
-//  Repo: https://github.com/johnno1962/CocoaScript
+//  Repo: https://github.com/johnno1962/Diamond
 //
 
 #import <Foundation/Foundation.h>
 
-#define SError( ... ) { NSLog( @"cocoa: " __VA_ARGS__ ); exit( EXIT_FAILURE ); }
+#define SError( ... ) { NSLog( @"diamond: " __VA_ARGS__ ); exit( EXIT_FAILURE ); }
 
 static int execFramework( NSString *framework, int argc, const char **argv );
 static void watchProject( NSString *scriptName );
@@ -35,8 +35,8 @@ static void ensureChildExits( int signal ) {
 // static libraries which causes problems with multiple definitions when the
 // frameworks load. Most of the work is done by the compile.rb script anyways.
 //
-// First time through argv is ["cocooa", "script_name", "args.."]
-// Child process argv is ["cocoa", "run:", "script_name", "args.."]
+// First time through argv is ["diamond", "script_name", "args.."]
+// Child process argv is ["diamond", "run:", "script_name", "args.."]
 //
 // guardian.framework main() receives ["child_pid", "script_name", "args.."]
 // script's framework main() receives ["script_name", "args.."]
@@ -49,7 +49,7 @@ static void ensureChildExits( int signal ) {
 // the child process.
 //
 // The final crinkle is "x.ccs" scripts produce standalone "~/bin/x.cce" binaries
-// (subject to availability of frameworks it depends on in ~/Library/CocoaPods/...)
+// (subject to availability of frameworks it depends on in ~/Library/Diamond/...)
 // Injection to a standalone ".cce" executable is not possible.
 //
 
@@ -61,9 +61,9 @@ int main( int argc, const char * argv[] ) {
             SError( "must be run with a script name" );
 
         NSString *home = [NSString stringWithUTF8String:getenv("HOME")];
-        libraryRoot = [home stringByAppendingPathComponent:@"Library/CocoaScript"];
+        libraryRoot = [home stringByAppendingPathComponent:@"Library/Diamond"];
 
-        // cocoa is called twice. Once to execute the "guardian" framework
+        // diamond is called twice. Once to execute the "guardian" framework
         // and once with the first argument run: to run the actual script.
         // The guardian process watches for traps in the child process and
         // processes the generated crash report to display the line number
@@ -72,7 +72,7 @@ int main( int argc, const char * argv[] ) {
         BOOL isChild = strcmp( argv[1], runIndicator ) == 0;
 
         NSString *script = isChild ? [NSString stringWithUTF8String:argv[2]] :
-            [libraryRoot stringByAppendingPathComponent:@"Resources/guardian"];
+        [libraryRoot stringByAppendingPathComponent:@"Resources/guardian"];
         NSString *lastArg = isChild && argv[argc-1][0] == '-' ? [NSString stringWithUTF8String:argv[argc-1]] : @"";
         BOOL isRestarter = strcmp( argv[argc-1], "-restarter" ) == 0;
 
@@ -105,11 +105,11 @@ int main( int argc, const char * argv[] ) {
 
         // Call compile.rb to build script into framework (or binary.cce if extension is .ccs.)
         // Makes sure project is built if any frameworks it is dependant on are rebuilt recursively.
-        NSString *compileCommand = [NSString stringWithFormat:@"%@/Resources/compile.rb \"%@\" \"%@\" \"%@\" \"%@\" \"%@\"",
+        NSString *compileCommand = [NSString stringWithFormat:@"%@/Resources/prepare.rb \"%@\" \"%@\" \"%@\" \"%@\" \"%@\"",
                                     libraryRoot, libraryRoot, scriptPath, scriptName, scriptProject, lastArg];
 
         int status;
-restart:
+    restart:
         // call compile.rb to prepare Frameworks/Binary
         status = system( [compileCommand UTF8String] );
 
@@ -122,8 +122,8 @@ restart:
 
         if ( !isChild ) {
 
-            setenv( "COCOA_LIBRARY_ROOT", [libraryRoot UTF8String], 1 );
-            setenv( "COCOA_PROJECT_ROOT", [scriptProject UTF8String], 1 );
+            setenv( "DIAMOND_LIBRARY_ROOT", [libraryRoot UTF8String], 1 );
+            setenv( "DIAMOND_PROJECT_ROOT", [scriptProject UTF8String], 1 );
 
             // This is where actual script is run as a child process leaving the
             // guardian framework monitoring it for traps/crashes to dump .crash
@@ -131,7 +131,7 @@ restart:
 
                 const char **shiftedArgv = calloc( argc+3, sizeof *shiftedArgv );
                 shiftedArgv[0] = "/usr/bin/env";
-                shiftedArgv[1] = "cocoa";
+                shiftedArgv[1] = "diamond";
                 shiftedArgv[2] = runIndicator; // run:
                 for ( int i=1 ; i<=argc ; i++ )
                     shiftedArgv[i+2] = argv[i];
@@ -140,8 +140,8 @@ restart:
                 SError( "execv failed" );
             }
 
-            // ENV["COCOA_CHILD_PID"] for guardian framework main() is process id of child process.
-            setenv( "COCOA_CHILD_PID", argv[0] = [[NSString stringWithFormat:@"%d", childPid] UTF8String], 1 );
+            // ENV["DIAMOND_CHILD_PID"] for guardian framework main() is process id of child process.
+            setenv( "DIAMOND_CHILD_PID", argv[0] = [[NSString stringWithFormat:@"%d", childPid] UTF8String], 1 );
 
             signal( SIGINT, ensureChildExits );
 
@@ -251,9 +251,9 @@ static void fileCallback( ConstFSEventStreamRef streamRef,
                 int status = system( [reloadCommand UTF8String] ) >> 8;
 
                 if ( status != EXIT_SUCCESS )
-                    NSLog( @"cocoa: %@ returns error", reloadCommand );
+                    NSLog( @"diamond: %@ returns error", reloadCommand );
                 else if ( ![[NSBundle bundleWithPath:bundlePath] load] )
-                    NSLog( @"cocoa: Could not reload bundle: %@", bundlePath );
+                    NSLog( @"diamond: Could not reload bundle: %@", bundlePath );
             }
 
             busy--;

@@ -1,14 +1,14 @@
 #!/usr/bin/env ruby -E UTF-8
 
 #  prepare.rb
-#  CocoaScript
+#  Diamond
 #
 #  Created by John Holdsworth on 18/09/2015.
 #  Copyright © 2015 John Holdsworth. All rights reserved.
 #
-#  $Id: //depot/CocoaScript/CocoaScript/compile.rb#14 $
+#  $Id: //depot/Diamond/Diamond/prepare.rb#23 $
 #
-#  Repo: https://github.com/johnno1962/CocoaScript
+#  Repo: https://github.com/johnno1962/Diamond
 #
 
 require 'fileutils'
@@ -19,11 +19,11 @@ $doReclone = false
 $indent = ""
 
 def log( msg )
-    puts( "CocoaScript: "+$indent+msg.gsub( ENV["HOME"], "~" ) )
+    puts( "Diamond: "+$indent+msg.gsub( ENV["HOME"], "~" ) )
 end
 
 def die( msg )
-    abort( "*** CocoaScript: "+$indent+msg )
+    abort( "*** Diamond: "+$indent+msg )
 end
 
 def dateCopy( from, to )
@@ -137,7 +137,7 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
         exit( 123 )
 
     when "-dump"
-        if !system( "open `ls -t $HOME/Library/Logs/DiagnosticReports/cocoa*.crash | head -1`" )
+        if !system( "open `ls -t $HOME/Library/Logs/DiagnosticReports/diamond*.crash | head -1`" )
             die( "Could not open crash log" )
         end
         exit( 123 )
@@ -271,7 +271,7 @@ PODFILE
     return false
 end
 
-# return to cocoa binary load bundle and call main
+# return to diamond binary load bundle and call main
 
 prepareScriptProject( *ARGV )
 exit( $isRebuild || 0 )

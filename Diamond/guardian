@@ -1,13 +1,13 @@
-#!/usr/bin/env cocoa
+#!/usr/bin/env diamond
 
 //
 //  guardian
-//  CocoaScript
+//  Diamond
 //
 //  Created by John Holdsworth on 18/09/2015.
 //  Copyright © 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/CocoaScript/CocoaScript/guardian#13 $
+//  $Id: //depot/Diamond/Diamond/guardian#5 $
 //
 //  Repo: https://github.com/RubyNative/RubyNative
 //
@@ -17,14 +17,14 @@ import RubyKit // clone RubyNative/RubyKit
 
 // print( Process.arguments )
 
-let pid = ENV["COCOA_CHILD_PID"]!.to_i
+let pid = ENV["DIAMOND_CHILD_PID"]!.to_i
 var status: Int32 = 0
 
 if waitpid( pid_t(pid), &status, 0 ) < 0 || status & 0o177 == 0 {
     exit( status >> 8 )
 }
 
-var binary = "cocoa"
+var binary = "diamond"
 var script = Process.arguments[1]
 if script.hasSuffix( ".ccs" ) {
     binary = script.stringByReplacingOccurrencesOfString( ".ccs", withString: ".cce" )

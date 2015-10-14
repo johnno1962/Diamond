@@ -1,9 +1,9 @@
 
-# CocoaScript - Swift scripting made easy
+# Diamond - Swift scripting made easy
 
 Stop Press:
 
-This Project has now moved [here](https://github.com/RubyNative/CocoaScript)
+This Project has now moved [here](https://github.com/RubyNative/Diamond)
 to be with the RubyNative project for which it was intended.
 
 When you're as bad a typist as I am, one of the frustrations of using dynamically typed
@@ -15,20 +15,20 @@ pressed into service in a scripting environment.
 From the onset you've been able [script in swift](http://nomothetis.svbtle.com/swift-for-scripting)
 and others have had [some success](https://realm.io/news/swift-scripting/)
 but it's fairly heavy going without autocompletion and dependency management.
-`cocoa` is small binary and a couple of scripts that looks to address 
+`diamond` is small binary and a couple of scripts that looks to address 
 these problems. Pods are specified in a comment after an import statement 
 in your script and are downloaded automatically when the script is run.
 For autocompletion, scripts are converted into a mini Xcode framework
 project with the correct framework search path.
 
 ```Swift
-    #!/usr/bin/env cocoa
+    #!/usr/bin/env diamond
 
     import Cocoa
     import Alamofire // pod
     import Box // pod 'Box', :head
 
-    print( "Hello CocoaScript" )
+    print( "Hello Diamond" )
 ```
 
 The [RubyKit](https://github.com/RubyNative/RubyKit) project is included as a
@@ -38,15 +38,15 @@ making Swift truly feel like a grown up scripting language.
 
 ### Usage
 
-This is overseen by the `cocoa` binary and a script `compile.rb` that is
-run before the script proper. `compile.rb` loads pods, rebuilds the script's
+This is overseen by the `diamond` binary and a script `prepare.rb` that is
+run before the script proper. `prepare.rb` loads pods, rebuilds the script's
 framework if required then jumps into it's main.swift to start execution.
 
 As all of Cocoa is available, a UI component can be added to a script by
 adding a `MainMenu.xib` and AppDelegate.swift to the script project.
 
 ```Swift
-    #!/usr/bin/env cocoa
+    #!/usr/bin/env diamond
 
     import Cocoa
     import WebKit
@@ -79,8 +79,8 @@ adding a `MainMenu.xib` and AppDelegate.swift to the script project.
     }
 ```
 
-To use CocoaScript, download and build this project and make sure that `$HOME/bin`
-is in your UNIX `PATH`. You can then type `cocoa path_to_script` and it creates
+To use Diamond, download and build this project and make sure that `$HOME/bin`
+is in your UNIX `PATH`. You can then type `diamond path_to_script` and it creates
 a blank script, an Xcode framework project then builds and runs it. If you prefer 
 editing in Xcode type `path_to_script -edit` to open the auto-created project.
 To get started there is a small example script `browse` in the project directory.
@@ -96,14 +96,14 @@ Use a !pod comment in framework import to force updating a particular pod later.
 
 ### Under the Covers
 
-Cocoa script works by setting the framework search path to include the following path:
+Diamond script works by setting the framework search path to include the following path:
 
-    ~/Library/CocoaScript/Frameworks/macosx/Debug
+    ~/Library/Diamond/Frameworks/macosx/Debug
 
-and set the SYMROOT of projects when they build to ~/Library/CocoaScript/Frameworks/macosx
+and set the SYMROOT of projects when they build to ~/Library/Diamond/Frameworks/macosx
 so they build there. This looks after auto completion in the Xcode editor.
-The `cocoa` binary use a runtime "rpath" the same as this Framework
-search path so cocoa finds the Frameworks at run time.
+The `diamond` binary use a runtime "rpath" the same as this Framework
+search path so diamond finds the Frameworks at run time.
 
 Each script has it's own shadow Xcode project accessed by typing `script_name -edit`.
 The files are copied to and from the actual script location depending on which is
@@ -116,7 +116,7 @@ process watches for crashes and opens and formats the `.crash` log to do this.
 
 ### Reloader
 
-CocoaScript contains an implementation of code injection. If you are running a
+Diamond contains an implementation of code injection. If you are running a
 UI script and update one of it's sources it will be built into a bundle
 and loaded applying any changes to class method implementations without restart.
 
