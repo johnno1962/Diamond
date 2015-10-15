@@ -8,7 +8,7 @@
 //
 
 import Foundation
-import RubyKit // clone RubyNative/RubyKit
+import SwiftRuby // clone RubyNative/SwiftRuby
 
 print("Hello, \(Process.arguments)!")
 
