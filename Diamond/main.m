@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 18/09/2015.
 //  Copyright © 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Diamond/Diamond/main.m#17 $
+//  $Id: //depot/Diamond/Diamond/main.m#18 $
 //
 //  Repo: https://github.com/johnno1962/Diamond
 //
@@ -80,8 +80,7 @@ int main( int argc, const char * argv[] ) {
         NSString *scriptPath = script, *mainPath = [script stringByAppendingString:@".scriptproj/main.swift"];
         NSFileManager *manager = [NSFileManager defaultManager];
 
-        unichar path0 = [scriptPath characterAtIndex:0];
-        if ( path0 != '/' && path0 != '.' )
+        if ( [scriptPath characterAtIndex:0] != '/' )
             for ( NSString *component in [[NSString stringWithUTF8String:getenv("PATH")] componentsSeparatedByString:@":"] ) {
                 NSString *result = [component stringByAppendingPathComponent:script];
                 if ( [manager fileExistsAtPath:result] ) {
@@ -94,6 +93,14 @@ int main( int argc, const char * argv[] ) {
                     break;
                 }
             }
+
+        if ( [scriptPath characterAtIndex:0] == '.' ) {
+            char cwd[MAXPATHLEN];
+            NSString *cwdStr = [NSString stringWithUTF8String:getcwd( cwd, sizeof cwd )];
+            if ( [scriptPath hasPrefix:@"./"] )
+                scriptPath = [scriptPath substringFromIndex:2];
+            scriptPath = [cwdStr stringByAppendingPathComponent:scriptPath];
+        }
 
         // remove extension from last path component to find framework name
         scriptName = [[script lastPathComponent] stringByDeletingPathExtension];

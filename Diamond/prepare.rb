@@ -6,7 +6,7 @@
 #  Created by John Holdsworth on 18/09/2015.
 #  Copyright © 2015 John Holdsworth. All rights reserved.
 #
-#  $Id: //depot/Diamond/Diamond/prepare.rb#23 $
+#  $Id: //depot/Diamond/Diamond/prepare.rb#24 $
 #
 #  Repo: https://github.com/johnno1962/Diamond
 #
@@ -102,7 +102,8 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
         for contents in [ENV["HOME"]+"/bin/Contents", libraryRoot+"/Build/Debug/Contents"]
             FileUtils.mkdir_p( contents )
             FileUtils.rm_f( contents+"/Resources" )
-            File.symlink( scriptFramework+"/Resources", contents+"/Resources" )
+                        resourceFramework = mainSource[/Resources: (\w+)/, 1] || scriptName
+            File.symlink( frameworkRoot+"/"+resourceFramework+".framework/Resources", contents+"/Resources" )
             FileUtils.rm_f( contents+"/Info.plist" )
             File.symlink( "Resources/Info.plist", contents+"/Info.plist" )
         end
@@ -117,6 +118,7 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
             sleep 2 # eh?
         end
         system( "open '#{newProj}'" )
+        system( "(sleep 2; open '#{scriptMain}')&" )
         log( "Opened #{newProj}" )
         exit( 123 )
 
