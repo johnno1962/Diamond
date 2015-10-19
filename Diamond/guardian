@@ -7,27 +7,28 @@
 //  Created by John Holdsworth on 18/09/2015.
 //  Copyright © 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Diamond/Diamond/guardian#5 $
+//  $Id: //depot/Diamond/Diamond/guardian#10 $
 //
 //  Repo: https://github.com/RubyNative/RubyNative
 //
 
 import Foundation
-import RubyKit // clone RubyNative/RubyKit
+import SwiftRuby // clone RubyNative/SwiftRuby
 
-// print( Process.arguments )
+//NSLog( "\(Process.arguments)" )
 
 let pid = ENV["DIAMOND_CHILD_PID"]!.to_i
 var status: Int32 = 0
 
 if waitpid( pid_t(pid), &status, 0 ) < 0 || status & 0o177 == 0 {
-    exit( status >> 8 )
+    status >>= 8
+    exit( status != 123 ? status : 0 )
 }
 
 var binary = "diamond"
 var script = Process.arguments[1]
-if script.hasSuffix( ".ccs" ) {
-    binary = script.stringByReplacingOccurrencesOfString( ".ccs", withString: ".cce" )
+if script.hasSuffix( ".dmd" ) {
+    binary = script.stringByReplacingOccurrencesOfString( ".dmd", withString: ".dme" )
 }
 
 let logs = "~/Library/Logs/DiagnosticReports/\(binary)_*.crash"
@@ -37,7 +38,7 @@ sleep( 1 )
 
 while let log = IO.popen( "ls -t \(logs) 2>/dev/null | head -1" )?.readline() {
     if File.mtime( log )!.to_f < recent {
-        print( "Waiting for \(logs)" )
+        print( "Waiting for recent \(logs)" )
         sleep( 1 )
     }
     else {
@@ -51,7 +52,7 @@ while let log = IO.popen( "ls -t \(logs) 2>/dev/null | head -1" )?.readline() {
                         (groups: [String?]) in
                         return groups[1]!+_stdlib_demangleName( groups[2]! )+groups[3]!
                     }
-                    print( mutable )
+                    STDERR.print( "\(mutable)\n" )
                     if line.containsString( " start + " ) {
                         mainThread = false
                     }

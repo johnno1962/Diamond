@@ -5,25 +5,35 @@
 //  Created by John Holdsworth on 18/09/2015.
 //  Copyright © 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Diamond/Diamond/main.m#17 $
+//  $Id: //depot/Diamond/Diamond/main.m#26 $
 //
 //  Repo: https://github.com/johnno1962/Diamond
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcstring-format-directive"
+#pragma clang diagnostic ignored "-Wcast-qual"
 
 #define SError( ... ) { NSLog( @"diamond: " __VA_ARGS__ ); exit( EXIT_FAILURE ); }
 
+static NSString *locateScriptInPath( NSString *script, NSString *home );
 static int execFramework( NSString *framework, int argc, const char **argv );
 static void watchProject( NSString *scriptName );
-static NSString *libraryRoot, *scriptName;
-static FSEventStreamRef fileEvents;
 
+static NSString *libraryRoot, *scriptName;
+static void (*savedHandler)( int );
+static FSEventStreamRef fileEvents;
 static pid_t childPid;
 
-static void ensureChildExits( int signal ) {
-    kill( childPid, SIGKILL );
-    exit( 1 );
+static void ensureChildExits( int signum ) {
+    if ( childPid ) {
+        kill( childPid, SIGABRT );
+        fprintf( stderr, " Signal sent. Type ^C again to exit or wait for stacktrace\n" );
+    }
+    signal( SIGINT, savedHandler );
+    //exit( 1 );
 }
 
 //
@@ -48,9 +58,9 @@ static void ensureChildExits( int signal ) {
 // The file watcher to look for changes to inject into classes only runs in
 // the child process.
 //
-// The final crinkle is "x.ccs" scripts produce standalone "~/bin/x.cce" binaries
+// The final crinkle is "x.dmd" scripts produce standalone "~/bin/x.dme" binaries
 // (subject to availability of frameworks it depends on in ~/Library/Diamond/...)
-// Injection to a standalone ".cce" executable is not possible.
+// Injection to a standalone ".dme" executable is not possible.
 //
 
 int main( int argc, const char * argv[] ) {
@@ -68,42 +78,26 @@ int main( int argc, const char * argv[] ) {
         // The guardian process watches for traps in the child process and
         // processes the generated crash report to display the line number
         // the script failed in a full symbolicated, demagled stack trace.
-        const char *runIndicator = "run:";
-        BOOL isChild = strcmp( argv[1], runIndicator ) == 0;
-
-        NSString *script = isChild ? [NSString stringWithUTF8String:argv[2]] :
-        [libraryRoot stringByAppendingPathComponent:@"Resources/guardian"];
-        NSString *lastArg = isChild && argv[argc-1][0] == '-' ? [NSString stringWithUTF8String:argv[argc-1]] : @"";
+        const char *childIndicator = "run:";
+        BOOL isChild = strcmp( argv[1], childIndicator ) == 0;
         BOOL isRestarter = strcmp( argv[argc-1], "-restarter" ) == 0;
 
-        // find the actual script path using $PATH from the environment.
-        NSString *scriptPath = script, *mainPath = [script stringByAppendingString:@".scriptproj/main.swift"];
-        NSFileManager *manager = [NSFileManager defaultManager];
+        NSString *script = isChild ? [NSString stringWithUTF8String:argv[2]] :
+            [libraryRoot stringByAppendingPathComponent:@"Resources/guardian"];
+        NSString *lastArg = isChild && argv[argc-1][0] == '-' ? [NSString stringWithUTF8String:argv[argc-1]] : @"";
 
-        unichar path0 = [scriptPath characterAtIndex:0];
-        if ( path0 != '/' && path0 != '.' )
-            for ( NSString *component in [[NSString stringWithUTF8String:getenv("PATH")] componentsSeparatedByString:@":"] ) {
-                NSString *result = [component stringByAppendingPathComponent:script];
-                if ( [manager fileExistsAtPath:result] ) {
-                    scriptPath = result;
-                    break;
-                }
-                result = [component stringByAppendingPathComponent:mainPath];
-                if ( [manager fileExistsAtPath:result] ) {
-                    scriptPath = result;
-                    break;
-                }
-            }
+        // find the actual script path using $PATH from the environment.
+        NSString *scriptPath = locateScriptInPath( script, home );
 
         // remove extension from last path component to find framework name
         scriptName = [[script lastPathComponent] stringByDeletingPathExtension];
 
         // find path to "hidden" or "shown" .scriptproj shadow Xcode project for editing/building
         NSString *scriptProject = [scriptPath stringByAppendingString:@".scriptproj"];
-        if ( ![manager fileExistsAtPath:scriptProject] )
+        if ( ![[NSFileManager defaultManager] fileExistsAtPath:scriptProject] )
             scriptProject = [NSString stringWithFormat:@"%@/Projects/%@", libraryRoot, scriptName];
 
-        // Call compile.rb to build script into framework (or binary.cce if extension is .ccs.)
+        // Call compile.rb to build script into framework (or binary.dme if extension is .dmd.)
         // Makes sure project is built if any frameworks it is dependant on are rebuilt recursively.
         NSString *compileCommand = [NSString stringWithFormat:@"%@/Resources/prepare.rb \"%@\" \"%@\" \"%@\" \"%@\" \"%@\"",
                                     libraryRoot, libraryRoot, scriptPath, scriptName, scriptProject, lastArg];
@@ -120,6 +114,8 @@ int main( int argc, const char * argv[] ) {
         if ( status != EXIT_SUCCESS )
             SError( "%@ returns error %x", compileCommand, status );
 
+        savedHandler = signal( SIGINT, ensureChildExits );
+
         if ( !isChild ) {
 
             setenv( "DIAMOND_LIBRARY_ROOT", [libraryRoot UTF8String], 1 );
@@ -131,8 +127,8 @@ int main( int argc, const char * argv[] ) {
 
                 const char **shiftedArgv = calloc( argc+3, sizeof *shiftedArgv );
                 shiftedArgv[0] = "/usr/bin/env";
-                shiftedArgv[1] = "diamond";
-                shiftedArgv[2] = runIndicator; // run:
+                shiftedArgv[1] = argv[0]; // "diamond";
+                shiftedArgv[2] = childIndicator; // run:
                 for ( int i=1 ; i<=argc ; i++ )
                     shiftedArgv[i+2] = argv[i];
 
@@ -141,11 +137,10 @@ int main( int argc, const char * argv[] ) {
             }
 
             // ENV["DIAMOND_CHILD_PID"] for guardian framework main() is process id of child process.
-            setenv( "DIAMOND_CHILD_PID", argv[0] = [[NSString stringWithFormat:@"%d", childPid] UTF8String], 1 );
+            argv[0] = [[NSString stringWithFormat:@"%d", childPid] UTF8String];
+            setenv( "DIAMOND_CHILD_PID", argv[0], 1 );
 
-            signal( SIGINT, ensureChildExits );
-
-            // run the guardian script .framework
+            // run the guardian script's .framework
             status = execFramework( scriptName, argc, argv );
 
             // restart on crash
@@ -159,11 +154,11 @@ int main( int argc, const char * argv[] ) {
 
             argv[2] = [scriptPath UTF8String];
 
-            // This code relates to ".cce" binaries used as an alternative to frameworks
-            if ( [scriptPath hasSuffix:@".ccs"] ) {
+            // This code relates to ".dme" binaries used as an alternative to frameworks
+            if ( [scriptPath hasSuffix:@".dmd"] ) {
 
                 // execv binary in child process if present (and there is run: argument.)
-                NSString *binaryPath = [NSString stringWithFormat:@"%@/bin/%@.cce", home, scriptName];
+                NSString *binaryPath = [NSString stringWithFormat:@"%@/bin/%@.dme", home, scriptName];
                 if ( [[NSFileManager defaultManager] isExecutableFileAtPath:binaryPath] )
                     execv( [binaryPath UTF8String], (char *const *)argv+2 );
 
@@ -174,7 +169,7 @@ int main( int argc, const char * argv[] ) {
             // start file watcher for code reloading.
             watchProject( scriptProject );
 
-            // runthe actual script .framework
+            // run the actual script .framework
             status = execFramework( scriptName, argc-2, argv+2 );
 
             if ( fileEvents ) {
@@ -186,8 +181,41 @@ int main( int argc, const char * argv[] ) {
 
         exit( status );
     }
+}
 
-    return 0;
+static NSString *locateScriptInPath( NSString *script, NSString *home ) {
+    NSString *path = [NSString stringWithUTF8String:getenv("PATH")];
+    path = [path stringByAppendingFormat:@":%@/bin", home];
+    setenv( "PATH", [path UTF8String], 1 );
+
+    NSString *scriptPath = script, *mainPath = [script stringByAppendingString:@".scriptproj/main.swift"];
+
+    if ( [scriptPath characterAtIndex:0] != '/' && ![scriptPath hasPrefix:@"./"] ) {
+        NSFileManager *manager = [NSFileManager defaultManager];
+
+        for ( NSString *component in [path componentsSeparatedByString:@":"] ) {
+            NSString *result = [component stringByAppendingPathComponent:script];
+            if ( [manager fileExistsAtPath:result] ) {
+                scriptPath = result;
+                break;
+            }
+            result = [component stringByAppendingPathComponent:mainPath];
+            if ( [manager fileExistsAtPath:result] ) {
+                scriptPath = result;
+                break;
+            }
+        }
+    }
+
+    if ( [scriptPath characterAtIndex:0] == '.' ) {
+        char cwd[MAXPATHLEN];
+        NSString *cwdStr = [NSString stringWithUTF8String:getcwd( cwd, sizeof cwd )];
+        if ( [scriptPath hasPrefix:@"./"] )
+            scriptPath = [scriptPath substringFromIndex:2];
+        scriptPath = [cwdStr stringByAppendingPathComponent:scriptPath];
+    }
+
+    return scriptPath;
 }
 
 static int execFramework( NSString *scriptName, int argc, const char **argv ) {
@@ -272,3 +300,5 @@ static void watchProject( NSString *scriptProject ) {
     FSEventStreamScheduleWithRunLoop(fileEvents, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
     FSEventStreamStart( fileEvents );
 }
+
+#pragma clang diagnostic pop

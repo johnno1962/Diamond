@@ -6,7 +6,7 @@
 #  Created by John Holdsworth on 18/09/2015.
 #  Copyright © 2015 John Holdsworth. All rights reserved.
 #
-#  $Id: //depot/Diamond/Diamond/prepare.rb#23 $
+#  $Id: //depot/Diamond/Diamond/prepare.rb#28 $
 #
 #  Repo: https://github.com/johnno1962/Diamond
 #
@@ -27,12 +27,7 @@ def die( msg )
 end
 
 def dateCopy( from, to )
-    if File.exists?( to )
-        File.unlink( to )
-    end
-    FileUtils.cp( from, to )
-    date = File.mtime( from ).to_f
-    system( "perl -e 'utime #{date}, #{date}, \"#{to}\";'" )
+    system( "rsync -a \"#{from}\" \"#{to}\"" )
     log( "Copied #{from} -> #{to}" )
 end
 
@@ -98,11 +93,12 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
     frameworkRoot = libraryRoot+"/Frameworks"
     scriptFramework = frameworkRoot+"/"+scriptName+".framework"
 
-    if mainSource =~ /NSApplicationMain/ && $indent == ""
+    if $indent == "" && mainSource =~ /\b(import Cocoa|NSApplicationMain)\b|\/\/ Resources: /
         for contents in [ENV["HOME"]+"/bin/Contents", libraryRoot+"/Build/Debug/Contents"]
             FileUtils.mkdir_p( contents )
             FileUtils.rm_f( contents+"/Resources" )
-            File.symlink( scriptFramework+"/Resources", contents+"/Resources" )
+                        resourceFramework = mainSource[/\/\/ Resources: (\w+)/, 1] || scriptName
+            File.symlink( frameworkRoot+"/"+resourceFramework+".framework/Resources", contents+"/Resources" )
             FileUtils.rm_f( contents+"/Info.plist" )
             File.symlink( "Resources/Info.plist", contents+"/Info.plist" )
         end
@@ -190,7 +186,7 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
                     if prepareScriptProject( libraryRoot, libProj+"/main.swift", libName, libProj, lastArg )
                         FileUtils.touch( scriptMain )
                     end
-                    if !File.exists?( scriptProject+"/"+libName )
+                    if !File.exists?( scriptProject+"/"+libName ) && scriptName != "guardian"
                         File.symlink( File.absolute_path( libProj ), scriptProject+"/"+libName )
                     end
                     $indent = saveIndent
@@ -228,7 +224,7 @@ PODFILE
 
     # scripts ending ".bin" create binaries rather than frameworks
 
-    if /\.ccs$/ =~ scriptPath
+    if /\.dmd$/ =~ scriptPath
         target = "-target Binary"
         binary = ENV["HOME"]+"/bin/"+scriptName
     else

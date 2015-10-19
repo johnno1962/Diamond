@@ -26,7 +26,7 @@ project with the correct framework search path.
     print( "Hello Diamond" )
 ```
 
-The [RubyKit](https://github.com/RubyNative/RubyKit) project is included as a
+The [SwiftRuby](https://github.com/RubyNative/SwiftRuby) project is included as a
 dependency automatically. This project ports the Ruby core apis to Swift for concise
 access to files and more flexible handling of Swift strings and Regular Expressions
 making Swift truly feel like a grown up scripting language.

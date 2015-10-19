@@ -18,21 +18,21 @@
 /* Begin PBXContainerItemProxy section */
 		BBB3FEB91BBC2610009E718C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = BBB3FEB31BBC260C009E718C /* RubyKit.xcodeproj */;
+			containerPortal = BBB3FEB31BBC260C009E718C /* SwiftRuby.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = BB3F78911BACAB9B00435430;
 			remoteInfo = Framework;
 		};
 		BBB3FEBB1BBC2610009E718C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = BBB3FEB31BBC260C009E718C /* RubyKit.xcodeproj */;
+			containerPortal = BBB3FEB31BBC260C009E718C /* SwiftRuby.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = BB45AF5A1BB0CC8A00428322;
 			remoteInfo = Binary;
 		};
 		BBB3FEBD1BBC2610009E718C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = BBB3FEB31BBC260C009E718C /* RubyKit.xcodeproj */;
+			containerPortal = BBB3FEB31BBC260C009E718C /* SwiftRuby.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = BBB3FE8E1BBBFDA5009E718C;
 			remoteInfo = Tests;
@@ -48,7 +48,7 @@
 		BB45AF631BB0CDD300428322 /* Swift.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Swift.png; sourceTree = "<group>"; };
 		BB8EE26A1BB0D75A00348257 /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
 		BB8EE2E51BB22FFD00348257 /* main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		BBB3FEB31BBC260C009E718C /* RubyKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RubyKit.xcodeproj; path = RubyKit/RubyKit.xcodeproj; sourceTree = "<group>"; };
+		BBB3FEB31BBC260C009E718C /* SwiftRuby.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SwiftRuby.xcodeproj; path = SwiftRuby/SwiftRuby.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,7 +78,7 @@
 				BB45AF621BB0CDD300428322 /* MainMenu.xib */,
 				BB45AF631BB0CDD300428322 /* Swift.png */,
 				BB3F78A21BACAC3600435430 /* Info.plist */,
-				BBB3FEB31BBC260C009E718C /* RubyKit.xcodeproj */,
+				BBB3FEB31BBC260C009E718C /* SwiftRuby.xcodeproj */,
 				BB3F78921BACAB9B00435430 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -95,8 +95,8 @@
 		BBB3FEB41BBC260C009E718C /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				BBB3FEBA1BBC2610009E718C /* RubyKit.framework */,
-				BBB3FEBC1BBC2610009E718C /* RubyKit */,
+				BBB3FEBA1BBC2610009E718C /* SwiftRuby.framework */,
+				BBB3FEBC1BBC2610009E718C /* SwiftRuby */,
 				BBB3FEBE1BBC2610009E718C /* Tests.xctest */,
 			);
 			name = Products;
@@ -181,7 +181,7 @@
 			projectReferences = (
 				{
 					ProductGroup = BBB3FEB41BBC260C009E718C /* Products */;
-					ProjectRef = BBB3FEB31BBC260C009E718C /* RubyKit.xcodeproj */;
+					ProjectRef = BBB3FEB31BBC260C009E718C /* SwiftRuby.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -193,17 +193,17 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		BBB3FEBA1BBC2610009E718C /* RubyKit.framework */ = {
+		BBB3FEBA1BBC2610009E718C /* SwiftRuby.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
-			path = RubyKit.framework;
+			path = SwiftRuby.framework;
 			remoteRef = BBB3FEB91BBC2610009E718C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		BBB3FEBC1BBC2610009E718C /* RubyKit */ = {
+		BBB3FEBC1BBC2610009E718C /* SwiftRuby */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
-			path = RubyKit;
+			path = SwiftRuby;
 			remoteRef = BBB3FEBB1BBC2610009E718C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -240,7 +240,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp \"$CODESIGNING_FOLDER_PATH\" ~/bin/${FULL_PRODUCT_NAME}.cce";
+			shellScript = "cp \"$CODESIGNING_FOLDER_PATH\" ~/bin/${FULL_PRODUCT_NAME}.dme";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -380,7 +380,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = Info.plist;
-				PRODUCT_BUNDLE_IDENTIFIER = com.johnholdsworth.Diamond;
+				PRODUCT_BUNDLE_IDENTIFIER = org.rubynative.Diamond;
 				PRODUCT_NAME = "TemplateProject";
 				SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -399,7 +399,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = Info.plist;
-				PRODUCT_BUNDLE_IDENTIFIER = com.johnholdsworth.Diamond;
+				PRODUCT_BUNDLE_IDENTIFIER = org.rubynative.Diamond;
 				PRODUCT_NAME = "TemplateProject";
 				SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator";
 			};
