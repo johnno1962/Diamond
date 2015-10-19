@@ -57,6 +57,7 @@
 		BB81CB671BAE168D001525E1 /* reloader.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = reloader.rb; sourceTree = "<group>"; };
 		BB82F7CB1BAD92BE00094771 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		BB8F123E1BBE94050067527A /* guardian */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = guardian; sourceTree = "<group>"; };
+		BB9042611BD4498300EDF909 /* run_injector */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = run_injector; sourceTree = SOURCE_ROOT; };
 		BBCFE07C1BC301F100BE6B16 /* prepare.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = prepare.rb; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -76,6 +77,7 @@
 			children = (
 				BB82F7CB1BAD92BE00094771 /* README.md */,
 				BB76C5411BBF3E6500987FBC /* browse */,
+				BB9042611BD4498300EDF909 /* run_injector */,
 				BB3F784C1BACA8E800435430 /* Diamond */,
 				BB3F789C1BACAB9B00435430 /* TemplateProject.xcodeproj */,
 				BB81CB541BADF8BD001525E1 /* Reloader.xcodeproj */,
@@ -218,7 +220,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = "/bin/sh -x";
-			shellScript = "LIBROOT=~/Library/Diamond\nmkdir -p $LIBROOT/{Build,Pods,Projects,Resources} &&\nrm -f $LIBROOT/Frameworks &&\nln -s Build/macosx/Debug $LIBROOT/Frameworks &&\ncp -f Diamond/{*.rb,guardian} $LIBROOT/Resources &&\ncp -rf TemplateProject Reloader $LIBROOT &&\nrm -rf $LIBROOT/TemplateProject/TemplateProject.xcodeproj/{xcuserdata,project.xcworkspace} &&\nrm -rf $LIBROOT/Frameworks/RubyKit.framework &&\n~/bin/diamond run: $LIBROOT/Resources/guardian -rebuild";
+			shellScript = "LIBROOT=~/Library/Diamond\nmkdir -p $LIBROOT/{Build,Pods,Projects,Resources} &&\nrm -f $LIBROOT/Frameworks &&\nln -s Build/macosx/Debug $LIBROOT/Frameworks &&\ncp -f Diamond/{*.rb,guardian} $LIBROOT/Resources &&\ncp -rf TemplateProject Reloader $LIBROOT &&\nrm -rf $LIBROOT/TemplateProject/TemplateProject.xcodeproj/{xcuserdata,project.xcworkspace} &&\nrm -rf $LIBROOT/{Projects/SwiftRuby,Frameworks/SwiftRuby.framework} &&\n~/bin/diamond run: $LIBROOT/Resources/guardian -rebuild";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -274,6 +276,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "-Weverything";
 				SDKROOT = macosx;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -311,6 +314,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_CFLAGS = "-Weverything";
 				SDKROOT = macosx;
 			};
 			name = Release;
