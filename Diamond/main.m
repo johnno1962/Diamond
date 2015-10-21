@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 18/09/2015.
 //  Copyright © 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Diamond/Diamond/main.m#26 $
+//  $Id: //depot/Diamond/Diamond/main.m#27 $
 //
 //  Repo: https://github.com/johnno1962/Diamond
 //
@@ -16,7 +16,7 @@
 #pragma clang diagnostic ignored "-Wcstring-format-directive"
 #pragma clang diagnostic ignored "-Wcast-qual"
 
-#define SError( ... ) { NSLog( @"diamond: " __VA_ARGS__ ); exit( EXIT_FAILURE ); }
+#define SError( ... ) { fputs( [[NSString stringWithFormat:@"diamond: " __VA_ARGS__ ] UTF8String], stderr ); exit( EXIT_FAILURE ); }
 
 static NSString *locateScriptInPath( NSString *script, NSString *home );
 static int execFramework( NSString *framework, int argc, const char **argv );
@@ -68,7 +68,7 @@ int main( int argc, const char * argv[] ) {
     @autoreleasepool {
 
         if ( argc < 2 )
-            SError( "must be run with a script name" );
+            SError( "must be run with a script name\n" );
 
         NSString *home = [NSString stringWithUTF8String:getenv("HOME")];
         libraryRoot = [home stringByAppendingPathComponent:@"Library/Diamond"];
@@ -112,7 +112,7 @@ int main( int argc, const char * argv[] ) {
             exit( 0 );
 
         if ( status != EXIT_SUCCESS )
-            SError( "%@ returns error %x", compileCommand, status );
+            SError( "%@ returns error %d\n", compileCommand, status>>8 );
 
         savedHandler = signal( SIGINT, ensureChildExits );
 
@@ -133,7 +133,7 @@ int main( int argc, const char * argv[] ) {
                     shiftedArgv[i+2] = argv[i];
 
                 execv( shiftedArgv[0], (char *const *)shiftedArgv );
-                SError( "execv failed" );
+                SError( "execv failed\n" );
             }
 
             // ENV["DIAMOND_CHILD_PID"] for guardian framework main() is process id of child process.
@@ -162,7 +162,7 @@ int main( int argc, const char * argv[] ) {
                 if ( [[NSFileManager defaultManager] isExecutableFileAtPath:binaryPath] )
                     execv( [binaryPath UTF8String], (char *const *)argv+2 );
 
-                SError( "Unable to execute %@: %s", binaryPath, strerror(errno) );
+                SError( "Unable to execute %@: %s\n", binaryPath, strerror(errno) );
             }
 
             // If running actual script in child process,
@@ -225,16 +225,16 @@ static int execFramework( NSString *scriptName, int argc, const char **argv ) {
     NSBundle *frameworkBundle = [NSBundle bundleWithPath:frameworkPath];
 
     if ( !frameworkBundle )
-        SError( "Could not locate binary or framemork bundle %@", frameworkPath );
+        SError( "Could not locate binary or framemork bundle %@\n", frameworkPath );
 
     if ( ![frameworkBundle load] )
-        SError( "Could not load framemork bundle %@", frameworkBundle );
+        SError( "Could not load framemork bundle %@\n", frameworkBundle );
 
     // Slight hack to get CFBundle from NSBundle so we can locate main function in main.swift
     CFBundleRef cfBundle = (__bridge CFBundleRef)[frameworkBundle valueForKey:@"cfBundle"];
 
     if ( !cfBundle )
-        SError( "Could not access CFBundle %@", frameworkBundle );
+        SError( "Could not access CFBundle %@\n", frameworkBundle );
 
     // find pointer to main( argc, argv )
     // ..can be guardian or actual script.
@@ -242,7 +242,7 @@ static int execFramework( NSString *scriptName, int argc, const char **argv ) {
     main_t scriptMain = (main_t)CFBundleGetFunctionPointerForName( cfBundle, (CFStringRef)@"main" );
 
     if ( !scriptMain )
-        SError( "Could not locate main() function in %@", frameworkBundle );
+        SError( "Could not locate main() function in %@\n", frameworkBundle );
 
     int status = 1;
     @try {

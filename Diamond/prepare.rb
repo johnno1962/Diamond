@@ -6,7 +6,7 @@
 #  Created by John Holdsworth on 18/09/2015.
 #  Copyright © 2015 John Holdsworth. All rights reserved.
 #
-#  $Id: //depot/Diamond/Diamond/prepare.rb#28 $
+#  $Id: //depot/Diamond/Diamond/prepare.rb#32 $
 #
 #  Repo: https://github.com/johnno1962/Diamond
 #
@@ -97,7 +97,7 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
         for contents in [ENV["HOME"]+"/bin/Contents", libraryRoot+"/Build/Debug/Contents"]
             FileUtils.mkdir_p( contents )
             FileUtils.rm_f( contents+"/Resources" )
-                        resourceFramework = mainSource[/\/\/ Resources: (\w+)/, 1] || scriptName
+            resourceFramework = mainSource[/\/\/ Resources: (\w+)/, 1] || scriptName
             File.symlink( frameworkRoot+"/"+resourceFramework+".framework/Resources", contents+"/Resources" )
             FileUtils.rm_f( contents+"/Info.plist" )
             File.symlink( "Resources/Info.plist", contents+"/Info.plist" )
@@ -228,7 +228,7 @@ PODFILE
         target = "-target Binary"
         binary = ENV["HOME"]+"/bin/"+scriptName
     else
-        target = "-target Framework"
+        target = ""#"-target "+scriptName
         binary = scriptFramework+"/"+scriptName
     end
 
@@ -256,7 +256,8 @@ PODFILE
         log( "Building #{scriptProject} #{target}")
         out = `#{build} 2>&1`
         if !$?.success?
-            die( "Script build error:\n"+build+"\n"+out )
+            errors = out.scan( /[^\/]+error:.*\n(?:.+\n)*/ ).uniq.join("")
+            die( "Script build error for command:\n"+build+"\n"+errors )
         end
 
         File.open( reloaderLog, mode ).write( out )
