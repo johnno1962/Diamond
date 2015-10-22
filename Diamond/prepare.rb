@@ -6,7 +6,7 @@
 #  Created by John Holdsworth on 18/09/2015.
 #  Copyright © 2015 John Holdsworth. All rights reserved.
 #
-#  $Id: //depot/Diamond/Diamond/prepare.rb#32 $
+#  $Id: //depot/Diamond/Diamond/prepare.rb#37 $
 #
 #  Repo: https://github.com/johnno1962/Diamond
 #
@@ -148,25 +148,32 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
 
     # determine pod dependancies
 
-    moduleBinaries = [`xcode-select -p`]
     missingPods = ""
+    missingCarts = ""
+    moduleBinaries = [`xcode-select -p`]
 
     # import a // pod
     # import b // pod 'b'
     # import c // pod 'c' -branch etc
-    # import d // clone xx/yy etc
+    # import d // github "d"
+    # import f // clone e/f etc
 
-    mainSource.scan( /^\s*import\s+(\S+)(\s*\/\/\s*(!)?(?:((pod)( .*)?)|(clone (\S+)(.*))))?/ ).each { |import|
+    mainSource.scan( /^\s*import\s+(\S+)\s*\/\/\s*(!)?((pod|github|clone)\s+(\S+)(.*))/ ).each { |import|
         libName = import[0]
         libFramework = frameworkRoot+"/"+libName+".framework"
 
         if $isReclone || import[2] == "!" || !File.exists?( libFramework )
-            if import[3]
-                missingPods += import[4] + (import[5]||" '#{import[0]}'") + "\n"
-            elsif import[6]
-                url = "https://github.com/"+import[7]+".git"
-                if !system( "cd '#{libraryRoot}/Projects' && rm -rf '#{libName}' && git clone #{import[8]} #{url}" )
-                    die "Could not clone #{libName} from #{url}"
+            if import[3] == "pod"
+                missingPods += import[2]+"\n"
+            elsif import[3] == "github"
+                missingCarts += import[2]+"\n"
+            elsif import[3] == "clone"
+                url = import[4]
+                if url !~ /^http/
+                    url = "https://github.com/"+url+".git"
+                end
+                if !system( "cd '#{libraryRoot}/Projects' && rm -rf '#{libName}' && git clone #{import[5]} #{url}" )
+                    die "Could not git clone #{import[5]} #{url}"
                 end
             end
         end
@@ -196,7 +203,7 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
         end
 
         # make sure script project is rebuilt if project it depends on has been rebuilt.
-        moduleBinaries += [libFramework+"/Versions/Current/"+libName]
+        moduleBinaries += [libFramework+"/"+libName]
     }
 
     # build and install any missing or forced pods
@@ -215,12 +222,27 @@ PODFILE
         if !system( "cd '#{libraryRoot}/Pods' && pod install" )
             die( "Could not build pods" )
         end
-
+        
         log( "Copying new pods to #{frameworkRoot}" )
         if !system( "cd '#{libraryRoot}/Pods' && (rsync -rilvp Rome/ ../Frameworks || echo 'rsync warning')" )
             die( "Could not copy pods" )
         end
     end
+    
+    if missingCarts != ""
+        File.write( libraryRoot+"/Carthage/Cartfile", missingCarts )
+
+        log( "Fetching missing carts:\n"+missingCarts )
+        if !system( "cd '#{libraryRoot}/Carthage' && carthage update" )
+            die( "Could not build carts" )
+        end
+
+        log( "Copying new carts to #{frameworkRoot}" )
+        if !system( "cd '#{libraryRoot}/Carthage' && (rsync -rilvp Carthage/Build/Mac/ ../Frameworks || echo 'rsync warning')" )
+            die( "Could not copy carts" )
+        end
+    end
+
 
     # scripts ending ".bin" create binaries rather than frameworks
 
@@ -256,7 +278,7 @@ PODFILE
         log( "Building #{scriptProject} #{target}")
         out = `#{build} 2>&1`
         if !$?.success?
-            errors = out.scan( /[^\/]+error:.*\n(?:.+\n)*/ ).uniq.join("")
+            errors = out.scan( /[^\/]+\b(?:error|ld):.*\n(?:.+\n)*/ ).uniq.join("")
             die( "Script build error for command:\n"+build+"\n"+errors )
         end
 
