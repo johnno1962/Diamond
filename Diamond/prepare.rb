@@ -6,7 +6,7 @@
 #  Created by John Holdsworth on 18/09/2015.
 #  Copyright © 2015 John Holdsworth. All rights reserved.
 #
-#  $Id: //depot/Diamond/Diamond/prepare.rb#41 $
+#  $Id: //depot/Diamond/Diamond/prepare.rb#43 $
 #
 #  Repo: https://github.com/johnno1962/Diamond
 #
@@ -93,14 +93,15 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, ld
     frameworkRoot = libraryRoot+"/Frameworks"
     scriptFramework = frameworkRoot+"/"+scriptName+".framework"
 
-    if $indent == "" && mainSource =~ /\b(import Cocoa|NSApplicationMain)\b|\/\/ Resources: /
+    if $indent == "" && scriptName != "guardian"
         for contents in [ENV["HOME"]+"/bin/Contents", libraryRoot+"/Build/Debug/Contents"]
-            FileUtils.mkdir_p( contents )
+            if !File.exists?( contents )
+                FileUtils.mkdir_p( contents )
+                File.symlink( "Resources/Info.plist", contents+"/Info.plist" )
+            end
             FileUtils.rm_f( contents+"/Resources" )
             resourceFramework = mainSource[/\/\/ Resources: (\w+)/, 1] || scriptName
             File.symlink( frameworkRoot+"/"+resourceFramework+".framework/Resources", contents+"/Resources" )
-            FileUtils.rm_f( contents+"/Info.plist" )
-            File.symlink( "Resources/Info.plist", contents+"/Info.plist" )
         end
     end
 
@@ -260,7 +261,6 @@ PODFILE
             die( "Could not copy carts" )
         end
     end
-
 
     # scripts ending ".bin" create binaries rather than frameworks
 
