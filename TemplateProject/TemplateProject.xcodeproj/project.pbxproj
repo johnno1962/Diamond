@@ -7,12 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BB45AF641BB0CDD300428322 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB45AF611BB0CDD300428322 /* AppDelegate.swift */; settings = {ASSET_TAGS = (); }; };
-		BB45AF651BB0CDD300428322 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = BB45AF621BB0CDD300428322 /* MainMenu.xib */; settings = {ASSET_TAGS = (); }; };
-		BB45AF661BB0CDD300428322 /* Swift.png in Resources */ = {isa = PBXBuildFile; fileRef = BB45AF631BB0CDD300428322 /* Swift.png */; settings = {ASSET_TAGS = (); }; };
-		BB8EE2E61BB22FFD00348257 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8EE2E51BB22FFD00348257 /* main.swift */; settings = {ASSET_TAGS = (); }; };
+		BB45AF641BB0CDD300428322 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB45AF611BB0CDD300428322 /* AppDelegate.swift */; };
+		BB45AF651BB0CDD300428322 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = BB45AF621BB0CDD300428322 /* MainMenu.xib */; };
+		BB45AF661BB0CDD300428322 /* Swift.png in Resources */ = {isa = PBXBuildFile; fileRef = BB45AF631BB0CDD300428322 /* Swift.png */; };
+		BB8EE2E61BB22FFD00348257 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8EE2E51BB22FFD00348257 /* main.swift */; };
 		BB8EE2E71BB2307700348257 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8EE2E51BB22FFD00348257 /* main.swift */; };
-		BB9B7F961BD76327000897D1 /* TemplateProject.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB3F78911BACAB9B00435430 /* TemplateProject.framework */; settings = {ASSET_TAGS = (); }; };
+		BB9B7F961BD76327000897D1 /* TemplateProject.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB3F78911BACAB9B00435430 /* TemplateProject.framework */; };
 		BB9B7FAA1BD767C7000897D1 /* ProjectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9B7FA81BD76797000897D1 /* ProjectTests.swift */; };
 		BBAD46771BBAE9BB00701DE9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB45AF611BB0CDD300428322 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
@@ -379,6 +379,8 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+				);
 				SDKROOT = macosx;
 				STRIP_INSTALLED_PRODUCT = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -427,6 +429,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(DIAMOND_HOME)/Frameworks @executable_path/../Library/Diamond/Frameworks $(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = (
+				);
 				SDKROOT = macosx;
 				STRIP_INSTALLED_PRODUCT = NO;
 				SYMROOT = "$(DIAMOND_HOME)/Build/$(PLATFORM_NAME)";
@@ -510,7 +514,7 @@
 				INFOPLIST_FILE = Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				PRODUCT_BUNDLE_IDENTIFIER =  org.rubynative.ProjectTests;
+				PRODUCT_BUNDLE_IDENTIFIER = org.rubynative.ProjectTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

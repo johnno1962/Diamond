@@ -6,7 +6,7 @@
 #  Created by John Holdsworth on 18/09/2015.
 #  Copyright © 2015 John Holdsworth. All rights reserved.
 #
-#  $Id: //depot/Diamond/Diamond/prepare.rb#37 $
+#  $Id: //depot/Diamond/Diamond/prepare.rb#41 $
 #
 #  Repo: https://github.com/johnno1962/Diamond
 #
@@ -31,11 +31,11 @@ def dateCopy( from, to )
     log( "Copied #{from} -> #{to}" )
 end
 
-def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, lastArg )
+def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, ldFlags, lastArg )
 
     # create shadow project
 
-    newProj = scriptProject+"/"+scriptName+".xcodeproj"
+    newProject = scriptProject+"/"+scriptName+".xcodeproj"
     scriptMain = scriptProject+"/main.swift"
     justCreated = false
 
@@ -62,7 +62,7 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
         project = File.read( pbxproj )
         project.gsub!( /TemplateProject/, scriptName )
         File.write( pbxproj, project )
-        File.rename( scriptProject+"/TemplateProject.xcodeproj", newProj )
+        File.rename( scriptProject+"/TemplateProject.xcodeproj", newProject )
 
         justCreated = true
     end
@@ -104,6 +104,23 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
         end
     end
 
+    # patch project with any LD options from the script
+
+    if $indent == ""
+        pbxproj = newProject+"/project.pbxproj"
+        original = File.read( pbxproj )
+
+        project = original.gsub( /OTHER_LDFLAGS = [^;]+;\n/, <<LDFLAGS )
+OTHER_LDFLAGS = (
+#{ldFlags}				);
+LDFLAGS
+
+        if project != original
+            log( "Saving OTHER_LDFLAGS to #{pbxproj}" )
+            File.write( pbxproj, project )
+        end
+    end
+
     # user options
 
     case lastArg
@@ -112,8 +129,8 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
         if justCreated
             sleep 2 # eh?
         end
-        system( "open '#{newProj}'" )
-        log( "Opened #{newProj}" )
+        system( "open '#{newProject}'" )
+        log( "Opened #{newProject}" )
         exit( 123 )
 
     when "-show"
@@ -162,18 +179,19 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
         libName = import[0]
         libFramework = frameworkRoot+"/"+libName+".framework"
 
-        if $isReclone || import[2] == "!" || !File.exists?( libFramework )
+        if $isReclone || import[1] == "!" || !File.exists?( libFramework )
             if import[3] == "pod"
                 missingPods += import[2]+"\n"
             elsif import[3] == "github"
                 missingCarts += import[2]+"\n"
             elsif import[3] == "clone"
                 url = import[4]
-                if url !~ /^http/
+                if url !~ /^https?:/
                     url = "https://github.com/"+url+".git"
                 end
-                if !system( "cd '#{libraryRoot}/Projects' && rm -rf '#{libName}' && git clone #{import[5]} #{url}" )
-                    die "Could not git clone #{import[5]} #{url}"
+                clone = "git clone #{import[5]} #{url}"
+                if !system( "cd '#{libraryRoot}/Projects' && rm -rf '#{libName}' && "+clone )
+                    die( "Could not "+clone )
                 end
             end
         end
@@ -190,7 +208,7 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
                 if File.exists?( libProj )
                     saveIndent = $indent
                     $indent += "  "
-                    if prepareScriptProject( libraryRoot, libProj+"/main.swift", libName, libProj, lastArg )
+                    if prepareScriptProject( libraryRoot, libProj+"/main.swift", libName, libProj, ldFlags, lastArg )
                         FileUtils.touch( scriptMain )
                     end
                     if !File.exists?( scriptProject+"/"+libName ) && scriptName != "guardian"
