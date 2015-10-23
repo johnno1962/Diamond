@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 18/09/2015.
 //  Copyright © 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Diamond/Diamond/main.m#26 $
+//  $Id: //depot/Diamond/Diamond/main.m#29 $
 //
 //  Repo: https://github.com/johnno1962/Diamond
 //
@@ -16,8 +16,9 @@
 #pragma clang diagnostic ignored "-Wcstring-format-directive"
 #pragma clang diagnostic ignored "-Wcast-qual"
 
-#define SError( ... ) { NSLog( @"diamond: " __VA_ARGS__ ); exit( EXIT_FAILURE ); }
+#define SError( ... ) { fputs( [[NSString stringWithFormat:@"diamond: " __VA_ARGS__ ] UTF8String], stderr ); exit( EXIT_FAILURE ); }
 
+static NSString *extractLDFlags( const char **argv[] );
 static NSString *locateScriptInPath( NSString *script, NSString *home );
 static int execFramework( NSString *framework, int argc, const char **argv );
 static void watchProject( NSString *scriptName );
@@ -43,7 +44,7 @@ static void ensureChildExits( int signum ) {
 //
 // This shell has to be written in Objective-C to avoid linking with the swift
 // static libraries which causes problems with multiple definitions when the
-// frameworks load. Most of the work is done by the compile.rb script anyways.
+// frameworks load. Most of the work is done by the prepare.rb script anyways.
 //
 // First time through argv is ["diamond", "script_name", "args.."]
 // Child process argv is ["diamond", "run:", "script_name", "args.."]
@@ -51,24 +52,24 @@ static void ensureChildExits( int signum ) {
 // guardian.framework main() receives ["child_pid", "script_name", "args.."]
 // script's framework main() receives ["script_name", "args.."]
 //
-// Entry point for frameworks is found using it's CFBundle by looking up the
-// symbol main(). Frameworks for the main script are loaded as an NSBundle.
+// Frameworks for the main script are loaded as an NSBundle. Entry point for
+// frameworks is found using it's CFBundle by looking up the symbol main().
 // Framework for parent process is "guardian". Framework for child is script.
 //
 // The file watcher to look for changes to inject into classes only runs in
-// the child process.
+// the child process. When running it will apply source changes immediately.
 //
 // The final crinkle is "x.dmd" scripts produce standalone "~/bin/x.dme" binaries
 // (subject to availability of frameworks it depends on in ~/Library/Diamond/...)
-// Injection to a standalone ".dme" executable is not possible.
+// File Watcher Injection to a standalone ".dme" executable is not possible.
 //
 
-int main( int argc, const char * argv[] ) {
+int main( int argc, const char *argv[] ) {
 
     @autoreleasepool {
 
         if ( argc < 2 )
-            SError( "must be run with a script name" );
+            SError( "must be run with a script name\n" );
 
         NSString *home = [NSString stringWithUTF8String:getenv("HOME")];
         libraryRoot = [home stringByAppendingPathComponent:@"Library/Diamond"];
@@ -82,7 +83,10 @@ int main( int argc, const char * argv[] ) {
         BOOL isChild = strcmp( argv[1], childIndicator ) == 0;
         BOOL isRestarter = strcmp( argv[argc-1], "-restarter" ) == 0;
 
-        NSString *script = isChild ? [NSString stringWithUTF8String:argv[2]] :
+        const char **childArgv = argv + 2;
+        NSString *ldFlags = isChild ? extractLDFlags( &childArgv ) : @"";
+
+        NSString *script = isChild ? [NSString stringWithUTF8String:*childArgv] :
             [libraryRoot stringByAppendingPathComponent:@"Resources/guardian"];
         NSString *lastArg = isChild && argv[argc-1][0] == '-' ? [NSString stringWithUTF8String:argv[argc-1]] : @"";
 
@@ -99,8 +103,8 @@ int main( int argc, const char * argv[] ) {
 
         // Call compile.rb to build script into framework (or binary.dme if extension is .dmd.)
         // Makes sure project is built if any frameworks it is dependant on are rebuilt recursively.
-        NSString *compileCommand = [NSString stringWithFormat:@"%@/Resources/prepare.rb \"%@\" \"%@\" \"%@\" \"%@\" \"%@\"",
-                                    libraryRoot, libraryRoot, scriptPath, scriptName, scriptProject, lastArg];
+        NSString *compileCommand = [NSString stringWithFormat:@"%@/Resources/prepare.rb \"%@\" \"%@\" \"%@\" \"%@\" \"%@\" \"%@\"",
+                                    libraryRoot, libraryRoot, scriptPath, scriptName, scriptProject, ldFlags, lastArg];
 
         int status;
     restart:
@@ -112,7 +116,7 @@ int main( int argc, const char * argv[] ) {
             exit( 0 );
 
         if ( status != EXIT_SUCCESS )
-            SError( "%@ returns error %x", compileCommand, status );
+            SError( "%@ returns error %d\n", compileCommand, status>>8 );
 
         savedHandler = signal( SIGINT, ensureChildExits );
 
@@ -133,7 +137,7 @@ int main( int argc, const char * argv[] ) {
                     shiftedArgv[i+2] = argv[i];
 
                 execv( shiftedArgv[0], (char *const *)shiftedArgv );
-                SError( "execv failed" );
+                SError( "execv failed\n" );
             }
 
             // ENV["DIAMOND_CHILD_PID"] for guardian framework main() is process id of child process.
@@ -162,7 +166,7 @@ int main( int argc, const char * argv[] ) {
                 if ( [[NSFileManager defaultManager] isExecutableFileAtPath:binaryPath] )
                     execv( [binaryPath UTF8String], (char *const *)argv+2 );
 
-                SError( "Unable to execute %@: %s", binaryPath, strerror(errno) );
+                SError( "Unable to execute %@: %s\n", binaryPath, strerror(errno) );
             }
 
             // If running actual script in child process,
@@ -170,7 +174,7 @@ int main( int argc, const char * argv[] ) {
             watchProject( scriptProject );
 
             // run the actual script .framework
-            status = execFramework( scriptName, argc-2, argv+2 );
+            status = execFramework( scriptName, argc-(int)(childArgv-argv), childArgv );
 
             if ( fileEvents ) {
                 FSEventStreamStop( fileEvents );
@@ -218,6 +222,27 @@ static NSString *locateScriptInPath( NSString *script, NSString *home ) {
     return scriptPath;
 }
 
+static NSString *extractLDFlags( const char **argv[] ) {
+    NSMutableString *ldFlags = [NSMutableString new];
+    while ( **argv ) {
+        if ( strcmp( **argv, "-L" ) == 0 || strcmp( **argv, "-F" ) == 0 || strcmp( **argv, "-framework" ) == 0 ) {
+            [ldFlags appendFormat:@"					\\\"%s\\\",\n", *(*argv)++];
+            if ( **argv )
+                [ldFlags appendFormat:@"					\\\"%@\\\",\n", [NSString stringWithUTF8String:*(*argv)++]];
+        }
+        else if ( strcmp( **argv, "-Xlinker" ) == 0 ) {
+            if ( *++(*argv) )
+                [ldFlags appendFormat:@"					\\\"%@\\\",\n", [NSString stringWithUTF8String:*(*argv)++]];
+        }
+        else if ( strncmp( **argv, "-l", 2 ) == 0 ) {
+            [ldFlags appendFormat:@"					\\\"%@\\\",\n", [NSString stringWithUTF8String:*(*argv)++]];
+        }
+        else
+            break;
+    }
+    return ldFlags;
+}
+
 static int execFramework( NSString *scriptName, int argc, const char **argv ) {
     // Now look for Framework with the script's name determined before and load it as a bundle.
     NSString *frameworkPath = [NSString stringWithFormat:@"%@/Frameworks/%@.framework",
@@ -225,16 +250,16 @@ static int execFramework( NSString *scriptName, int argc, const char **argv ) {
     NSBundle *frameworkBundle = [NSBundle bundleWithPath:frameworkPath];
 
     if ( !frameworkBundle )
-        SError( "Could not locate binary or framemork bundle %@", frameworkPath );
+        SError( "Could not locate binary or framemork bundle %@\n", frameworkPath );
 
     if ( ![frameworkBundle load] )
-        SError( "Could not load framemork bundle %@", frameworkBundle );
+        SError( "Could not load framemork bundle %@\n", frameworkBundle );
 
     // Slight hack to get CFBundle from NSBundle so we can locate main function in main.swift
     CFBundleRef cfBundle = (__bridge CFBundleRef)[frameworkBundle valueForKey:@"cfBundle"];
 
     if ( !cfBundle )
-        SError( "Could not access CFBundle %@", frameworkBundle );
+        SError( "Could not access CFBundle %@\n", frameworkBundle );
 
     // find pointer to main( argc, argv )
     // ..can be guardian or actual script.
@@ -242,7 +267,7 @@ static int execFramework( NSString *scriptName, int argc, const char **argv ) {
     main_t scriptMain = (main_t)CFBundleGetFunctionPointerForName( cfBundle, (CFStringRef)@"main" );
 
     if ( !scriptMain )
-        SError( "Could not locate main() function in %@", frameworkBundle );
+        SError( "Could not locate main() function in %@\n", frameworkBundle );
 
     int status = 1;
     @try {

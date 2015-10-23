@@ -7,21 +7,30 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BB45AF641BB0CDD300428322 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB45AF611BB0CDD300428322 /* AppDelegate.swift */; settings = {ASSET_TAGS = (); }; };
-		BB45AF651BB0CDD300428322 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = BB45AF621BB0CDD300428322 /* MainMenu.xib */; settings = {ASSET_TAGS = (); }; };
-		BB45AF661BB0CDD300428322 /* Swift.png in Resources */ = {isa = PBXBuildFile; fileRef = BB45AF631BB0CDD300428322 /* Swift.png */; settings = {ASSET_TAGS = (); }; };
-		BB8EE2E61BB22FFD00348257 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8EE2E51BB22FFD00348257 /* main.swift */; settings = {ASSET_TAGS = (); }; };
+		BB45AF641BB0CDD300428322 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB45AF611BB0CDD300428322 /* AppDelegate.swift */; };
+		BB45AF651BB0CDD300428322 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = BB45AF621BB0CDD300428322 /* MainMenu.xib */; };
+		BB45AF661BB0CDD300428322 /* Swift.png in Resources */ = {isa = PBXBuildFile; fileRef = BB45AF631BB0CDD300428322 /* Swift.png */; };
+		BB8EE2E61BB22FFD00348257 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8EE2E51BB22FFD00348257 /* main.swift */; };
 		BB8EE2E71BB2307700348257 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8EE2E51BB22FFD00348257 /* main.swift */; };
+		BB9B7F961BD76327000897D1 /* TemplateProject.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB3F78911BACAB9B00435430 /* TemplateProject.framework */; };
+		BB9B7FAA1BD767C7000897D1 /* ProjectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9B7FA81BD76797000897D1 /* ProjectTests.swift */; };
 		BBAD46771BBAE9BB00701DE9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB45AF611BB0CDD300428322 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		BB9B7F971BD76327000897D1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BB3F78881BACAB9B00435430 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BB3F78901BACAB9B00435430;
+			remoteInfo = "TemplateProject";
+		};
 		BBB3FEB91BBC2610009E718C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BBB3FEB31BBC260C009E718C /* SwiftRuby.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = BB3F78911BACAB9B00435430;
-			remoteInfo = Framework;
+			remoteInfo = SwiftRuby;
 		};
 		BBB3FEBB1BBC2610009E718C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -35,7 +44,7 @@
 			containerPortal = BBB3FEB31BBC260C009E718C /* SwiftRuby.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = BBB3FE8E1BBBFDA5009E718C;
-			remoteInfo = Tests;
+			remoteInfo = SwiftRubyTests;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -48,6 +57,8 @@
 		BB45AF631BB0CDD300428322 /* Swift.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Swift.png; sourceTree = "<group>"; };
 		BB8EE26A1BB0D75A00348257 /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
 		BB8EE2E51BB22FFD00348257 /* main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		BB9B7F911BD76326000897D1 /* TemplateProjectTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "TemplateProjectTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB9B7FA81BD76797000897D1 /* ProjectTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProjectTests.swift; sourceTree = "<group>"; };
 		BBB3FEB31BBC260C009E718C /* SwiftRuby.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SwiftRuby.xcodeproj; path = SwiftRuby/SwiftRuby.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -66,6 +77,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BB9B7F8E1BD76326000897D1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB9B7F961BD76327000897D1 /* TemplateProject.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -74,6 +93,7 @@
 			children = (
 				BB8EE2E51BB22FFD00348257 /* main.swift */,
 				BB45AF611BB0CDD300428322 /* AppDelegate.swift */,
+				BB9B7FA81BD76797000897D1 /* ProjectTests.swift */,
 				BB8EE26A1BB0D75A00348257 /* BridgingHeader.h */,
 				BB45AF621BB0CDD300428322 /* MainMenu.xib */,
 				BB45AF631BB0CDD300428322 /* Swift.png */,
@@ -88,6 +108,7 @@
 			children = (
 				BB3F78911BACAB9B00435430 /* TemplateProject.framework */,
 				BB45AF5A1BB0CC8A00428322 /* TemplateProject */,
+				BB9B7F911BD76326000897D1 /* TemplateProjectTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -115,9 +136,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		BB3F78901BACAB9B00435430 /* Framework */ = {
+		BB3F78901BACAB9B00435430 /* TemplateProject */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BB3F78991BACAB9B00435430 /* Build configuration list for PBXNativeTarget "Framework" */;
+			buildConfigurationList = BB3F78991BACAB9B00435430 /* Build configuration list for PBXNativeTarget "TemplateProject" */;
 			buildPhases = (
 				BB3F788C1BACAB9B00435430 /* Sources */,
 				BB3F788D1BACAB9B00435430 /* Frameworks */,
@@ -128,7 +149,7 @@
 			);
 			dependencies = (
 			);
-			name = Framework;
+			name = "TemplateProject";
 			productName = "TemplateProject";
 			productReference = BB3F78911BACAB9B00435430 /* TemplateProject.framework */;
 			productType = "com.apple.product-type.framework";
@@ -150,6 +171,24 @@
 			productReference = BB45AF5A1BB0CC8A00428322 /* TemplateProject */;
 			productType = "com.apple.product-type.tool";
 		};
+		BB9B7F901BD76326000897D1 /* TemplateProjectTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB9B7F991BD76327000897D1 /* Build configuration list for PBXNativeTarget "TemplateProjectTests" */;
+			buildPhases = (
+				BB9B7F8D1BD76326000897D1 /* Sources */,
+				BB9B7F8E1BD76326000897D1 /* Frameworks */,
+				BB9B7F8F1BD76326000897D1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BB9B7F981BD76327000897D1 /* PBXTargetDependency */,
+			);
+			name = "TemplateProjectTests";
+			productName = "TemplateProjectTests";
+			productReference = BB9B7F911BD76326000897D1 /* TemplateProjectTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -165,6 +204,9 @@
 					};
 					BB45AF591BB0CC8A00428322 = {
 						CreatedOnToolsVersion = 7.0;
+					};
+					BB9B7F901BD76326000897D1 = {
+						CreatedOnToolsVersion = 7.0.1;
 					};
 				};
 			};
@@ -186,7 +228,8 @@
 			);
 			projectRoot = "";
 			targets = (
-				BB3F78901BACAB9B00435430 /* Framework */,
+				BB3F78901BACAB9B00435430 /* TemplateProject */,
+				BB9B7F901BD76326000897D1 /* TemplateProjectTests */,
 				BB45AF591BB0CC8A00428322 /* Binary */,
 			);
 		};
@@ -223,6 +266,13 @@
 			files = (
 				BB45AF651BB0CDD300428322 /* MainMenu.xib in Resources */,
 				BB45AF661BB0CDD300428322 /* Swift.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB9B7F8F1BD76326000897D1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -264,7 +314,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BB9B7F8D1BD76326000897D1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB9B7FAA1BD767C7000897D1 /* ProjectTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		BB9B7F981BD76327000897D1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BB3F78901BACAB9B00435430 /* TemplateProject */;
+			targetProxy = BB9B7F971BD76327000897D1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		BB3F78971BACAB9B00435430 /* Debug */ = {
@@ -284,10 +350,10 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				DIAMOND_HOME = $HOME/Library/Diamond;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DIAMOND_HOME = $HOME/Library/Diamond;
 				DSTROOT = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -313,6 +379,8 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+				);
 				SDKROOT = macosx;
 				STRIP_INSTALLED_PRODUCT = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -339,10 +407,10 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				DIAMOND_HOME = $HOME/Library/Diamond;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DIAMOND_HOME = $HOME/Library/Diamond;
 				DSTROOT = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -361,6 +429,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(DIAMOND_HOME)/Frameworks @executable_path/../Library/Diamond/Frameworks $(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = (
+				);
 				SDKROOT = macosx;
 				STRIP_INSTALLED_PRODUCT = NO;
 				SYMROOT = "$(DIAMOND_HOME)/Build/$(PLATFORM_NAME)";
@@ -381,7 +451,7 @@
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = org.rubynative.Diamond;
-				PRODUCT_NAME = "TemplateProject";
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -400,7 +470,7 @@
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = org.rubynative.Diamond;
-				PRODUCT_NAME = "TemplateProject";
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator";
 			};
 			name = Release;
@@ -425,6 +495,30 @@
 			};
 			name = Release;
 		};
+		BB9B7F9A1BD76327000897D1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				PRODUCT_BUNDLE_IDENTIFIER = org.rubynative.ProjectTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		BB9B7F9B1BD76327000897D1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				PRODUCT_BUNDLE_IDENTIFIER = org.rubynative.ProjectTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -437,7 +531,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		BB3F78991BACAB9B00435430 /* Build configuration list for PBXNativeTarget "Framework" */ = {
+		BB3F78991BACAB9B00435430 /* Build configuration list for PBXNativeTarget "TemplateProject" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BB3F789A1BACAB9B00435430 /* Debug */,
@@ -451,6 +545,15 @@
 			buildConfigurations = (
 				BB45AF5F1BB0CC8A00428322 /* Debug */,
 				BB45AF601BB0CC8A00428322 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		BB9B7F991BD76327000897D1 /* Build configuration list for PBXNativeTarget "TemplateProjectTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB9B7F9A1BD76327000897D1 /* Debug */,
+				BB9B7F9B1BD76327000897D1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

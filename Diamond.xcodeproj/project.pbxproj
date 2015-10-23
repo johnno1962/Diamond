@@ -33,6 +33,13 @@
 			remoteGlobalIDString = BB45AF5A1BB0CC8A00428322;
 			remoteInfo = Binary;
 		};
+		BBBD9B961BD981B500EEC745 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BB3F789C1BACAB9B00435430 /* TemplateProject.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BB9B7F911BD76326000897D1;
+			remoteInfo = TemplateProjectTests;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -108,6 +115,7 @@
 			isa = PBXGroup;
 			children = (
 				BB3F78A11BACAB9D00435430 /* TemplateProject.framework */,
+				BBBD9B971BD981B500EEC745 /* TemplateProjectTests.xctest */,
 				BB8EE26F1BB0E14500348257 /* TemplateProject */,
 			);
 			name = Products;
@@ -206,6 +214,13 @@
 			remoteRef = BB8EE26E1BB0E14500348257 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		BBBD9B971BD981B500EEC745 /* TemplateProjectTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = TemplateProjectTests.xctest;
+			remoteRef = BBBD9B961BD981B500EEC745 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -220,7 +235,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = "/bin/sh -x";
-			shellScript = "LIBROOT=~/Library/Diamond\nmkdir -p $LIBROOT/{Build,Pods,Projects,Resources} &&\nrm -f $LIBROOT/Frameworks &&\nln -s Build/macosx/Debug $LIBROOT/Frameworks &&\ncp -f Diamond/{*.rb,guardian} $LIBROOT/Resources &&\ncp -rf TemplateProject Reloader $LIBROOT &&\nrm -rf $LIBROOT/TemplateProject/TemplateProject.xcodeproj/{xcuserdata,project.xcworkspace} &&\nrm -rf $LIBROOT/{Projects/SwiftRuby,Frameworks/SwiftRuby.framework} &&\n~/bin/diamond run: $LIBROOT/Resources/guardian -rebuild";
+			shellScript = "LIBROOT=~/Library/Diamond\nrm -rf $LIBROOT/Build &&\nmkdir -p $LIBROOT/{Build,Carthage,Pods,Projects,Resources} &&\nrm -f $LIBROOT/Frameworks &&\nln -s Build/macosx/Debug $LIBROOT/Frameworks &&\ncp -f Diamond/{*.rb,guardian} $LIBROOT/Resources &&\ncp -rf TemplateProject Reloader $LIBROOT &&\nrm -rf $LIBROOT/TemplateProject/TemplateProject.xcodeproj/{xcuserdata,project.xcworkspace} &&\nrm -rf $LIBROOT/{Projects/SwiftRuby,Frameworks/SwiftRuby.framework} &&\n~/bin/diamond run: $LIBROOT/Resources/guardian -rebuild";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -276,7 +291,6 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = "-Weverything";
 				SDKROOT = macosx;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -314,7 +328,6 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_CFLAGS = "-Weverything";
 				SDKROOT = macosx;
 			};
 			name = Release;

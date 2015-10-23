@@ -7,7 +7,7 @@
 //  Created by John Holdsworth on 18/09/2015.
 //  Copyright © 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Diamond/Diamond/guardian#10 $
+//  $Id: //depot/Diamond/Diamond/guardian#13 $
 //
 //  Repo: https://github.com/RubyNative/RubyNative
 //
@@ -45,17 +45,15 @@ while let log = IO.popen( "ls -t \(logs) 2>/dev/null | head -1" )?.readline() {
         var mainThread = true
         File.open( log )?.each_line {
             (line) in
-            if mainThread {
-                if line.containsString( " + ") {
-                    var mutable = line.mutableString
-                    mutable["((?:\\S+\\s+){3})(\\S+)(.*)"] =~ {
-                        (groups: [String?]) in
-                        return groups[1]!+_stdlib_demangleName( groups[2]! )+groups[3]!
-                    }
-                    STDERR.print( "\(mutable)\n" )
-                    if line.containsString( " start + " ) {
-                        mainThread = false
-                    }
+            if mainThread && line.containsString( " + ") {
+                var mutable = line.mutableString
+                mutable["^((?:\\S+\\s+){3})(\\S+)"] =~ {
+                    (groups: [String?]) in
+                    return groups[1]!+_stdlib_demangleName( groups[2]! )
+                }
+                STDERR.print( "\(mutable)\n" )
+                if line.containsString( " start + " ) {
+                    mainThread = false
                 }
             }
         }

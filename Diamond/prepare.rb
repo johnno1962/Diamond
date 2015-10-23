@@ -6,7 +6,7 @@
 #  Created by John Holdsworth on 18/09/2015.
 #  Copyright © 2015 John Holdsworth. All rights reserved.
 #
-#  $Id: //depot/Diamond/Diamond/prepare.rb#28 $
+#  $Id: //depot/Diamond/Diamond/prepare.rb#43 $
 #
 #  Repo: https://github.com/johnno1962/Diamond
 #
@@ -31,11 +31,11 @@ def dateCopy( from, to )
     log( "Copied #{from} -> #{to}" )
 end
 
-def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, lastArg )
+def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, ldFlags, lastArg )
 
     # create shadow project
 
-    newProj = scriptProject+"/"+scriptName+".xcodeproj"
+    newProject = scriptProject+"/"+scriptName+".xcodeproj"
     scriptMain = scriptProject+"/main.swift"
     justCreated = false
 
@@ -62,7 +62,7 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
         project = File.read( pbxproj )
         project.gsub!( /TemplateProject/, scriptName )
         File.write( pbxproj, project )
-        File.rename( scriptProject+"/TemplateProject.xcodeproj", newProj )
+        File.rename( scriptProject+"/TemplateProject.xcodeproj", newProject )
 
         justCreated = true
     end
@@ -93,14 +93,32 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
     frameworkRoot = libraryRoot+"/Frameworks"
     scriptFramework = frameworkRoot+"/"+scriptName+".framework"
 
-    if $indent == "" && mainSource =~ /\b(import Cocoa|NSApplicationMain)\b|\/\/ Resources: /
+    if $indent == "" && scriptName != "guardian"
         for contents in [ENV["HOME"]+"/bin/Contents", libraryRoot+"/Build/Debug/Contents"]
-            FileUtils.mkdir_p( contents )
+            if !File.exists?( contents )
+                FileUtils.mkdir_p( contents )
+                File.symlink( "Resources/Info.plist", contents+"/Info.plist" )
+            end
             FileUtils.rm_f( contents+"/Resources" )
-                        resourceFramework = mainSource[/\/\/ Resources: (\w+)/, 1] || scriptName
+            resourceFramework = mainSource[/\/\/ Resources: (\w+)/, 1] || scriptName
             File.symlink( frameworkRoot+"/"+resourceFramework+".framework/Resources", contents+"/Resources" )
-            FileUtils.rm_f( contents+"/Info.plist" )
-            File.symlink( "Resources/Info.plist", contents+"/Info.plist" )
+        end
+    end
+
+    # patch project with any LD options from the script
+
+    if $indent == ""
+        pbxproj = newProject+"/project.pbxproj"
+        original = File.read( pbxproj )
+
+        project = original.gsub( /OTHER_LDFLAGS = [^;]+;\n/, <<LDFLAGS )
+OTHER_LDFLAGS = (
+#{ldFlags}				);
+LDFLAGS
+
+        if project != original
+            log( "Saving OTHER_LDFLAGS to #{pbxproj}" )
+            File.write( pbxproj, project )
         end
     end
 
@@ -112,8 +130,8 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
         if justCreated
             sleep 2 # eh?
         end
-        system( "open '#{newProj}'" )
-        log( "Opened #{newProj}" )
+        system( "open '#{newProject}'" )
+        log( "Opened #{newProject}" )
         exit( 123 )
 
     when "-show"
@@ -148,25 +166,33 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
 
     # determine pod dependancies
 
-    moduleBinaries = [`xcode-select -p`]
     missingPods = ""
+    missingCarts = ""
+    moduleBinaries = [`xcode-select -p`]
 
     # import a // pod
     # import b // pod 'b'
     # import c // pod 'c' -branch etc
-    # import d // clone xx/yy etc
+    # import d // github "d"
+    # import f // clone e/f etc
 
-    mainSource.scan( /^\s*import\s+(\S+)(\s*\/\/\s*(!)?(?:((pod)( .*)?)|(clone (\S+)(.*))))?/ ).each { |import|
+    mainSource.scan( /^\s*import\s+(\S+)\s*\/\/\s*(!)?((pod|github|clone)\s+(\S+)(.*))/ ).each { |import|
         libName = import[0]
         libFramework = frameworkRoot+"/"+libName+".framework"
 
-        if $isReclone || import[2] == "!" || !File.exists?( libFramework )
-            if import[3]
-                missingPods += import[4] + (import[5]||" '#{import[0]}'") + "\n"
-            elsif import[6]
-                url = "https://github.com/"+import[7]+".git"
-                if !system( "cd '#{libraryRoot}/Projects' && rm -rf '#{libName}' && git clone #{import[8]} #{url}" )
-                    die "Could not clone #{libName} from #{url}"
+        if $isReclone || import[1] == "!" || !File.exists?( libFramework )
+            if import[3] == "pod"
+                missingPods += import[2]+"\n"
+            elsif import[3] == "github"
+                missingCarts += import[2]+"\n"
+            elsif import[3] == "clone"
+                url = import[4]
+                if url !~ /^https?:/
+                    url = "https://github.com/"+url+".git"
+                end
+                clone = "git clone #{import[5]} #{url}"
+                if !system( "cd '#{libraryRoot}/Projects' && rm -rf '#{libName}' && "+clone )
+                    die( "Could not "+clone )
                 end
             end
         end
@@ -183,7 +209,7 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
                 if File.exists?( libProj )
                     saveIndent = $indent
                     $indent += "  "
-                    if prepareScriptProject( libraryRoot, libProj+"/main.swift", libName, libProj, lastArg )
+                    if prepareScriptProject( libraryRoot, libProj+"/main.swift", libName, libProj, ldFlags, lastArg )
                         FileUtils.touch( scriptMain )
                     end
                     if !File.exists?( scriptProject+"/"+libName ) && scriptName != "guardian"
@@ -196,7 +222,7 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, la
         end
 
         # make sure script project is rebuilt if project it depends on has been rebuilt.
-        moduleBinaries += [libFramework+"/Versions/Current/"+libName]
+        moduleBinaries += [libFramework+"/"+libName]
     }
 
     # build and install any missing or forced pods
@@ -215,10 +241,24 @@ PODFILE
         if !system( "cd '#{libraryRoot}/Pods' && pod install" )
             die( "Could not build pods" )
         end
-
+        
         log( "Copying new pods to #{frameworkRoot}" )
         if !system( "cd '#{libraryRoot}/Pods' && (rsync -rilvp Rome/ ../Frameworks || echo 'rsync warning')" )
             die( "Could not copy pods" )
+        end
+    end
+    
+    if missingCarts != ""
+        File.write( libraryRoot+"/Carthage/Cartfile", missingCarts )
+
+        log( "Fetching missing carts:\n"+missingCarts )
+        if !system( "cd '#{libraryRoot}/Carthage' && carthage update" )
+            die( "Could not build carts" )
+        end
+
+        log( "Copying new carts to #{frameworkRoot}" )
+        if !system( "cd '#{libraryRoot}/Carthage' && (rsync -rilvp Carthage/Build/Mac/ ../Frameworks || echo 'rsync warning')" )
+            die( "Could not copy carts" )
         end
     end
 
@@ -228,7 +268,7 @@ PODFILE
         target = "-target Binary"
         binary = ENV["HOME"]+"/bin/"+scriptName
     else
-        target = "-target Framework"
+        target = ""#"-target "+scriptName
         binary = scriptFramework+"/"+scriptName
     end
 
@@ -256,7 +296,8 @@ PODFILE
         log( "Building #{scriptProject} #{target}")
         out = `#{build} 2>&1`
         if !$?.success?
-            die( "Script build error:\n"+build+"\n"+out )
+            errors = out.scan( /[^\/]+\b(?:error|ld):.*\n(?:.+\n)*/ ).uniq.join("")
+            die( "Script build error for command:\n"+build+"\n"+errors )
         end
 
         File.open( reloaderLog, mode ).write( out )
