@@ -8,6 +8,8 @@
 //
 
 import Foundation
+
+// plain git dependency
 import SwiftRuby // clone RubyNative/SwiftRuby
 
 // CocoaPoda dependencies

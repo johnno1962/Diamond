@@ -48,7 +48,10 @@ and formats it to extract the stacktrace, de-mangling any Swift function names.
 When working with the Xcode project for a script it's "Binary" target can be run
 in the lldb debugger as you would a normal program. The binary target can also be
 used to create standalone binary versions of a script provided any dependencies
-are available.
+are available. If you are debugging a script which imports another script or a 
+framework you can get warnings about duplications of Swift Classes as they
+are both built into theh binary and linked against by the frameworks.
+You can ignore these.
 
 ### Importing one script into another to share code
 
@@ -63,23 +66,23 @@ top of the script as they can with `xcrun swift`.
 
 Script projects come with a `MainMenu.xib` and `AppDelegate.swift` by default so all that's
 required to give a script a UI is to call `NSApplicationMain` as shown in the `browse`
-example included in the distribution. For this to work `diamond` creates a dummy
-Contents directory in ~/bin where the `diamond` binary resides when you run the script.
+example included in the distribution. For this to work `diamond` creates a dummy `Contents`
+directory in `~/bin` where the `diamond` binary resides when you run the script.
 
 ### import SwiftRuby for easier access to files and Strings
 
 Foundation is not a particularly convenient way to work with files and processes
 and Swifts uncompromising String class does not make accessing parts of a string
 easy. To resolve this a port of the Core Ruby apis has been made to Swift in the
-project [SwiftRuby](https://RubyNative/SwiftRuby). Classes File, Stat, Time and Regexp
+project [SwiftRuby](https://RubyNative/SwiftRuby). Classes: File, Stat, Time and Regexp
 are included along with extensions to String and Array to round off their rather Austere
 edges.
 
 ### Requirements
 
-To use Diamond, download and build this project and make sure that `$HOME/bin`
-is in your UNIX `PATH`. For some reason you may have to retry the build if
-you are using `El Capitan`.
+To use Diamond, download and build this project and make sure that have `$HOME/bin`
+(`~/bin` does not work) in your UNIX `PATH`. For some reason you may have to retry 
+the build if you are using `El Capitan`.
 
 You can then type `diamond path_to_script` and it creates a blank script, an Xcode
 framework project then builds and runs it. If you prefer editing in Xcode type
