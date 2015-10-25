@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 18/09/2015.
 //  Copyright © 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Diamond/Diamond/main.m#29 $
+//  $Id: //depot/Diamond/Diamond/main.m#30 $
 //
 //  Repo: https://github.com/johnno1962/Diamond
 //
@@ -34,7 +34,6 @@ static void ensureChildExits( int signum ) {
         fprintf( stderr, " Signal sent. Type ^C again to exit or wait for stacktrace\n" );
     }
     signal( SIGINT, savedHandler );
-    //exit( 1 );
 }
 
 //
@@ -111,9 +110,13 @@ int main( int argc, const char *argv[] ) {
         // call compile.rb to prepare Frameworks/Binary
         status = system( [compileCommand UTF8String] );
 
-        // user option such as -edit, -show, -hide, -rebuild
+        // user option such as -edit, -show, -hide, -rebuild, -reclone
         if ( status >> 8 == 123 )
             exit( 0 );
+
+        // compilation error
+        if ( status >> 8 == 124 )
+            exit( 1 );
 
         if ( status != EXIT_SUCCESS )
             SError( "%@ returns error %d\n", compileCommand, status>>8 );
@@ -187,6 +190,27 @@ int main( int argc, const char *argv[] ) {
     }
 }
 
+static NSString *extractLDFlags( const char **argv[] ) {
+    NSMutableString *ldFlags = [NSMutableString new];
+    while ( **argv ) {
+        if ( strcmp( **argv, "-L" ) == 0 || strcmp( **argv, "-F" ) == 0 || strcmp( **argv, "-framework" ) == 0 ) {
+            [ldFlags appendFormat:@"					\\\"%s\\\",\n", *(*argv)++];
+            if ( **argv )
+                [ldFlags appendFormat:@"					\\\"%@\\\",\n", [NSString stringWithUTF8String:*(*argv)++]];
+        }
+        else if ( strcmp( **argv, "-Xlinker" ) == 0 ) {
+            if ( *++(*argv) )
+                [ldFlags appendFormat:@"					\\\"%@\\\",\n", [NSString stringWithUTF8String:*(*argv)++]];
+        }
+        else if ( strncmp( **argv, "-l", 2 ) == 0 ) {
+            [ldFlags appendFormat:@"					\\\"%@\\\",\n", [NSString stringWithUTF8String:*(*argv)++]];
+        }
+        else
+            break;
+    }
+    return ldFlags;
+}
+
 static NSString *locateScriptInPath( NSString *script, NSString *home ) {
     NSString *path = [NSString stringWithUTF8String:getenv("PATH")];
     path = [path stringByAppendingFormat:@":%@/bin", home];
@@ -222,27 +246,6 @@ static NSString *locateScriptInPath( NSString *script, NSString *home ) {
     return scriptPath;
 }
 
-static NSString *extractLDFlags( const char **argv[] ) {
-    NSMutableString *ldFlags = [NSMutableString new];
-    while ( **argv ) {
-        if ( strcmp( **argv, "-L" ) == 0 || strcmp( **argv, "-F" ) == 0 || strcmp( **argv, "-framework" ) == 0 ) {
-            [ldFlags appendFormat:@"					\\\"%s\\\",\n", *(*argv)++];
-            if ( **argv )
-                [ldFlags appendFormat:@"					\\\"%@\\\",\n", [NSString stringWithUTF8String:*(*argv)++]];
-        }
-        else if ( strcmp( **argv, "-Xlinker" ) == 0 ) {
-            if ( *++(*argv) )
-                [ldFlags appendFormat:@"					\\\"%@\\\",\n", [NSString stringWithUTF8String:*(*argv)++]];
-        }
-        else if ( strncmp( **argv, "-l", 2 ) == 0 ) {
-            [ldFlags appendFormat:@"					\\\"%@\\\",\n", [NSString stringWithUTF8String:*(*argv)++]];
-        }
-        else
-            break;
-    }
-    return ldFlags;
-}
-
 static int execFramework( NSString *scriptName, int argc, const char **argv ) {
     // Now look for Framework with the script's name determined before and load it as a bundle.
     NSString *frameworkPath = [NSString stringWithFormat:@"%@/Frameworks/%@.framework",
@@ -275,7 +278,7 @@ static int execFramework( NSString *scriptName, int argc, const char **argv ) {
         status = scriptMain( argc, argv );
     }
     @catch ( NSException *e ) {
-        NSLog( @"Exception %@\n%@", e, e.callStackSymbols );
+        NSLog( @"diamond: Uncaught exception %@\n%@", e, e.callStackSymbols );
         abort();
     }
 

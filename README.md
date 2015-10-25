@@ -1,84 +1,90 @@
 
 # Diamond - Swift scripting made easy
 
-When you're as bad a typist as I am, one of the frustrations of using dynamically typed
-scripting languages is when a run time error occurs that could have been picked up 
-by a compiler. Type inference has also reduced the burden coding in a type-safe
-language so perhaps it is time to see if a language such as Swift can be
-pressed into service in a scripting environment.
+I, [like](https://realm.io/news/swift-for-rubyists/) [many](https://realm.io/news/swift-scripting/)
+would like to see Swift as the premier scripting language for the Mac (and Linux?)
+As it stands, using [xcrun swift](http://nomothetis.svbtle.com/swift-for-scripting)
+has it's limitations however.
 
-From the onset you've been able [script in swift](http://nomothetis.svbtle.com/swift-for-scripting)
-and others have had [some success](https://realm.io/news/swift-scripting/)
-but it's fairly heavy going without autocompletion and dependency management.
-`diamond` is small binary and a couple of scripts that looks to address 
-these problems. Pods are specified in a comment after an import statement 
-in your script and are downloaded automatically when the script is run.
-For autocompletion, scripts are converted into a mini Xcode framework
-project with the correct framework search path.
+* The Xcode editor for swift scripts does not allow auto-completion
+* managing dependencies on frameworks is left to the user
+* In the even of a crash the line number is not reported
+* It is not possible to run swift scripts in the debugger
+* Code can not be shared readily between swift scripts
+* A script can not have a UI component using Cocoa
+* Foundation is not convenient when working with files
+* Swift Strings are uncompromising and don't support Regexps
 
-```Swift
-    #!/usr/bin/env diamond
+`diamond` is a small binary intended to be used as a Swift interpreter to alleviate these
+problems. A Ruby script looks after converting your script into a Xcode project and
+building it (along with any dependencies) as required. It also comes with a small library
+`SwiftRuby` which replicates the core of the Ruby api to work more easily with files,
+Strings and regular expressions.
 
-    import Cocoa
-    import Alamofire // pod
-    import Box // pod 'Box', :head
+### Xcode Editor, auto-completion and dependency management
 
-    print( "Hello Diamond" )
-```
+![Icon](http://injectionforxcode.johnholdsworth.com/completion.png)
 
-The [SwiftRuby](https://github.com/RubyNative/SwiftRuby) project is included as a
-dependency automatically. This project ports the Ruby core apis to Swift for concise
-access to files and more flexible handling of Swift strings and Regular Expressions
-making Swift truly feel like a grown up scripting language.
+To create a script type `diamond <path_to_script>`. `diamond` will create an Xcode
+project for the script. This project can be accessed by typing `<path_to_script> -edit`.
+Your script will be shadowed by the file main.swift in this project. Frameworks can be
+pulled into your script from CocoaPods or Carthage using the syntax above and diamond
+will download and build them placing them in ~/Library/Diamond/Frameworks.
+As the script project has it's `Framework search path` is set to include 
+`~/Library/Diamond/Frameworks` auto-completion now works.
 
-### Usage
+### Capturing script stacktaces
 
-This is overseen by the `diamond` binary and a script `prepare.rb` that is
-run before the script proper. `prepare.rb` loads pods, rebuilds the script's
-framework if required then jumps into it's main.swift to start execution.
+![Icon](http://injectionforxcode.johnholdsworth.com/stacktrace.png)
 
-As all of Cocoa is available, a UI component can be added to a script by
-adding a `MainMenu.xib` and AppDelegate.swift to the script project.
+`diamond` runs your script from a parent process `guardian` to check
+for crashes. This process finds the Symbolicated CrashReporter ".crash" file
+and formats it to extract the stacktrace, de-mangling any Swift function names.
 
-```Swift
-    #!/usr/bin/env diamond
+### Running Diamond scripts in the debugger
 
-    import Cocoa
-    import WebKit
+![Icon](http://injectionforxcode.johnholdsworth.com/debugging.png)
 
-    if Process.arguments.count < 2 {
-        print( "Please specify URL" )
-        exit(0)
-    }
+When working with the Xcode project for a script it's "Binary" target can be run
+in the lldb debugger as you would a normal program. The binary target can also be
+used to create standalone binary versions of a script provided any dependencies
+are available.
 
-    let url = Process.arguments[1]
+### Importing one script into another to share code
 
-    NSApplicationMain( 0,  UnsafeMutablePointer<UnsafeMutablePointer<Int8>>(nil) )
+`diamond` shadow script projects are actually built as frameworks and run by loading
+them as a bundle. This means they can be imported into each other. If you wish to
+share some script library code it should be in the scripts's' directory ~/bin or
+~/bin/lib for it to be rebuilt automatically. Otherwise if you want to use external
+frameworks the `-F`, `-L`, `-l<library>` and `-Xlinker` options can be added at the
+top of the script as they can with `xcrun swift`.
 
-    class AppDelegate: NSObject, NSApplicationDelegate {
+### Scripts with a UI Component.
 
-        @IBOutlet weak var window: NSWindow!
-        @IBOutlet weak var webView: WebView!
+Script projects come with a `MainMenu.xib` and `AppDelegate.swift` by default so all that's
+required to give a script a UI is to call `NSApplicationMain` as shown in the `browse`
+example included in the distribution. For this to work `diamond` creates a dummy
+Contents directory in ~/bin where the `diamond` binary resides when you run the script.
 
-        func applicationDidFinishLaunching(aNotification: NSNotification) {
-            // Insert code here to initialize your application
-            NSApp.applicationIconImage = NSImage( named:"Swift" )
-            webView.mainFrame.loadRequest(NSURLRequest(URL: NSURL(string: url)!))
-            NSApplication.sharedApplication().activateIgnoringOtherApps( true )
-        }
+### import SwiftRuby for easier access to files and Strings
 
-        func applicationWillTerminate(aNotification: NSNotification) {
-            // Insert code here to tear down your application
-        }
+Foundation is not a particularly convenient way to work with files and processes
+and Swifts uncompromising String class does not make accessing parts of a string
+easy. To resolve this a port of the Core Ruby apis has been made to Swift in the
+project [SwiftRuby](https://RubyNative/SwiftRuby). Classes File, Stat, Time and Regexp
+are included along with extensions to String and Array to round off their rather Austere
+edges.
 
-    }
-```
+### Requirements
 
 To use Diamond, download and build this project and make sure that `$HOME/bin`
-is in your UNIX `PATH`. You can then type `diamond path_to_script` and it creates
-a blank script, an Xcode framework project then builds and runs it. If you prefer 
-editing in Xcode type `path_to_script -edit` to open the auto-created project.
-To get started there is a small example script `browse` in the project directory.
+is in your UNIX `PATH`. For some reason you may have to retry the build if
+you are using `El Capitan`.
+
+You can then type `diamond path_to_script` and it creates a blank script, an Xcode
+framework project then builds and runs it. If you prefer editing in Xcode type
+`path_to_script -edit` to open the auto-created project. To get started there
+is a small example script `browse` in the project directory.
 
 To use dependencies the `CocoaPods` gem and it's `Rome` plugin need to be installed.
 
@@ -89,34 +95,16 @@ To use dependencies the `CocoaPods` gem and it's `Rome` plugin need to be instal
 
 Use a !pod comment in framework import to force updating a particular pod later.
 
-### Under the Covers
-
-Diamond script works by setting the framework search path to include the following path:
-
-    ~/Library/Diamond/Frameworks/macosx/Debug
-
-and set the SYMROOT of projects when they build to ~/Library/Diamond/Frameworks/macosx
-so they build there. This looks after auto completion in the Xcode editor.
-The `diamond` binary use a runtime "rpath" the same as this Framework
-search path so diamond finds the Frameworks at run time.
-
-Each script has it's own shadow Xcode project accessed by typing `script_name -edit`.
-The files are copied to and from the actual script location depending on which is
-more recent. When `compile.rb` is building these projects it looks for projects
-it is dependent on and makes sure they are up to date.
-
-The final step is to provide better reporting of the file and line number of
-any crashes. All builds are `Debug` so they symbolicate. A separate `guardian`
-process watches for crashes and opens and formats the `.crash` log to do this.
-
 ### Reloader
 
 Diamond contains an implementation of code injection. If you are running a
 UI script and update one of it's sources it will be built into a bundle
-and loaded applying any changes to class method implementations without restart.
+and loaded applying any changes to class method implementations without
+requiring a restart.
 
 The author can be reached on Twitter
-[@Injection4Xcode](https://twitter.com/#!/@Injection4Xcode).
+[@Injection4Xcode](https://twitter.com/#!/@Injection4Xcode) or by email
+on support at injectionforxcode.com
 
 ### MIT License
 
