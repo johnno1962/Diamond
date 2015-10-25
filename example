@@ -1,0 +1,22 @@
+#!/usr/bin/env diamond
+//
+//  main.swift
+//  TemplateProject
+//
+//  Created by John Holdsworth on 18/09/2015.
+//  Copyright © 2015 John Holdsworth. All rights reserved.
+//
+
+import Foundation
+
+// plain git dependency
+import SwiftRuby // clone RubyNative/SwiftRuby
+
+// CocoaPoda dependencies
+import Alamofire // pod 'Alamofire'
+import Box // pod 'Box', :head
+
+// Carthage dependency
+import SWXMLHash // github "drmohundro/SWXMLHash"
+
+print("Hello, \(Process.arguments)!")

@@ -6,7 +6,7 @@
 #  Created by John Holdsworth on 18/09/2015.
 #  Copyright © 2015 John Holdsworth. All rights reserved.
 #
-#  $Id: //depot/Diamond/Diamond/prepare.rb#43 $
+#  $Id: //depot/Diamond/Diamond/prepare.rb#45 $
 #
 #  Repo: https://github.com/johnno1962/Diamond
 #
@@ -93,75 +93,77 @@ def prepareScriptProject( libraryRoot, scriptPath, scriptName, scriptProject, ld
     frameworkRoot = libraryRoot+"/Frameworks"
     scriptFramework = frameworkRoot+"/"+scriptName+".framework"
 
-    if $indent == "" && scriptName != "guardian"
-        for contents in [ENV["HOME"]+"/bin/Contents", libraryRoot+"/Build/Debug/Contents"]
-            if !File.exists?( contents )
-                FileUtils.mkdir_p( contents )
-                File.symlink( "Resources/Info.plist", contents+"/Info.plist" )
+    if scriptName != "guardian"
+
+        if $indent == ""
+            for contents in [ENV["HOME"]+"/bin/Contents", libraryRoot+"/Build/Debug/Contents"]
+                if !File.exists?( contents )
+                    FileUtils.mkdir_p( contents )
+                    File.symlink( "Resources/Info.plist", contents+"/Info.plist" )
+                end
+                resourceFramework = mainSource[/\/\/ Resources: (\w+)/, 1] || scriptName
+                FileUtils.ln_s( frameworkRoot+"/"+resourceFramework+".framework/Resources", contents+"/Resources", :force => true )
             end
-            FileUtils.rm_f( contents+"/Resources" )
-            resourceFramework = mainSource[/\/\/ Resources: (\w+)/, 1] || scriptName
-            File.symlink( frameworkRoot+"/"+resourceFramework+".framework/Resources", contents+"/Resources" )
         end
-    end
 
-    # patch project with any LD options from the script
+        # patch project with any LD options from the script
 
-    if $indent == ""
-        pbxproj = newProject+"/project.pbxproj"
-        original = File.read( pbxproj )
+        if $indent == ""
+            pbxproj = newProject+"/project.pbxproj"
+            original = File.read( pbxproj )
 
-        project = original.gsub( /OTHER_LDFLAGS = [^;]+;\n/, <<LDFLAGS )
+            project = original.gsub( /OTHER_LDFLAGS = [^;]+;\n/, <<LDFLAGS )
 OTHER_LDFLAGS = (
 #{ldFlags}				);
 LDFLAGS
 
-        if project != original
-            log( "Saving OTHER_LDFLAGS to #{pbxproj}" )
-            File.write( pbxproj, project )
+            if project != original
+                log( "Saving OTHER_LDFLAGS to #{pbxproj}" )
+                File.write( pbxproj, project )
+            end
         end
-    end
 
-    # user options
+        # user options
 
-    case lastArg
+        case lastArg
 
-    when "-edit"
-        if justCreated
-            sleep 2 # eh?
+        when "-edit"
+            if justCreated
+                sleep 2 # eh?
+            end
+            system( "open '#{newProject}'" )
+            log( "Opened #{newProject}" )
+            exit( 123 )
+
+        when "-show"
+            showProj = scriptPath+".scriptproj"
+            if !File.rename( scriptProject, showProj )
+                die( "Could not move project to #{showProj}" )
+            end
+            log( "Moved #{scriptProject} -> #{showProj}" )
+            exit( 123 )
+
+        when "-hide"
+            hideProj = libraryRoot+"/Projects/"+scriptName
+            if !File.rename( scriptProject, hideProj )
+                die( "Could not move project to #{hideProj}" )
+            end
+            log( "Moved #{scriptProject} -> #{hideProj}" )
+            exit( 123 )
+
+        when "-dump"
+            if !system( "open `ls -t $HOME/Library/Logs/DiagnosticReports/diamond*.crash | head -1`" )
+                die( "Could not open crash log" )
+            end
+            exit( 123 )
+
+        when "-reclone"
+            $isReclone = 123
+        
+        when "-rebuild"
+            $isRebuild = 123
+        
         end
-        system( "open '#{newProject}'" )
-        log( "Opened #{newProject}" )
-        exit( 123 )
-
-    when "-show"
-        showProj = scriptPath+".scriptproj"
-        if !File.rename( scriptProject, showProj )
-            die( "Could not move project to #{showProj}" )
-        end
-        log( "Moved #{scriptProject} -> #{showProj}" )
-        exit( 123 )
-
-    when "-hide"
-        hideProj = libraryRoot+"/Projects/"+scriptName
-        if !File.rename( scriptProject, hideProj )
-            die( "Could not move project to #{hideProj}" )
-        end
-        log( "Moved #{scriptProject} -> #{hideProj}" )
-        exit( 123 )
-
-    when "-dump"
-        if !system( "open `ls -t $HOME/Library/Logs/DiagnosticReports/diamond*.crash | head -1`" )
-            die( "Could not open crash log" )
-        end
-        exit( 123 )
-
-    when "-reclone"
-        $isReclone = 123
-    
-    when "-rebuild"
-        $isRebuild = 123
-    
     end
 
     # determine pod dependancies
@@ -176,21 +178,21 @@ LDFLAGS
     # import d // github "d"
     # import f // clone e/f etc
 
-    mainSource.scan( /^\s*import\s+(\S+)\s*\/\/\s*(!)?((pod|github|clone)\s+(\S+)(.*))/ ).each { |import|
+    mainSource.scan( /^\s*import\s+(\S+)(\s*\/\/\s*(!)?((pod|github|clone)\s+(\S+)(.*)))?/ ).each { |import|
         libName = import[0]
         libFramework = frameworkRoot+"/"+libName+".framework"
 
-        if $isReclone || import[1] == "!" || !File.exists?( libFramework )
-            if import[3] == "pod"
-                missingPods += import[2]+"\n"
-            elsif import[3] == "github"
-                missingCarts += import[2]+"\n"
-            elsif import[3] == "clone"
-                url = import[4]
+        if $isReclone || import[2] == "!" || !File.exists?( libFramework )
+            if import[4] == "pod"
+                missingPods += import[3]+"\n"
+            elsif import[4] == "github"
+                missingCarts += import[3]+"\n"
+            elsif import[4] == "clone"
+                url = import[5]
                 if url !~ /^https?:/
                     url = "https://github.com/"+url+".git"
                 end
-                clone = "git clone #{import[5]} #{url}"
+                clone = "git clone #{import[6]} #{url}"
                 if !system( "cd '#{libraryRoot}/Projects' && rm -rf '#{libName}' && "+clone )
                     die( "Could not "+clone )
                 end
@@ -199,24 +201,42 @@ LDFLAGS
 
         if !$builtFramework[libName]
             $builtFramework[libName] = true
+            libBuilt = false
 
-            # make sure ay projects script is dependent on are rebuilt
-            for libProj in [libName+".scriptproj",
-                        scriptPath+"/lib/"+libName+".scriptproj",
-                        ENV["HOME"]+"/bin/lib/"+libName+".scriptproj",
-                        libraryRoot+"/Projects/"+libName]
-
-                if File.exists?( libProj )
+            # make sure scripts imported are rebuilt
+            for libScript in [libName, ENV["HOME"]+"/bin/lib/"+libName, ENV["HOME"]+"/bin/"+libName]
+                if File.exists?( libScript )
                     saveIndent = $indent
                     $indent += "  "
-                    if prepareScriptProject( libraryRoot, libProj+"/main.swift", libName, libProj, ldFlags, lastArg )
+                    libProj = libraryRoot+"/Projects/"+libName
+                    if prepareScriptProject( libraryRoot, libScript, libName, libProj, ldFlags, lastArg )
                         FileUtils.touch( scriptMain )
                     end
-                    if !File.exists?( scriptProject+"/"+libName ) && scriptName != "guardian"
-                        File.symlink( File.absolute_path( libProj ), scriptProject+"/"+libName )
-                    end
                     $indent = saveIndent
+                    libBuilt = true
                     break
+                end
+            end
+
+            if !libBuilt
+                # make sure ay projects script is dependent on are rebuilt
+                for libProj in [libName+".scriptproj",
+                            scriptPath+"/lib/"+libName+".scriptproj",
+                            ENV["HOME"]+"/bin/lib/"+libName+".scriptproj",
+                            libraryRoot+"/Projects/"+libName]
+
+                    if File.exists?( libProj )
+                        saveIndent = $indent
+                        $indent += "  "
+                        if prepareScriptProject( libraryRoot, libProj+"/main.swift", libName, libProj, ldFlags, lastArg )
+                            FileUtils.touch( scriptMain )
+                        end
+                        if !File.exists?( scriptProject+"/"+libName ) && scriptName != "guardian"
+                            FileUtils.ln_s( File.absolute_path( libProj ), scriptProject+"/"+libName, :force => true )
+                        end
+                        $indent = saveIndent
+                        break
+                    end
                 end
             end
         end
@@ -225,7 +245,7 @@ LDFLAGS
         moduleBinaries += [libFramework+"/"+libName]
     }
 
-    # build and install any missing or forced pods
+    # build and install any missing or forced pods & carts
 
     if missingPods != ""
         File.write( libraryRoot+"/Pods/Podfile", podfile = <<PODFILE )
@@ -296,8 +316,9 @@ PODFILE
         log( "Building #{scriptProject} #{target}")
         out = `#{build} 2>&1`
         if !$?.success?
-            errors = out.scan( /[^\/]+\b(?:error|ld):.*\n(?:.+\n)*/ ).uniq.join("")
-            die( "Script build error for command:\n"+build+"\n"+errors )
+            errors = out.scan( /[^\/\n]+\b(?:error|ld):.*\n(?:.+\n)*/ ).uniq.join("")
+            log( "Script build error for command:\n"+build+"\n\x1b[31m"+errors+"\x1b[0m" )
+            exit( 124 )
         end
 
         File.open( reloaderLog, mode ).write( out )

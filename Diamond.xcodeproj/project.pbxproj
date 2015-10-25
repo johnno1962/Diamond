@@ -59,12 +59,12 @@
 		BB3F784A1BACA8E800435430 /* diamond */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = diamond; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB3F789C1BACAB9B00435430 /* TemplateProject.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TemplateProject.xcodeproj; path = TemplateProject/TemplateProject.xcodeproj; sourceTree = "<group>"; };
 		BB3F78B51BACB8C100435430 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		BB6B2F0B1BDD45FA00D03601 /* example */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = example; sourceTree = "<group>"; };
 		BB76C5411BBF3E6500987FBC /* browse */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = browse; sourceTree = "<group>"; };
 		BB81CB541BADF8BD001525E1 /* Reloader.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Reloader.xcodeproj; path = Reloader/Reloader.xcodeproj; sourceTree = "<group>"; };
 		BB81CB671BAE168D001525E1 /* reloader.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = reloader.rb; sourceTree = "<group>"; };
 		BB82F7CB1BAD92BE00094771 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		BB8F123E1BBE94050067527A /* guardian */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = guardian; sourceTree = "<group>"; };
-		BB9042611BD4498300EDF909 /* run_injector */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = run_injector; sourceTree = SOURCE_ROOT; };
 		BBCFE07C1BC301F100BE6B16 /* prepare.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = prepare.rb; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -84,7 +84,7 @@
 			children = (
 				BB82F7CB1BAD92BE00094771 /* README.md */,
 				BB76C5411BBF3E6500987FBC /* browse */,
-				BB9042611BD4498300EDF909 /* run_injector */,
+				BB6B2F0B1BDD45FA00D03601 /* example */,
 				BB3F784C1BACA8E800435430 /* Diamond */,
 				BB3F789C1BACAB9B00435430 /* TemplateProject.xcodeproj */,
 				BB81CB541BADF8BD001525E1 /* Reloader.xcodeproj */,
