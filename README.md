@@ -2,9 +2,9 @@
 # Diamond - Swift scripting made easy
 
 I, [like](https://realm.io/news/swift-for-rubyists/) [many](https://realm.io/news/swift-scripting/)
-would like to see Swift as the premier scripting language for the Mac (and Linux?)
-As it stands, using [xcrun swift](http://nomothetis.svbtle.com/swift-for-scripting)
-has it's limitations however.
+would love to see Swift as the premier scripting language for the Mac (and Linux?)
+As it stands however, using [xcrun swift](http://nomothetis.svbtle.com/swift-for-scripting)
+has it's limitations:
 
 * The Xcode editor for swift scripts does not allow auto-completion
 * managing dependencies on frameworks is left to the user
@@ -16,10 +16,10 @@ has it's limitations however.
 * Swift Strings are uncompromising and don't support Regexps
 
 `diamond` is a small binary intended to be used as a Swift interpreter to alleviate these
-problems. A Ruby script looks after converting your script into a Xcode project and
+problems. A small Ruby script looks after converting your script into a Xcode project and
 building it (along with any dependencies) as required. It also comes with a small library
 `SwiftRuby` which replicates the core of the Ruby api to work more easily with files,
-Strings and regular expressions.
+Strings and Regular Expressions than would otherwise be the case with Foundation.
 
 ### Xcode Editor, auto-completion and dependency management
 
@@ -33,7 +33,7 @@ will download and build them placing them in ~/Library/Diamond/Frameworks.
 As the script project has it's `Framework search path` is set to include 
 `~/Library/Diamond/Frameworks` auto-completion now works.
 
-### Capturing script stacktaces
+### Capturing script stacktraces
 
 ![Icon](http://injectionforxcode.johnholdsworth.com/stacktrace.png)
 
@@ -50,14 +50,14 @@ in the lldb debugger as you would a normal program. The binary target can also b
 used to create standalone binary versions of a script provided any dependencies
 are available. If you are debugging a script which imports another script or a 
 framework you can get warnings about duplications of Swift Classes as they
-are both built into theh binary and linked against by the frameworks.
+are both built into the binary and linked against by the frameworks.
 You can ignore these.
 
 ### Importing one script into another to share code
 
-`diamond` shadow script projects are actually built as frameworks and run by loading
+`diamond's` script projects are actually built as frameworks and run by loading
 them as a bundle. This means they can be imported into each other. If you wish to
-share some script library code it should be in the scripts's' directory ~/bin or
+share some script library code it should be in the scripts's directory ~/bin or
 ~/bin/lib for it to be rebuilt automatically. Otherwise if you want to use external
 frameworks the `-F`, `-L`, `-l<library>` and `-Xlinker` options can be added at the
 top of the script as they can with `xcrun swift`.
@@ -72,16 +72,16 @@ directory in `~/bin` where the `diamond` binary resides when you run the script.
 ### import SwiftRuby for easier access to files and Strings
 
 Foundation is not a particularly convenient way to work with files and processes
-and Swifts uncompromising String class does not make accessing parts of a string
+and Swift's uncompromising String class does not make accessing parts of a string
 easy. To resolve this a port of the Core Ruby apis has been made to Swift in the
-project [SwiftRuby](https://RubyNative/SwiftRuby). Classes: File, Stat, Time and Regexp
-are included along with extensions to String and Array to round off their rather Austere
-edges.
+project [SwiftRuby](https://github.com/RubyNative/SwiftRuby). Classes: File, Stat,
+Time and Regexp are included along with extensions to String and Array to round off
+their rather Austere edges.
 
 ### Requirements
 
 To use Diamond, download and build this project and make sure that have `$HOME/bin`
-(`~/bin` does not work) in your UNIX `PATH`. For some reason you may have to retry 
+(`~/bin` does not work) in your UNIX `$PATH`. For some reason you may have to retry 
 the build if you are using `El Capitan`.
 
 You can then type `diamond path_to_script` and it creates a blank script, an Xcode
