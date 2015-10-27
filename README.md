@@ -2,15 +2,15 @@
 # Diamond - Swift scripting made easy
 
 I, [like](https://realm.io/news/swift-for-rubyists/) [many](https://realm.io/news/swift-scripting/)
-would love to see Swift as the premier scripting language for the Mac (and Linux?)
+would love to see Swift as the goto scripting language for the Mac (and Linux?)
 As it stands however, using [xcrun swift](http://nomothetis.svbtle.com/swift-for-scripting)
 has it's limitations:
 
 * The Xcode editor for swift scripts does not allow auto-completion
-* managing dependencies on frameworks is left to the user
-* In the even of a crash the line number is not reported
+* Managing dependencies on frameworks is left to the user
+* In the event of a crash the line number is not reported
 * It is not possible to run swift scripts in the debugger
-* Code can not be shared readily between swift scripts
+* Code cannot be shared readily between swift scripts
 * A script can not have a UI component using Cocoa
 * Foundation is not convenient when working with files
 * Swift Strings are uncompromising and don't support Regexps
@@ -76,12 +76,12 @@ and Swift's uncompromising String class does not make accessing parts of a strin
 easy. To resolve this a port of the Core Ruby apis has been made to Swift in the
 project [SwiftRuby](https://github.com/RubyNative/SwiftRuby). Classes: File, Stat,
 Time and Regexp are included along with extensions to String and Array to round off
-their rather Austere edges.
+their rather austere edges.
 
 ### Requirements
 
 To use Diamond, download and build this project and make sure that have `$HOME/bin`
-(`~/bin` does not work) in your UNIX `$PATH`. For some reason you may have to retry 
+in your UNIX `$PATH` (`~/bin` does not work.) For some reason you may have to retry 
 the build if you are using `El Capitan`.
 
 You can then type `diamond path_to_script` and it creates a blank script, an Xcode
@@ -106,8 +106,7 @@ and loaded applying any changes to class method implementations without
 requiring a restart.
 
 The author can be reached on Twitter
-[@Injection4Xcode](https://twitter.com/#!/@Injection4Xcode) or by email
-on support at injectionforxcode.com
+[@Injection4Xcode](https://twitter.com/#!/@Injection4Xcode)
 
 ### MIT License
 
