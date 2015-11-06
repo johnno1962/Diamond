@@ -1,0 +1,24 @@
+#!/usr/bin/env diamond
+//
+//  run_injector
+//  Diamond
+//
+//  Created by John Holdsworth on 18/09/2015.
+//  Copyright © 2015 John Holdsworth. All rights reserved.
+//
+
+import SwiftRuby
+import Injector // clone https://github.com/johnno1962/Injector
+
+// Resources: Injector // specfies project for ~/bin/Contents/Resources
+
+let binPath = U(ENV["HOME"])+"/bin/run_injector"
+let currentPath = Process.arguments[0]
+
+if currentPath != binPath {
+    FileUtils.rsync( currentPath, binPath )
+    Kernel.exec( "/usr/bin/env", ["diamond", "run:", binPath] )
+}
+else {
+    InjectorAppDelegate.main()
+}

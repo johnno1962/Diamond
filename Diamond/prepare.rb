@@ -6,7 +6,7 @@
 #  Created by John Holdsworth on 18/09/2015.
 #  Copyright © 2015 John Holdsworth. All rights reserved.
 #
-#  $Id: //depot/Diamond/Diamond/prepare.rb#45 $
+#  $Id: //depot/Diamond/Diamond/prepare.rb#46 $
 #
 #  Repo: https://github.com/johnno1962/Diamond
 #
@@ -313,10 +313,11 @@ PODFILE
             mode = "w"
         end
 
+        system( "rm -rf '#{frameworkRoot}'/*.swiftmodule" )
         log( "Building #{scriptProject} #{target}")
         out = `#{build} 2>&1`
         if !$?.success?
-            errors = out.scan( /[^\/\n]+\b(?:error|ld):.*\n(?:.+\n)*/ ).uniq.join("")
+            errors = out.scan( /(?:\n.{1,200})*\berror:.*\n(?:.+\n)*/ ).uniq.join("")
             log( "Script build error for command:\n"+build+"\n\x1b[31m"+errors+"\x1b[0m" )
             exit( 124 )
         end

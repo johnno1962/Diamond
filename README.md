@@ -87,7 +87,9 @@ the build if you are using `El Capitan`.
 You can then type `diamond path_to_script` and it creates a blank script, an Xcode
 framework project then builds and runs it. If you prefer editing in Xcode type
 `path_to_script -edit` to open the auto-created project. To get started there
-is a small example script `browse` in the project directory.
+is a small example script `browse` in the project directory. The script
+"run_injector" installs and runs the [Injector](https://github.com/johnno1962/Injector)
+project for run-time modifcation of code in Xcode.
 
 To use dependencies the `CocoaPods` gem and it's `Rome` plugin need to be installed.
 
