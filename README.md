@@ -21,17 +21,60 @@ building it (along with any dependencies) as required. It also comes with a smal
 `SwiftRuby` which replicates the core of the Ruby api to work more easily with files,
 Strings and Regular Expressions than would otherwise be the case with Foundation.
 
+### Installation
+
+Diamond can be installed either via homebrew or by cloning and building this repo.
+
+``` sh
+  # Brew
+  brew install --HEAD RubyNative/formulae/diamond
+
+  # Manually
+  git clone https://github.com/RubyNative/Diamond.git
+  cd Diamond
+  xcrun xcodebuild build
+```
+
+This will install the `diamond` tool in `$HOME/bin`.
+
+You will need to make sure that have `$HOME/bin` in your UNIX `$PATH` (`~/bin`
+does not work.) For some reason you may have to retry the build if
+you are using `El Capitan`.
+
+### Getting Started
+
+To make your first Diamond script, run `diamond my_script.swift`. This will create a
+default swift file, and set up the project behind the scene.
+
+From there you can either edit in your favourite `$EDITOR`. If your editor of choice
+happens to be Xcode, then you can run `diamond my_script.swift -edit` and Diamond
+will generate an Xcode project for you to work in.
+
 ### Xcode Editor, auto-completion and dependency management
 
 ![Icon](http://injectionforxcode.johnholdsworth.com/completion.png)
 
-To create a script type `diamond <path_to_script>`. `diamond` will create an Xcode
-project for the script. This project can be accessed by typing `<path_to_script> -edit`.
-Your script will be shadowed by the file main.swift in this project. Frameworks can be
-pulled into your script from CocoaPods or Carthage using the syntax above and diamond
-will download and build them placing them in ~/Library/Diamond/Frameworks.
-As the script project has it's `Framework search path` is set to include 
-`~/Library/Diamond/Frameworks` auto-completion now works.
+Using `diamond my_script.swift -edit` will create an Xcode project for the script.
+Your script will be shadowed by the file main.swift in this project.
+
+Frameworks can be pulled into your script from CocoaPods or Carthage using the
+syntax above and `diamond` will download and build and install them in `~/Library/Diamond/Frameworks`.
+The script's project has it's `Framework search path` set to include
+`~/Library/Diamond/Frameworks`, so Xcode's auto-completion works too!
+
+After adding your dependencies, re-running `diamond my_script.swift` will set
+them up.
+
+To use dependencies, the `CocoaPods` gem and it's `Rome` plugin need to be installed.
+
+``` sh
+    $ [sudo] gem install cocoapods
+    $ [sudo] gem install cocoapods-rome
+```
+
+Use a `!pod` comment in framework import to force updating a particular pod after
+it has been installed for the first time, it will stay cached otherwise.
+
 
 ### Capturing script stacktraces
 
@@ -45,10 +88,10 @@ and formats it to extract the stacktrace, de-mangling any Swift function names.
 
 ![Icon](http://injectionforxcode.johnholdsworth.com/debugging.png)
 
-When working with the Xcode project for a script it's "Binary" target can be run
+When working with the Xcode project for a script, it's "Binary" target can be run
 in the lldb debugger as you would a normal program. The binary target can also be
 used to create standalone binary versions of a script provided any dependencies
-are available. If you are debugging a script which imports another script or a 
+are available. If you are debugging a script which imports another script or a
 framework you can get warnings about duplications of Swift Classes as they
 are both built into the binary and linked against by the frameworks.
 You can ignore these.
@@ -78,27 +121,11 @@ project [SwiftRuby](https://github.com/RubyNative/SwiftRuby). Classes: File, Sta
 Time and Regexp are included along with extensions to String and Array to round off
 their rather austere edges.
 
-### Requirements
+### Examples
 
-To use Diamond, download and build this project and make sure that have `$HOME/bin`
-in your UNIX `$PATH` (`~/bin` does not work.) For some reason you may have to retry 
-the build if you are using `El Capitan`.
-
-You can then type `diamond path_to_script` and it creates a blank script, an Xcode
-framework project then builds and runs it. If you prefer editing in Xcode type
-`path_to_script -edit` to open the auto-created project. To get started there
-is a small example script `browse` in the project directory. The script
-"run_injector" installs and runs the [Injector](https://github.com/johnno1962/Injector)
-project for run-time modifcation of code in Xcode.
-
-To use dependencies the `CocoaPods` gem and it's `Rome` plugin need to be installed.
-
-```
-    $ sudo gem install cocoapods
-    $ sudo gem install cocoapods-rome
-```
-
-Use a !pod comment in framework import to force updating a particular pod later.
+To get started there is a small example script `browse` in the project directory.
+The script "run_injector" installs and runs the [Injector](https://github.com/johnno1962/Injector)
+project for run-time modification of code in Xcode.
 
 ### Reloader
 
