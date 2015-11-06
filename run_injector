@@ -10,7 +10,7 @@
 import SwiftRuby
 import Injector // clone https://github.com/johnno1962/Injector
 
-// Resources: Injector // specfies project for ~/bin/Contents/Resources
+// Resources: Injector // specifies project for ~/bin/Contents/Resources
 
 let binPath = U(ENV["HOME"])+"/bin/run_injector"
 let currentPath = Process.arguments[0]

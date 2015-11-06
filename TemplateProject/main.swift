@@ -12,7 +12,7 @@ import SwiftRuby // clone RubyNative/SwiftRuby
 
 print("Hello, \(Process.arguments)!")
 
-//// uncomment this to turn this into a fully fledged Cocoa App
+//// Uncomment below to turn the script into a fully fledged Cocoa App
 
 // import Cocoa
 // if Process.arguments.count < 2 {
