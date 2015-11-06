@@ -5,18 +5,22 @@
 //  Created by John Holdsworth on 18/09/2015.
 //  Copyright © 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Diamond/Diamond/main.m#30 $
+//  $Id: //depot/Diamond/Diamond/main.m#32 $
 //
 //  Repo: https://github.com/johnno1962/Diamond
 //
 
 @import Foundation;
+#import <sys/xattr.h>
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wcstring-format-directive"
 #pragma clang diagnostic ignored "-Wcast-qual"
 
-#define SError( ... ) { fputs( [[NSString stringWithFormat:@"diamond: " __VA_ARGS__ ] UTF8String], stderr ); exit( EXIT_FAILURE ); }
+#define DError( ... ) do { \
+    fputs( [[NSString stringWithFormat:@"diamond: " __VA_ARGS__ ] UTF8String], stderr ); \
+    exit( EXIT_FAILURE ); \
+} while( FALSE );
 
 static NSString *extractLDFlags( const char **argv[] );
 static NSString *locateScriptInPath( NSString *script, NSString *home );
@@ -68,7 +72,7 @@ int main( int argc, const char *argv[] ) {
     @autoreleasepool {
 
         if ( argc < 2 )
-            SError( "must be run with a script name\n" );
+            DError( "must be run with a script name\n" );
 
         NSString *home = [NSString stringWithUTF8String:getenv("HOME")];
         libraryRoot = [home stringByAppendingPathComponent:@"Library/Diamond"];
@@ -91,6 +95,11 @@ int main( int argc, const char *argv[] ) {
 
         // find the actual script path using $PATH from the environment.
         NSString *scriptPath = locateScriptInPath( script, home );
+
+        char attrValue[PATH_MAX];
+        if ( getxattr( [scriptPath UTF8String], "com.apple.quarantine", attrValue, sizeof attrValue, 0, 0 ) >= 0 )
+            DError( "Script has quarantine attribute set and can not be run.\n"
+                   "Downloaded by: %s\nUse: xattr -d com.apple.quarantine %@ if you are sure.\n", attrValue, scriptPath );
 
         // remove extension from last path component to find framework name
         scriptName = [[script lastPathComponent] stringByDeletingPathExtension];
@@ -119,7 +128,7 @@ int main( int argc, const char *argv[] ) {
             exit( 1 );
 
         if ( status != EXIT_SUCCESS )
-            SError( "%@ returns error %d\n", compileCommand, status>>8 );
+            DError( "%@ returns error %d\n", compileCommand, status>>8 );
 
         savedHandler = signal( SIGINT, ensureChildExits );
 
@@ -140,7 +149,7 @@ int main( int argc, const char *argv[] ) {
                     shiftedArgv[i+2] = argv[i];
 
                 execv( shiftedArgv[0], (char *const *)shiftedArgv );
-                SError( "execv failed\n" );
+                DError( "execv failed\n" );
             }
 
             // ENV["DIAMOND_CHILD_PID"] for guardian framework main() is process id of child process.
@@ -169,7 +178,7 @@ int main( int argc, const char *argv[] ) {
                 if ( [[NSFileManager defaultManager] isExecutableFileAtPath:binaryPath] )
                     execv( [binaryPath UTF8String], (char *const *)argv+2 );
 
-                SError( "Unable to execute %@: %s\n", binaryPath, strerror(errno) );
+                DError( "Unable to execute %@: %s\n", binaryPath, strerror(errno) );
             }
 
             // If running actual script in child process,
@@ -236,7 +245,7 @@ static NSString *locateScriptInPath( NSString *script, NSString *home ) {
     }
 
     if ( [scriptPath characterAtIndex:0] == '.' ) {
-        char cwd[MAXPATHLEN];
+        char cwd[PATH_MAX];
         NSString *cwdStr = [NSString stringWithUTF8String:getcwd( cwd, sizeof cwd )];
         if ( [scriptPath hasPrefix:@"./"] )
             scriptPath = [scriptPath substringFromIndex:2];
@@ -253,16 +262,16 @@ static int execFramework( NSString *scriptName, int argc, const char **argv ) {
     NSBundle *frameworkBundle = [NSBundle bundleWithPath:frameworkPath];
 
     if ( !frameworkBundle )
-        SError( "Could not locate binary or framemork bundle %@\n", frameworkPath );
+        DError( "Could not locate binary or framemork bundle %@\n", frameworkPath );
 
     if ( ![frameworkBundle load] )
-        SError( "Could not load framemork bundle %@\n", frameworkBundle );
+        DError( "Could not load framemork bundle %@\n", frameworkBundle );
 
     // Slight hack to get CFBundle from NSBundle so we can locate main function in main.swift
     CFBundleRef cfBundle = (__bridge CFBundleRef)[frameworkBundle valueForKey:@"cfBundle"];
 
     if ( !cfBundle )
-        SError( "Could not access CFBundle %@\n", frameworkBundle );
+        DError( "Could not access CFBundle %@\n", frameworkBundle );
 
     // find pointer to main( argc, argv )
     // ..can be guardian or actual script.
@@ -270,7 +279,7 @@ static int execFramework( NSString *scriptName, int argc, const char **argv ) {
     main_t scriptMain = (main_t)CFBundleGetFunctionPointerForName( cfBundle, (CFStringRef)@"main" );
 
     if ( !scriptMain )
-        SError( "Could not locate main() function in %@\n", frameworkBundle );
+        DError( "Could not locate main() function in %@\n", frameworkBundle );
 
     int status = 1;
     @try {
