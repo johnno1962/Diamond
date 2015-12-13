@@ -5,7 +5,7 @@ I, [like](https://realm.io/news/swift-for-rubyists/) [many](https://realm.io/new
 would love to see Swift as the goto scripting language for the Mac (and Linux?)
 As it stands however, using [xcrun swift](http://nomothetis.svbtle.com/swift-for-scripting)
 has it's limitations:
-
+ 
 * The Xcode editor for swift scripts does not allow auto-completion
 * Managing dependencies on frameworks is left to the user
 * In the event of a crash the line number is not reported
@@ -54,8 +54,9 @@ will generate an Xcode project for you to work in.
 ### Linux
 
 Once you have developed a script it can be used on Linux using the interpreter
-script diaomn in the Linux directory which uses the Swift package manager.
-Where there are dependencies use comments after the import such as:
+script `diamond` in the Linux directory which uses the Swift package manager.
+Copy this script into a directory on your UNIX $PATH and where there are
+dependencies use comments after the import such as:
 
     import NSLinux // clone https://github.com/johnno1962/NSLinux.git #1
 
