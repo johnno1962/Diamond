@@ -6,9 +6,17 @@
 #  Created by John Holdsworth on 18/09/2015.
 #  Copyright © 2015 John Holdsworth. All rights reserved.
 #
-#  $Id: //depot/Diamond/Linux/diamond#2 $
+#  $Id: //depot/Diamond/Linux/diamond#3 $
 #
 #  Repo: https://github.com/johnno1962/Diamond
+#
+
+#
+#  Place this file somewhere on your UNIX PATH
+#
+#  dependencies can be specified in a comment after the import e.g.
+#
+#  import NSLinux // clone https://github.com/johnno1962/NSLinux.git #1
 #
 
 scriptPath = ARGV.shift
@@ -50,5 +58,5 @@ let package = Package(
 PACKAGE
 
 if system( "cd #{package} && swift build" )
-    Kernel.exec( package+".build/debug/"+scriptName, *ARGV )
+    Kernel.exec( [package+".build/debug/"+scriptName, scriptPath], *ARGV )
 end
