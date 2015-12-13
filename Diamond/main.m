@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 18/09/2015.
 //  Copyright © 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Diamond/Diamond/main.m#32 $
+//  $Id: //depot/Diamond/Diamond/main.m#33 $
 //
 //  Repo: https://github.com/johnno1962/Diamond
 //
@@ -17,10 +17,10 @@
 #pragma clang diagnostic ignored "-Wcstring-format-directive"
 #pragma clang diagnostic ignored "-Wcast-qual"
 
-#define DError( ... ) do { \
+#define DError( ... ) { \
     fputs( [[NSString stringWithFormat:@"diamond: " __VA_ARGS__ ] UTF8String], stderr ); \
     exit( EXIT_FAILURE ); \
-} while( FALSE );
+}
 
 static NSString *extractLDFlags( const char **argv[] );
 static NSString *locateScriptInPath( NSString *script, NSString *home );
@@ -28,8 +28,8 @@ static int execFramework( NSString *framework, int argc, const char **argv );
 static void watchProject( NSString *scriptName );
 
 static NSString *libraryRoot, *scriptName;
-static void (*savedHandler)( int );
 static FSEventStreamRef fileEvents;
+static void (*savedHandler)( int );
 static pid_t childPid;
 
 static void ensureChildExits( int signum ) {
@@ -96,10 +96,10 @@ int main( int argc, const char *argv[] ) {
         // find the actual script path using $PATH from the environment.
         NSString *scriptPath = locateScriptInPath( script, home );
 
-        char attrValue[PATH_MAX];
-        if ( getxattr( [scriptPath UTF8String], "com.apple.quarantine", attrValue, sizeof attrValue, 0, 0 ) >= 0 )
-            DError( "Script has quarantine attribute set and can not be run.\n"
-                   "Downloaded by: %s\nUse: xattr -d com.apple.quarantine %@ if you are sure.\n", attrValue, scriptPath );
+        char quarantineAttr[] = "com.apple.quarantine", attrValue[PATH_MAX];
+        if ( getxattr( [scriptPath UTF8String], quarantineAttr, attrValue, sizeof attrValue, 0, 0 ) >= 0 )
+            DError( "Script has quarantine attribute set and can not be run.\nDownloaded by: %s\n"
+                    "Use: xattr -d %s %@ if you are sure.\n", attrValue, quarantineAttr, scriptPath );
 
         // remove extension from last path component to find framework name
         scriptName = [[script lastPathComponent] stringByDeletingPathExtension];

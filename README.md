@@ -18,8 +18,9 @@ has it's limitations:
 `diamond` is a small binary intended to be used as a Swift interpreter to alleviate these
 problems. A small Ruby script looks after converting your script into a Xcode project and
 building it (along with any dependencies) as required. It also comes with a small library
-`SwiftRuby` which replicates the core of the Ruby api to work more easily with files,
-Strings and Regular Expressions than would otherwise be the case with Foundation.
+[SwiftRuby](https://github.com/RubyNative/SwiftRuby) which replicates the core of the Ruby
+api to work more easily with files, Strings and Regular Expressions than would otherwise
+be the case with Foundation.
 
 ### Installation
 
@@ -49,6 +50,18 @@ default swift file, and set up the project behind the scene.
 From there you can either edit in your favourite `$EDITOR`. If your editor of choice
 happens to be Xcode, then you can run `diamond my_script.swift -edit` and Diamond
 will generate an Xcode project for you to work in.
+
+### Linux
+
+Once you have developed a script it can be used on Linux using the interpreter
+script diaomn in the Linux directory which uses the Swift package manager.
+Where there are dependencies use comments after the import such as:
+
+    import NSLinux // clone https://github.com/johnno1962/NSLinux.git #1
+
+You'll need to install ruby if you don't already have it by typing:
+
+    sudo apt-get install ruby
 
 ### Xcode Editor, auto-completion and dependency management
 

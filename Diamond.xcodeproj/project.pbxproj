@@ -63,6 +63,7 @@
 		BB76C5411BBF3E6500987FBC /* browse */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = browse; sourceTree = "<group>"; };
 		BB81CB541BADF8BD001525E1 /* Reloader.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Reloader.xcodeproj; path = Reloader/Reloader.xcodeproj; sourceTree = "<group>"; };
 		BB81CB671BAE168D001525E1 /* reloader.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = reloader.rb; sourceTree = "<group>"; };
+		BB8227A61C1CF8C1007A87A1 /* diamond */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = diamond; path = Linux/diamond; sourceTree = "<group>"; };
 		BB82F7CB1BAD92BE00094771 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		BB8F123E1BBE94050067527A /* guardian */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = guardian; sourceTree = "<group>"; };
 		BBCFE07C1BC301F100BE6B16 /* prepare.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = prepare.rb; sourceTree = "<group>"; };
@@ -86,6 +87,7 @@
 				BB76C5411BBF3E6500987FBC /* browse */,
 				BB6B2F0B1BDD45FA00D03601 /* example */,
 				BB3F784C1BACA8E800435430 /* Diamond */,
+				BB8227A11C1CF8AC007A87A1 /* Linux */,
 				BB3F789C1BACAB9B00435430 /* TemplateProject.xcodeproj */,
 				BB81CB541BADF8BD001525E1 /* Reloader.xcodeproj */,
 				BB3F784B1BACA8E800435430 /* Products */,
@@ -127,6 +129,14 @@
 				BB81CB591BADF8C2001525E1 /* Reloader.bundle */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		BB8227A11C1CF8AC007A87A1 /* Linux */ = {
+			isa = PBXGroup;
+			children = (
+				BB8227A61C1CF8C1007A87A1 /* diamond */,
+			);
+			name = Linux;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

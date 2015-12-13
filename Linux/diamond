@@ -1,0 +1,54 @@
+#!/usr/bin/env ruby
+
+#  diamond (for Linux)
+#  Diamond
+#
+#  Created by John Holdsworth on 18/09/2015.
+#  Copyright © 2015 John Holdsworth. All rights reserved.
+#
+#  $Id: //depot/Diamond/Linux/diamond#2 $
+#
+#  Repo: https://github.com/johnno1962/Diamond
+#
+
+scriptPath = ARGV.shift
+scriptName = scriptPath[/(\w+)(\.\w+)*$/, 1]
+
+for directory in ENV["PATH"].split( ":" )
+    found = directory+"/"+scriptPath
+    if File.exists?( directory+"/"+scriptPath )
+        scriptPath = found
+        break
+    end
+end
+
+package = ENV["HOME"]+"/.packages/"+scriptName+"/"
+system( "mkdir -p '#{package}'" )
+
+mainSwift = package+"main.swift"
+
+if !File.exists?( mainSwift ) || File.mtime( scriptPath ).to_f > File.mtime( mainSwift ).to_f
+    system( "rsync -a '#{scriptPath}' '#{mainSwift}'" )
+end
+
+dependencies = []
+
+File.read( scriptPath ).scan( /^\s*import\s+\S+\s*\/\/\s*clone (.*?) #(\d+)/ ).each { |groups|
+    groups[1].sub!( /\.git$/, "" )
+    dependencies += [".Package(url: \"#{groups[0]}\", majorVersion: #{groups[1]})"]
+}
+
+File.write( package+"Package.swift", <<PACKAGE )
+
+import PackageDescription
+
+let package = Package(
+    name: "#{scriptName}",
+    dependencies: [#{dependencies.join(",\n\t")}
+    ]
+)
+PACKAGE
+
+if system( "cd #{package} && swift build" )
+    Kernel.exec( package+".build/debug/"+scriptName, *ARGV )
+end
