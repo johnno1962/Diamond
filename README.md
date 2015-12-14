@@ -58,7 +58,19 @@ script `diamond` in the Linux directory which uses the Swift package manager.
 Copy this script into a directory on your UNIX $PATH and where there are
 dependencies use comments after the import such as:
 
+```Swift
+    #!/usr/bin/env diamond
+
+    import Foundation
     import NSLinux // clone https://github.com/johnno1962/NSLinux.git #1
+    import Glibc
+
+    dispatch_async( 1, {
+        print( "\(Process.arguments)" )
+    } )
+
+    sleep( 1 )
+```
 
 You'll need to install ruby if you don't already have it by typing:
 
