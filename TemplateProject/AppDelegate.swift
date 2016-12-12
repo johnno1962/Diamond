@@ -20,7 +20,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         print( "\(CommandLine.arguments[0]) reloaded: \(self)!!" )
     }
 
-    func applicationDidFinishLaunching(_ aNotification: NSNotification) {
+    func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application
         NSApp.applicationIconImage = NSImage( named:"Swift" )
         let url = URL( string: CommandLine.arguments[1] )!

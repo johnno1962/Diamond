@@ -8,7 +8,7 @@
 import Foundation
 import SwiftRuby // clone RubyNative/SwiftRuby
 
-print("Hello, \(Process.arguments)!")
+print("Hello, \(CommandLine.arguments)!")
 
 //// Uncomment below to turn the script into a fully fledged Cocoa App
 
