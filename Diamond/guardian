@@ -7,7 +7,7 @@
 //  Created by John Holdsworth on 18/09/2015.
 //  Copyright © 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Diamond/Diamond/guardian#13 $
+//  $Id: //depot/Diamond/Diamond/guardian#14 $
 //
 //  Repo: https://github.com/RubyNative/RubyNative
 //
@@ -15,7 +15,7 @@
 import Foundation
 import SwiftRuby // clone RubyNative/SwiftRuby
 
-//NSLog( "\(Process.arguments)" )
+//NSLog( "\(CommandLine.arguments)" )
 
 let pid = ENV["DIAMOND_CHILD_PID"]!.to_i
 var status: Int32 = 0
@@ -26,9 +26,9 @@ if waitpid( pid_t(pid), &status, 0 ) < 0 || status & 0o177 == 0 {
 }
 
 var binary = "diamond"
-var script = Process.arguments[1]
+var script = CommandLine.arguments[1]
 if script.hasSuffix( ".dmd" ) {
-    binary = script.stringByReplacingOccurrencesOfString( ".dmd", withString: ".dme" )
+    binary = script.replacingOccurrences(of: ".dmd", with: ".dme" )
 }
 
 let logs = "~/Library/Logs/DiagnosticReports/\(binary)_*.crash"
@@ -45,14 +45,14 @@ while let log = IO.popen( "ls -t \(logs) 2>/dev/null | head -1" )?.readline() {
         var mainThread = true
         File.open( log )?.each_line {
             (line) in
-            if mainThread && line.containsString( " + ") {
+            if mainThread && line.contains( " + ") {
                 var mutable = line.mutableString
                 mutable["^((?:\\S+\\s+){3})(\\S+)"] =~ {
                     (groups: [String?]) in
                     return groups[1]!+_stdlib_demangleName( groups[2]! )
                 }
                 STDERR.print( "\(mutable)\n" )
-                if line.containsString( " start + " ) {
+                if line.contains( " start + " ) {
                     mainThread = false
                 }
             }
@@ -61,6 +61,6 @@ while let log = IO.popen( "ls -t \(logs) 2>/dev/null | head -1" )?.readline() {
     }
 }
 
-if Process.arguments[Process.argc-1] != "-restarter" {
+if CommandLine.arguments[CommandLine.argc-1] != "-restarter" {
     exit( EXIT_FAILURE )
 }

@@ -167,7 +167,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0700;
-				LastUpgradeCheck = 0700;
+				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = "John Holdsworth";
 				TargetAttributes = {
 					BB3F78491BACA8E800435430 = {
@@ -245,7 +245,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = "/bin/sh -x";
-			shellScript = "LIBROOT=~/Library/Diamond\nunset TOOLCHAINS\nrm -rf $LIBROOT/Build &&\nmkdir -p $LIBROOT/{Build,Carthage,Pods,Projects,Resources} &&\nrm -f $LIBROOT/Frameworks &&\nln -s Build/macosx/Debug $LIBROOT/Frameworks &&\ncp -f Diamond/{*.rb,guardian} $LIBROOT/Resources &&\ncp -rf TemplateProject Reloader $LIBROOT &&\nrm -rf $LIBROOT/TemplateProject/TemplateProject.xcodeproj/{xcuserdata,project.xcworkspace} &&\nrm -rf $LIBROOT/{Projects/SwiftRuby,Frameworks/SwiftRuby.framework} &&\n~/bin/diamond run: $LIBROOT/Resources/guardian -rebuild";
+			shellScript = "LIBROOT=~/Library/Diamond\nunset TOOLCHAINS\nrm -rf $LIBROOT/Build &&\nmkdir -p $LIBROOT/{Build,Carthage,Pods,Projects,Resources} &&\nrm -f $LIBROOT/Frameworks &&\nln -s Build/macosx/Debug $LIBROOT/Frameworks &&\ncp -f Diamond/{*.rb,guardian} $LIBROOT/Resources &&\ncp -rf TemplateProject Reloader $LIBROOT &&\nrm -rf $LIBROOT/TemplateProject/TemplateProject.xcodeproj/{xcuserdata,project.xcworkspace} &&\nrm -rf $LIBROOT/{Projects/{SwiftRuby,guardian},Frameworks/SwiftRuby.framework} &&\n~/bin/diamond run: $LIBROOT/Resources/guardian -rebuild";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -275,8 +275,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
@@ -319,8 +321,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;

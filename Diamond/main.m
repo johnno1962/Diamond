@@ -5,13 +5,14 @@
 //  Created by John Holdsworth on 18/09/2015.
 //  Copyright © 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Diamond/Diamond/main.m#33 $
+//  $Id: //depot/Diamond/Diamond/main.m#34 $
 //
 //  Repo: https://github.com/johnno1962/Diamond
 //
 
 @import Foundation;
 #import <sys/xattr.h>
+#import <crt_externs.h>
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wcstring-format-directive"
@@ -262,10 +263,10 @@ static int execFramework( NSString *scriptName, int argc, const char **argv ) {
     NSBundle *frameworkBundle = [NSBundle bundleWithPath:frameworkPath];
 
     if ( !frameworkBundle )
-        DError( "Could not locate binary or framemork bundle %@\n", frameworkPath );
+        DError( "Could not locate binary or framework bundle %@\n", frameworkPath );
 
     if ( ![frameworkBundle load] )
-        DError( "Could not load framemork bundle %@\n", frameworkBundle );
+        DError( "Could not load framework bundle %@\n", frameworkBundle );
 
     // Slight hack to get CFBundle from NSBundle so we can locate main function in main.swift
     CFBundleRef cfBundle = (__bridge CFBundleRef)[frameworkBundle valueForKey:@"cfBundle"];
@@ -284,6 +285,8 @@ static int execFramework( NSString *scriptName, int argc, const char **argv ) {
     int status = 1;
     @try {
         // run guardian or script in child process.
+        *_NSGetArgc() = argc;
+        *_NSGetArgv() = (char **)argv;
         status = scriptMain( argc, argv );
     }
     @catch ( NSException *e ) {

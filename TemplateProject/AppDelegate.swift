@@ -17,15 +17,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let psc = PureSwiftClass()
 
     class func reloaded() {
-        print( "\(Process.arguments[0]) reloaded: \(self)!!" )
+        print( "\(CommandLine.arguments[0]) reloaded: \(self)!!" )
     }
 
-    func applicationDidFinishLaunching(aNotification: NSNotification) {
+    func applicationDidFinishLaunching(_ aNotification: NSNotification) {
         // Insert code here to initialize your application
         NSApp.applicationIconImage = NSImage( named:"Swift" )
-        let url = NSURL( string: Process.arguments[1] )!
-        webView.mainFrame.loadRequest( NSURLRequest( URL: url ) )
-        NSApplication.sharedApplication().activateIgnoringOtherApps( true )
+        let url = URL( string: CommandLine.arguments[1] )!
+        webView.mainFrame.load( URLRequest( url: url ) )
+        NSApplication.shared().activate( ignoringOtherApps: true )
     }
 
     func applicationWillTerminate(aNotification: NSNotification) {
