@@ -17,4 +17,7 @@ print("Hello, \(CommandLine.arguments)!")
 //     print( "Usage: ./browse <http://url..>" )
 //     exit(0)
 // }
-// NSApplicationMain( 0,  UnsafeMutablePointer<UnsafeMutablePointer<CChar>>(nil) )
+// var dummy_argv = [UnsafeMutablePointer<CChar>?]()
+// dummy_argv.withUnsafeMutableBufferPointer {
+//     NSApplicationMain( 0,  $0.baseAddress! )
+// }

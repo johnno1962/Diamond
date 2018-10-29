@@ -46,7 +46,7 @@
 		BB3F78481BACA8E800435430 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 12;
-			dstPath = "~/bin";
+			dstPath = $HOME/bin;
 			dstSubfolderSpec = 0;
 			files = (
 				BB3F78541BACA97F00435430 /* diamond in CopyFiles */,
@@ -245,7 +245,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = "/bin/sh -x";
-			shellScript = "LIBROOT=~/Library/Diamond\nunset TOOLCHAINS\nrm -rf $LIBROOT/Build &&\nmkdir -p $LIBROOT/{Build,Carthage,Pods,Projects,Resources} &&\nrm -f $LIBROOT/Frameworks &&\nln -s Build/macosx/Debug $LIBROOT/Frameworks &&\ncp -f Diamond/{*.rb,guardian} $LIBROOT/Resources &&\ncp -rf TemplateProject Reloader $LIBROOT &&\nrm -rf $LIBROOT/TemplateProject/TemplateProject.xcodeproj/{xcuserdata,project.xcworkspace} &&\nrm -rf $LIBROOT/{Projects/{SwiftRuby,guardian},Frameworks/SwiftRuby.framework} &&\n~/bin/diamond run: $LIBROOT/Resources/guardian -rebuild";
+			shellScript = "LIBROOT=~/Library/Diamond\nunset TOOLCHAINS\nrm -rf $LIBROOT/Build &&\nmkdir -p $LIBROOT/{Build,Carthage,Pods,Projects,Resources} &&\nrm -f $LIBROOT/Frameworks &&\nln -s Build/macosx/Debug $LIBROOT/Frameworks &&\ncp -f Diamond/{*.rb,guardian} $LIBROOT/Resources &&\ncp -rf TemplateProject Reloader $LIBROOT &&\nrm -rf $LIBROOT/TemplateProject/TemplateProject.xcodeproj/{xcuserdata,project.xcworkspace} &&\nrm -rf $LIBROOT/{Projects/{SwiftRuby,guardian},Frameworks/SwiftRuby.framework} &&\n~/bin/diamond run: $LIBROOT/Resources/guardian -rebuild\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */

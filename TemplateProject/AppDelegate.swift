@@ -20,7 +20,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         print( "\(CommandLine.arguments[0]) reloaded: \(self)!!" )
     }
 
-    func applicationDidFinishLaunching(_ aNotification: Notification) {
+    @objc func applicationDidFinishLaunching(_ notification: Notification) {
         // Insert code here to initialize your application
         NSApp.applicationIconImage = NSImage( named:"Swift" )
         let url = URL( string: CommandLine.arguments[1] )!
@@ -28,7 +28,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         NSApplication.shared().activate( ignoringOtherApps: true )
     }
 
-    func applicationWillTerminate(aNotification: NSNotification) {
+    @objc func applicationWillTerminate(_ notification: Notification) {
         // Insert code here to tear down your application
         psc.reloadTest()
     }
