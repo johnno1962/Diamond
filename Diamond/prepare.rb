@@ -6,7 +6,7 @@
 #  Created by John Holdsworth on 18/09/2015.
 #  Copyright © 2015 John Holdsworth. All rights reserved.
 #
-#  $Id: //depot/Diamond/Diamond/prepare.rb#48 $
+#  $Id: //depot/Diamond/Diamond/prepare.rb#50 $
 #
 #  Repo: https://github.com/johnno1962/Diamond
 #
@@ -301,7 +301,7 @@ PODFILE
 
     if !skipRebuild || $isRebuild
 
-        settings = "SYMROOT=#{libraryRoot}/Build/macosx"
+        settings = "SYMROOT=#{libraryRoot}/Build/macosx BUILD_LIBRARY_FOR_DISTRIBUTION=YES"
         build = "cd '#{scriptProject}' && xcodebuild -sdk macosx -configuration Debug #{target} #{settings}"
 
         reloaderLog = libraryRoot+"/Reloader/"+scriptName+".log"
@@ -310,11 +310,11 @@ PODFILE
         # make sure there is a complete xcodebuild log retained while keeping it under a mb
         if $isRebuild || File.exists?( reloaderLog ) && File.size( reloaderLog ) > 1_000_000
             log( "Cleaning #{scriptProject}")
-            `#{build} clean 2>&1`
+#            `#{build} clean 2>&1`
             mode = "w"
         end
 
-        system( "rm -rf '#{frameworkRoot}'/*.swiftmodule" )
+#        system( "rm -rf '#{frameworkRoot}'/*.swiftmodule" )
         log( "Building #{scriptProject} #{target}")
         out = `#{build} 2>&1`
         if !$?.success?

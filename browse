@@ -10,9 +10,18 @@
 import SwiftRuby
 import Cocoa
 
-if Process.argc < 2 {
-    print( "Usage: \(Process.arguments[0]) <http://url..>" )
+if CommandLine.arguments.count < 2 {
+    print( "Usage: \(CommandLine.arguments[0]) <http://url..>" )
     exit(0)
 }
 
-NSApplicationMain( 0,  UnsafeMutablePointer<UnsafeMutablePointer<CChar>>(nil) )
+var args = [UnsafeMutablePointer<Int8>?]()
+for arg in CommandLine.arguments {
+    arg.withCString {
+        args.append(strdup($0))
+    }
+}
+
+args.withUnsafeMutableBufferPointer {
+    _ = NSApplicationMain(Int32($0.count), $0.baseAddress!)
+}

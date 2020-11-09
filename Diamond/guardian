@@ -7,7 +7,7 @@
 //  Created by John Holdsworth on 18/09/2015.
 //  Copyright © 2015 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Diamond/Diamond/guardian#14 $
+//  $Id: //depot/Diamond/Diamond/guardian#15 $
 //
 //  Repo: https://github.com/RubyNative/RubyNative
 //
@@ -61,6 +61,6 @@ while let log = IO.popen( "ls -t \(logs) 2>/dev/null | head -1" )?.readline() {
     }
 }
 
-if CommandLine.arguments[CommandLine.argc-1] != "-restarter" {
+if CommandLine.arguments[CommandLine.arguments.count-1] != "-restarter" {
     exit( EXIT_FAILURE )
 }

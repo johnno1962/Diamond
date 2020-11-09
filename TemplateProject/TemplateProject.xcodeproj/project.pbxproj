@@ -12,6 +12,7 @@
 		BB45AF661BB0CDD300428322 /* Swift.png in Resources */ = {isa = PBXBuildFile; fileRef = BB45AF631BB0CDD300428322 /* Swift.png */; };
 		BB8EE2E61BB22FFD00348257 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8EE2E51BB22FFD00348257 /* main.swift */; };
 		BB8EE2E71BB2307700348257 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB8EE2E51BB22FFD00348257 /* main.swift */; };
+		BB98DCDA2559A819008E8627 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB98DCCF2559A6C3008E8627 /* WebKit.framework */; };
 		BB9B7F961BD76327000897D1 /* TemplateProject.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB3F78911BACAB9B00435430 /* TemplateProject.framework */; };
 		BB9B7FAA1BD767C7000897D1 /* ProjectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9B7FA81BD76797000897D1 /* ProjectTests.swift */; };
 		BBAD46771BBAE9BB00701DE9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB45AF611BB0CDD300428322 /* AppDelegate.swift */; };
@@ -57,7 +58,7 @@
 		BB45AF631BB0CDD300428322 /* Swift.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Swift.png; sourceTree = "<group>"; };
 		BB8EE26A1BB0D75A00348257 /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
 		BB8EE2E51BB22FFD00348257 /* main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		BB9B7F911BD76326000897D1 /* TemplateProjectTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "TemplateProjectTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB98DCCF2559A6C3008E8627 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		BB9B7FA81BD76797000897D1 /* ProjectTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProjectTests.swift; sourceTree = "<group>"; };
 		BBB3FEB31BBC260C009E718C /* SwiftRuby.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SwiftRuby.xcodeproj; path = SwiftRuby/SwiftRuby.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -67,6 +68,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BB98DCDA2559A819008E8627 /* WebKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -100,6 +102,7 @@
 				BB3F78A21BACAC3600435430 /* Info.plist */,
 				BBB3FEB31BBC260C009E718C /* SwiftRuby.xcodeproj */,
 				BB3F78921BACAB9B00435430 /* Products */,
+				BB98DCCE2559A6C3008E8627 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -111,6 +114,14 @@
 				BB9B7F911BD76326000897D1 /* TemplateProjectTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		BB98DCCE2559A6C3008E8627 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				BB98DCCF2559A6C3008E8627 /* WebKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		BBB3FEB41BBC260C009E718C /* Products */ = {
@@ -215,6 +226,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = BB3F78871BACAB9B00435430;
@@ -383,7 +395,7 @@
 				SDKROOT = macosx;
 				STRIP_INSTALLED_PRODUCT = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 5.0;
 				SYMROOT = "$(DIAMOND_HOME)/Build/$(PLATFORM_NAME)";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -432,7 +444,7 @@
 				OTHER_LDFLAGS = "";
 				SDKROOT = macosx;
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 5.0;
 				SYMROOT = "$(DIAMOND_HOME)/Build/$(PLATFORM_NAME)";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";

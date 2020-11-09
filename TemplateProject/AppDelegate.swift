@@ -17,15 +17,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let psc = PureSwiftClass()
 
     class func reloaded() {
-        print( "\(CommandLine.arguments[0]) reloaded: \(self)!!" )
+        print("\(CommandLine.arguments[0]) reloaded: \(self)!!")
     }
 
     @objc func applicationDidFinishLaunching(_ notification: Notification) {
         // Insert code here to initialize your application
-        NSApp.applicationIconImage = NSImage( named:"Swift" )
-        let url = URL( string: CommandLine.arguments[1] )!
-        webView.mainFrame.load( URLRequest( url: url ) )
-        NSApplication.shared().activate( ignoringOtherApps: true )
+        NSApp.applicationIconImage = NSImage(named:"Swift")
+        let url = URL(string: CommandLine.arguments[1])!
+        webView.mainFrame.load(URLRequest(url: url))
+        NSApplication.shared.activate(ignoringOtherApps: true)
     }
 
     @objc func applicationWillTerminate(_ notification: Notification) {
@@ -33,7 +33,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         psc.reloadTest()
     }
 
-    func webView( aWebView: WebView, didReceiveTitle aTitle: String, forFrame frame: WebFrame ) {
+    func webView(aWebView: WebView, didReceiveTitle aTitle: String, forFrame frame: WebFrame) {
         window.title = aTitle
     }
 
@@ -42,7 +42,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 class PureSwiftClass {
 
     func reloadTest() {
-        print( "bye.." )
+        print("bye..")
     }
 
 }
